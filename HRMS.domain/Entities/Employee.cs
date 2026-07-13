@@ -14,6 +14,7 @@ namespace HRMS.domain.Entities
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Phone { get; set; } = string.Empty;
+        public string Address {  get; set; } = string.Empty;
         public DateTime HireDate { get; set; }
         public ICollection<EmployeeDepartment> EmployeeDepartments { get; set; } = new List<EmployeeDepartment>();
         public ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();

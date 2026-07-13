@@ -8,10 +8,19 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="16.2.0" />
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\HRMS.domain\HRMS.domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DTOs\Company\" />
+    <Folder Include="DTOs\Department\" />
+    <Folder Include="DTOs\Shift\" />
+    <Folder Include="DTOs\Request\" />
+    <Folder Include="DTOs\User\" />
   </ItemGroup>
 
 </Project>
