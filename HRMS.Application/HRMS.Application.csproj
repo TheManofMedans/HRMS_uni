@@ -20,7 +20,6 @@
     <Folder Include="DTOs\Department\" />
     <Folder Include="DTOs\Shift\" />
     <Folder Include="DTOs\Request\" />
-    <Folder Include="DTOs\User\" />
   </ItemGroup>
 
 </Project>

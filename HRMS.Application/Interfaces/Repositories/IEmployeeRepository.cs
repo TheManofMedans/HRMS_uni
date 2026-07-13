@@ -15,6 +15,7 @@ namespace HRMS.Application.Interfaces.Repositories
         Task AddAsync(Employee employee);
         void Update(Employee employee);
         void Delete(Employee employee);
+        Task<bool> SSNExistsAsync(string SSN);
         Task<bool> EmailExistsAsync(string email);
         Task<bool> SaveChangesAsync();
     }

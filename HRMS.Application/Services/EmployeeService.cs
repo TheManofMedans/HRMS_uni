@@ -28,6 +28,10 @@ namespace HRMS.Application.Services
             {
 
             }
+            if (await _employeeRepository.SSNExistsAsync(dto.SSN))
+            {
+
+            }
             var employee = _mapper.Map<Employee>(dto);
             await _employeeRepository.AddAsync(employee);
             await _employeeRepository.SaveChangesAsync();
