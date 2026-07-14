@@ -17,7 +17,6 @@
 
   <ItemGroup>
     <Folder Include="DTOs\Company\" />
-    <Folder Include="DTOs\Department\" />
     <Folder Include="DTOs\Shift\" />
     <Folder Include="DTOs\Request\" />
   </ItemGroup>
