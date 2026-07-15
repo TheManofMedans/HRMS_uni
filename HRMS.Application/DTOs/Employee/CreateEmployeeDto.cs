@@ -15,6 +15,6 @@ namespace HRMS.Application.DTOs.Employee
         public string Address { get; set; } = string.Empty;
         public string SSN { get; set; } = string.Empty;
         public DateTime HireDate { get; set; }
-        public List<int> DepartmentIds { get; set; } = new List<int>();
+        //public List<int?> DepartmentIds { get; set; }
     }
 }

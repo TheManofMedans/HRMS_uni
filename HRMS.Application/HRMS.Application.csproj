@@ -18,7 +18,6 @@
   <ItemGroup>
     <Folder Include="DTOs\Company\" />
     <Folder Include="DTOs\Shift\" />
-    <Folder Include="DTOs\Request\" />
   </ItemGroup>
 
 </Project>
