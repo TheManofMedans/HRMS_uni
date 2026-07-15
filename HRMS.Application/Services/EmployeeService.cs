@@ -15,10 +15,12 @@ namespace HRMS.Application.Services
     public class EmployeeService : IEmployeeService
     {
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly IDepartdmentRepository _departdmentRepository;
         private readonly IMapper _mapper;
-        public EmployeeService(IEmployeeRepository employeeRepository, IMapper mapper)
+        public EmployeeService(IEmployeeRepository employeeRepository,IDepartdmentRepository departdmentRepository, IMapper mapper)
         {
             _employeeRepository = employeeRepository;
+            _departdmentRepository = departdmentRepository;
             _mapper = mapper;
         }
 
@@ -36,6 +38,57 @@ namespace HRMS.Application.Services
             await _employeeRepository.AddAsync(employee);
             await _employeeRepository.SaveChangesAsync();
             return _mapper.Map<EmployeeResponseDto>(employee);
+        }
+        public async Task<bool> AddToDepartmentAsync(int EmployeeId,int DepartmentId)
+        {
+            var Employee = await _employeeRepository.GetByIdWithDepartmentsAsync(EmployeeId);
+            if (Employee == null)
+            {
+                return false;
+            }
+            var department = await _departdmentRepository.GetByIdAsync(DepartmentId);
+            if (department == null)
+            {
+                return false;
+            }
+            if (Employee.EmployeeDepartments.Any(uc => uc.DepartmentID == DepartmentId))
+            {
+                return false;
+            }
+            Employee.EmployeeDepartments.Add(new EmployeeDepartment
+            {
+                EmployeeID = Employee.Id,
+                DepartmentID = DepartmentId,
+                AssignedAt = DateTime.UtcNow,
+                IsPrimary = false
+            }); 
+            _employeeRepository.Update(Employee);
+            return await _employeeRepository.SaveChangesAsync();
+        }
+        public async Task<bool> SetPrimary(int EmployeeId,int DepartmentId)
+        {
+            var employee = await _employeeRepository.GetByIdWithDepartmentsAsync(EmployeeId);
+            if (employee is null)
+            {
+                return false;
+            }
+            var department = await _departdmentRepository.GetByIdAsync (DepartmentId);
+            if (department is null)
+            {
+                return false;
+            }
+            if (!employee.EmployeeDepartments.Any(ed => ed.DepartmentID == DepartmentId))
+            {
+                return false;
+            }
+            var ED = employee.EmployeeDepartments.FirstOrDefault(ed => ed.DepartmentID == DepartmentId);
+            if (ED is null)
+            {
+                return false;
+            }
+            ED.IsPrimary = true;
+            _employeeRepository.Update(employee);
+            return await _employeeRepository.SaveChangesAsync();
         }
         public async Task<EmployeeResponseDto?> GetByIdAsync(int id)
         {
