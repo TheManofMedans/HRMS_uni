@@ -70,10 +70,23 @@ namespace HRMS.Application.Services
                 return false;
             }
             request.ReviewedAt = requestDto.ReviewedAt;
-            request.Status = (domain.Enums.RequestStatus)requestDto.Status;
-            request.StartDate = (DateTime)requestDto.StartDate;
-            request.EndDate = (DateTime)requestDto.EndDate;
-            request.description = requestDto.Description;
+            if ((requestDto.Status != null))
+            {
+                request.Status = (domain.Enums.RequestStatus)requestDto.Status;
+            }
+            if ((requestDto.StartDate != null))
+            {
+                request.StartDate = (DateTime)requestDto.StartDate;
+            }
+            if (requestDto.EndDate != null)
+            {
+                request.EndDate = (DateTime)requestDto.EndDate;
+            }
+            if (requestDto.Description != null)
+            {
+                request.description = requestDto.Description;
+            }
+            
             _requestRepository.Update(request);
             return await _requestRepository.SaveChangesAsync();
         }
