@@ -16,6 +16,14 @@ namespace HRMS.Application.DTOs.Request
         public DateTime EndDate { get; set; }
         public RequestStatus Status { get; set; }
         public RequestType RequestType { get; set; }
+        public EmployeeDto Employee { get; set; }
+        
 
+    }
+    public class EmployeeDto
+    {
+        public int Id { get; set; }
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
     }
 }

@@ -1,0 +1,123 @@
+﻿using HRMS.Application.Interfaces.Repositories;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using HRMS.domain.Entities;
+using HRMS.Application.DTOs;
+using HRMS.Application.Interfaces.Services;
+using AutoMapper;
+using HRMS.Application.DTOs.Company;
+using HRMS.domain.Enums;
+
+namespace HRMS.Application.Services
+{
+    public class CompanyService : ICompanyService
+    {
+        private readonly IMapper _mapper;
+        private readonly ICompanyRepository _companyRepository;
+        private readonly IUserRepository _userRepository;
+        public CompanyService (IMapper mapper,ICompanyRepository companyRepository, IUserRepository userRepository)
+        {
+            _mapper = mapper;
+            _companyRepository = companyRepository;
+            _userRepository = userRepository;
+        }
+        public async Task<CompanyResponseDto?> GetByIdAsync(int id)
+        {
+            var Company = await _companyRepository.GetByIdAsync(id);
+            return Company is null ? null : _mapper.Map<CompanyResponseDto?>(Company);
+        }
+        public async Task<CompanyResponseDto?> GetByRegNumAsync(string RegNum)
+        {
+            var company = await _companyRepository.GetByRegNumAsync(RegNum);
+            return company is null ? null : _mapper.Map<CompanyResponseDto>(company);
+        }
+        public async Task<CompanyResponseDto?> GetWithUserAsync(int UserId)
+        {
+            var user = await _userRepository.GetByIdAsync(UserId);
+            if (user is null)
+            {
+
+            }
+            var Company = await _companyRepository.GetWithUserAsync(UserId);
+            return _mapper.Map<CompanyResponseDto>(Company);
+        }
+        public async Task<IEnumerable<CompanyResponseDto>> GetAllAsync()
+        {
+            var companies = await _companyRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<CompanyResponseDto>>(companies);
+        }
+        public async Task<CompanyResponseDto> CreateAsync(CreateCompanyDto dto)
+        {
+            var Company = _mapper.Map<Company>(dto);
+            var User = await _userRepository.GetByIdAsync(dto.UserId);
+            if (User is null)
+            {
+
+            }
+            Company.UserCompanies.Add(new UserCompany
+            {
+                user = User,
+                company = Company,
+                Role = dto.Role,
+            });
+           await _companyRepository.AddAsync(Company);
+            bool isAdded = await _userRepository.SaveChangesAsync();
+            if (!isAdded)
+            {
+
+            }
+            return _mapper.Map<CompanyResponseDto>(Company);
+        }
+        public async Task<bool> UpdateAsync(int id,UpdateCompanyDto dto)
+        {
+            var Company = await _companyRepository.GetByIdAsync(id);
+            if (Company is null)
+            {
+
+            }
+            Company.Address = dto.Address;
+            _companyRepository.Update(Company);
+            return await _companyRepository.SaveChangesAsync();
+        }
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var Company = await _companyRepository.GetByIdAsync(id);
+            if (Company is null) 
+            {
+                
+            }
+            _companyRepository.Delete(id);
+            return await _companyRepository.SaveChangesAsync();
+        }
+        public async Task<CompanyResponseDto> AddUsertoCompanyAsync(int CompanyId, int UserId,CompanyRole Role)
+        {
+            var Company = await _companyRepository.GetByIdAsync(CompanyId);
+            if (Company is null)
+            {
+
+            }
+            var User = await  _userRepository.GetByIdAsync(UserId);
+            if (User is null)
+            {
+
+            }
+            Company.UserCompanies.Add(new UserCompany
+            {
+                company = Company,
+                user = User,
+                Role = Role,
+
+            });
+            _companyRepository.Update(Company);
+            bool isAdded = await _companyRepository.SaveChangesAsync();
+            if (!isAdded)
+            {
+
+            }
+            return _mapper.Map<CompanyResponseDto>(Company);
+        }
+    }
+}
