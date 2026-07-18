@@ -91,6 +91,11 @@ namespace HRMS.Application.Services
         }
         public async Task<bool> DeleteAsync(int id)
         {
+            var shift = await _shiftRepository.GetByIdAsync(id);
+            if (shift == null)
+            {
+
+            }
             _shiftRepository.Delete(id);
             return await _shiftRepository.SaveChangesAsync();
         }
