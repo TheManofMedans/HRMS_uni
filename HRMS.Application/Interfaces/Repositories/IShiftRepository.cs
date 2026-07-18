@@ -11,7 +11,7 @@ namespace HRMS.Application.Interfaces.Repositories
     {
         Task<Shift?> GetByIdAsync(int id);
         Task<IEnumerable<Shift>> GetAllAsync();
-        Task<IEnumerable<Shift>?> GetByUserIdAsync(int UserId);
+        Task<IEnumerable<Shift>?> GetByCompanyIdAsync(int CompanyId);
         Task AddAsync(Shift shift);
         void  Update(Shift shift);
         void Delete(int id);

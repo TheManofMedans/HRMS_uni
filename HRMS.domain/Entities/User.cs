@@ -16,7 +16,6 @@ namespace HRMS.domain.Entities
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public ICollection<UserCompany> UserCompanies { get; set; } = new List<UserCompany>();
-        public ICollection<Shift> Shifts { get; set; } = new List<Shift>();
 
     }
 }

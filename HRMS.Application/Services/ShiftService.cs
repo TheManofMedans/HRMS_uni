@@ -15,12 +15,12 @@ namespace HRMS.Application.Services
     {
         private readonly Mapper _mapper;
         private readonly IShiftRepository _shiftRepository;
-        private readonly IUserRepository _userRepository;
-        public ShiftService(Mapper mapper, IShiftRepository shiftRepository, IUserRepository userRepository)
+        private readonly ICompanyRepository _companyRepository;
+        public ShiftService(Mapper mapper, IShiftRepository shiftRepository, ICompanyRepository companyRepository)
         {
             _mapper = mapper;
            _shiftRepository = shiftRepository;
-            _userRepository = userRepository;
+            _companyRepository = companyRepository;
         }
 
         public async Task<ShiftResponseDto?> GetByIdAsync(int id)
@@ -33,14 +33,14 @@ namespace HRMS.Application.Services
             var Shifts = await  _shiftRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<ShiftResponseDto>>(Shifts);
         }
-        public async Task<IEnumerable<ShiftResponseDto>?> GetByUserIdAsync(int UserId)
+        public async Task<IEnumerable<ShiftResponseDto>?> GetByCompanyIdAsync(int CompanyId)
         {
-            var user = await _userRepository.GetByIdAsync(UserId);
-            if (user == null)
+            var Company = await _companyRepository.GetByIdAsync(CompanyId);
+            if (Company == null)
             {
 
             }
-            var Shifts = await _shiftRepository.GetByUserIdAsync(UserId);
+            var Shifts = await _shiftRepository.GetByCompanyIdAsync(CompanyId);
             if (Shifts == null)
             {
 
@@ -49,7 +49,7 @@ namespace HRMS.Application.Services
         }
         public async Task<ShiftResponseDto> CreateAsync(CreateShiftDto dto)
         {
-            var Shifts = await _shiftRepository.GetByUserIdAsync(dto.UserId);
+            var Shifts = await _shiftRepository.GetByCompanyIdAsync(dto.CompanyId);
             if (Shifts is null)
             {
 
@@ -67,7 +67,7 @@ namespace HRMS.Application.Services
 
             }
             var Shift = _mapper.Map<Shift>(dto);
-            Shift.UserId = dto.UserId;
+            Shift.CompanyId = dto.CompanyId;
             await _shiftRepository.AddAsync(Shift);
             var isdone = await _shiftRepository.SaveChangesAsync();
             if (!isdone)

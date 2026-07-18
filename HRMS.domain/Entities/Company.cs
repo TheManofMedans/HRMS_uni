@@ -15,6 +15,7 @@ namespace HRMS.domain.Entities
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public ICollection<UserCompany> UserCompanies { get; set; } = new List<UserCompany>();
         public ICollection<Department> Departments { get; set; } = new List<Department>();
+        public ICollection<Shift> Shifts { get; set; } = new List<Shift>();
 
     }
 }

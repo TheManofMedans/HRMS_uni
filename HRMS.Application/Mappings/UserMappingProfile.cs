@@ -14,8 +14,8 @@ namespace HRMS.Application.Mappings
     {
         public UserMappingProfile() 
         {
-            CreateMap<User, UserResponseDto>()
-                .ForMember(dest => dest.CompanyNames, opt => opt.MapFrom(src => src.UserCompanies.Select(d => d.company.Name)));
+            //CreateMap<User, UserResponseDto>()
+                //.ForMember(dest => dest.CompanyNames, opt => opt.MapFrom(src => src.UserCompanies.Select(d => d.company.Name)));
 
         }
     }

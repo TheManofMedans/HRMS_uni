@@ -11,7 +11,7 @@ namespace HRMS.Application.Interfaces.Services
     {
         Task<ShiftResponseDto?> GetByIdAsync(int id);
         Task<IEnumerable<ShiftResponseDto>> GetAllAsync();
-        Task<IEnumerable<ShiftResponseDto>?> GetByUserIdAsync(int userId);
+        Task<IEnumerable<ShiftResponseDto>?> GetByCompanyIdAsync(int CompanyId);
         Task<ShiftResponseDto> CreateAsync(CreateShiftDto dto);
         Task<bool> UpdateAsync(int id,UpdateShiftDto dto);
         Task<bool> DeleteAsync(int id);

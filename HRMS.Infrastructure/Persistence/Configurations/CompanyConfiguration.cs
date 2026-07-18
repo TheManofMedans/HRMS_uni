@@ -19,6 +19,7 @@ namespace HRMS.Infrastructure.Persistence.Configurations
             builder.Property(u=>u.Name).HasMaxLength(100);
             builder.Property(u=>u.Address).HasMaxLength(500);
             builder.HasIndex(u => u.RegNum).IsUnique();
+
             builder.HasMany(u=>u.Departments)
                 .WithOne(u => u.Company)
                 .HasForeignKey(u=>u.CompanyId)

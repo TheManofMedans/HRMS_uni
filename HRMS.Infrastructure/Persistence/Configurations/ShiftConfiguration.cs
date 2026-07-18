@@ -18,6 +18,10 @@ namespace HRMS.Infrastructure.Persistence.Configurations
 
             builder.Property(s => s.ShiftName).IsRequired().HasMaxLength(100);
 
+            builder.HasOne(s => s.Company)
+                .WithMany(c => c.Shifts)
+                .HasForeignKey(s=> s.CompanyId)
+                .OnDelete(DeleteBehavior.Cascade);
             
             builder.HasMany(s => s.Attendances)
                    .WithOne(a => a.shift)

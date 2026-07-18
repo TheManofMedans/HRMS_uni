@@ -21,10 +21,6 @@ namespace HRMS.Infrastructure.Persistence.Configurations
             builder.Property(u => u.PhoneNumber).IsRequired().HasMaxLength(50);
             builder.HasIndex(u => u.Email).IsUnique();
             builder.HasIndex(u=>u.PhoneNumber).IsUnique();
-            builder.HasMany(u=>u.Shifts)
-                .WithOne(s=>s.User)
-                .HasForeignKey(s=>s.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
