@@ -1,0 +1,98 @@
+﻿using AutoMapper;
+using HRMS.Application.DTOs.Shift;
+using HRMS.Application.Interfaces.Repositories;
+using HRMS.Application.Interfaces.Services;
+using HRMS.domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace HRMS.Application.Services
+{
+    public class ShiftService : IShiftService
+    {
+        private readonly Mapper _mapper;
+        private readonly IShiftRepository _shiftRepository;
+        private readonly IUserRepository _userRepository;
+        public ShiftService(Mapper mapper, IShiftRepository shiftRepository, IUserRepository userRepository)
+        {
+            _mapper = mapper;
+           _shiftRepository = shiftRepository;
+            _userRepository = userRepository;
+        }
+
+        public async Task<ShiftResponseDto?> GetByIdAsync(int id)
+        {
+            var Shift = await _shiftRepository.GetByIdAsync(id);
+            return Shift is null ? null : _mapper.Map<ShiftResponseDto>(Shift);
+        }
+        public async Task <IEnumerable<ShiftResponseDto>> GetAllAsync()
+        {
+            var Shifts = await  _shiftRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<ShiftResponseDto>>(Shifts);
+        }
+        public async Task<IEnumerable<ShiftResponseDto>?> GetByUserIdAsync(int UserId)
+        {
+            var user = await _userRepository.GetByIdAsync(UserId);
+            if (user == null)
+            {
+
+            }
+            var Shifts = await _shiftRepository.GetByUserIdAsync(UserId);
+            if (Shifts == null)
+            {
+
+            }
+            return _mapper.Map<IEnumerable<ShiftResponseDto>>(Shifts);
+        }
+        public async Task<ShiftResponseDto> CreateAsync(CreateShiftDto dto)
+        {
+            var Shifts = await _shiftRepository.GetByUserIdAsync(dto.UserId);
+            if (Shifts is null)
+            {
+
+            }
+            bool alreadyexists = false;
+            foreach(var shift in Shifts)
+            {
+                if (shift.StartTime ==  dto.StartTime && shift.EndTime == dto.EndTime)
+                {
+                    alreadyexists = true;
+                }
+            }
+            if (alreadyexists) 
+            {
+
+            }
+            var Shift = _mapper.Map<Shift>(dto);
+            Shift.UserId = dto.UserId;
+            await _shiftRepository.AddAsync(Shift);
+            var isdone = await _shiftRepository.SaveChangesAsync();
+            if (!isdone)
+            {
+
+            }
+            return _mapper.Map<ShiftResponseDto>(Shift);
+        }
+        public async Task<bool> UpdateAsync(int id, UpdateShiftDto dto)
+        {
+            var shift = await _shiftRepository.GetByIdAsync(id);
+            if (shift == null)
+            {
+
+            }
+            shift.ShiftName = dto.ShiftName;
+            shift.StartTime = dto.StartTime;
+            shift.EndTime = dto.EndTime;
+            _shiftRepository.Update(shift);
+            return await _shiftRepository.SaveChangesAsync();
+        }
+        public async Task<bool> DeleteAsync(int id)
+        {
+            _shiftRepository.Delete(id);
+            return await _shiftRepository.SaveChangesAsync();
+        }
+    }
+}

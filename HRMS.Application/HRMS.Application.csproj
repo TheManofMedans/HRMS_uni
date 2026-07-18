@@ -15,8 +15,4 @@
     <ProjectReference Include="..\HRMS.domain\HRMS.domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DTOs\Shift\" />
-  </ItemGroup>
-
 </Project>
