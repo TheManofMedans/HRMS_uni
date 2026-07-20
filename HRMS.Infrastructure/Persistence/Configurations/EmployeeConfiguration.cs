@@ -23,6 +23,7 @@ namespace HRMS.Infrastructure.Persistence.Configurations
 
             builder.HasIndex(e =>e.Email).IsUnique();
             builder.HasIndex(e => e.Phone).IsUnique();
+            builder.HasIndex(e => e.SSN).IsUnique();
 
             builder.HasMany(e => e.Requests)
                 .WithOne(r => r.Employee)

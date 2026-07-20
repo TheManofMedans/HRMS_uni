@@ -14,8 +14,13 @@ namespace HRMS.Application.Mappings
     {
         public UserMappingProfile() 
         {
-            //CreateMap<User, UserResponseDto>()
-                //.ForMember(dest => dest.CompanyNames, opt => opt.MapFrom(src => src.UserCompanies.Select(d => d.company.Name)));
+            CreateMap<User,UserResponseDto>()
+                .ForMember(dest => dest.Companies, opt => opt.MapFrom(src => src.UserCompanies));
+            CreateMap<UserCompany, UserCompanyDto>().ForMember(dest => dest.CompanyId, opt => opt.MapFrom(opt => opt.CompanyId))
+                .ForMember(dest => dest.CompanyName,opt => opt.MapFrom(src => src.company.Name))
+                .ForMember(dest => dest.Role,opt => opt.MapFrom(src => src.Role));
+            CreateMap<CreateUserDto, User>().
+                ForMember(dest => dest.PhoneNumber,opt => opt.MapFrom(src => src.Phone));
 
         }
     }

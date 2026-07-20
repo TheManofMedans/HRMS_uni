@@ -12,7 +12,8 @@ namespace HRMS.domain.Enums
         Present,
         Late,
         Absent,
-        OnLeave
+        OnLeave,
+        NoClockOut
 
     }
 }
