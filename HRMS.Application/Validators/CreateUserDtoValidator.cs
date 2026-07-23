@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentValidation;
+using HRMS.Application.DTOs.User;
 
 namespace HRMS.Application.Validators
 {
-    internal class CreateUserDtoValidator
+    public class CreateUserDtoValidator
     {
     }
 }
