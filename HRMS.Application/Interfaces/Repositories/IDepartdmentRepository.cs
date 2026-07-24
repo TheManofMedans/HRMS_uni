@@ -11,7 +11,7 @@ namespace HRMS.Application.Interfaces.Repositories
     public interface IDepartdmentRepository
     {
         Task<Department?> GetByIdAsync(int id);
-        Task<Department?> FindByCompanyIdAsync(int id);
+        Task<IEnumerable<Department>> FindByCompanyIdAsync(int id);
         Task<IEnumerable<Department>> GetAllAsync();
         Task AddAsync(Department department);
         void Update(Department department);

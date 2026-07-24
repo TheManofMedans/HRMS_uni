@@ -12,9 +12,9 @@ namespace HRMS.Application.Interfaces.Repositories
     {
         Task<Attendance?> GetByIdAsync(int id);
         Task<IEnumerable<Attendance>> GetAllAsync();
-        Task<IEnumerable<Attendance>?> GetByEmployeeIdAsync(int employeeId);
-        Task<IEnumerable<Attendance>?> GetByStatusAsync(AttendanceStatus status);
-        Task<IEnumerable<Attendance>?> GetByEmployeeAndStatusAsync(int employeeId, AttendanceStatus status);
+        Task<IEnumerable<Attendance>> GetByEmployeeIdAsync(int employeeId);
+        Task<IEnumerable<Attendance>> GetByStatusAsync(AttendanceStatus status);
+        Task<IEnumerable<Attendance>> GetByEmployeeAndStatusAsync(int employeeId, AttendanceStatus status);
         Task AddAsync(Attendance attendance);
         void Update(Attendance attendance);
         void Delete(int id);

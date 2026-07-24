@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HRMS.Application.DTOs.Shift;
+using HRMS.Application.Exceptions;
 using HRMS.Application.Interfaces.Repositories;
 using HRMS.Application.Interfaces.Services;
 using HRMS.domain.Entities;
@@ -50,21 +51,11 @@ namespace HRMS.Application.Services
         public async Task<ShiftResponseDto> CreateAsync(CreateShiftDto dto)
         {
             var Shifts = await _shiftRepository.GetByCompanyIdAsync(dto.CompanyId);
-            if (Shifts is null)
+            bool AlreadyExists = Shifts is not null &&
+                Shifts.Any(s => s.StartTime ==  dto.StartTime && s.EndTime == dto.EndTime);
+            if (AlreadyExists)
             {
-
-            }
-            bool alreadyexists = false;
-            foreach(var shift in Shifts)
-            {
-                if (shift.StartTime ==  dto.StartTime && shift.EndTime == dto.EndTime)
-                {
-                    alreadyexists = true;
-                }
-            }
-            if (alreadyexists) 
-            {
-
+                throw new ConflictException("A Shift with the same start and end times already exists for this company!");
             }
             var Shift = _mapper.Map<Shift>(dto);
             Shift.CompanyId = dto.CompanyId;

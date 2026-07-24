@@ -14,11 +14,13 @@ namespace HRMS.Application.Mappings
         public CompanyMappingProfile() 
         {
             CreateMap<Company,CompanyResponseDto>().
-                ForMember(dest => dest.User,opt => opt.MapFrom(src => src.UserCompanies));
+                ForMember(dest => dest.Users,opt => opt.MapFrom(src => src.UserCompanies));
             CreateMap<UserCompany,UserDto>().
                 ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.UserId)).
                 ForMember(dest => dest.FirstName,opt => opt.MapFrom(src => src.user.FirstName)).
-                ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.user.LastName));
+                ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.user.LastName)).
+                ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.user.Email));
+            CreateMap<CreateCompanyDto, Company>();
             
         }
     }

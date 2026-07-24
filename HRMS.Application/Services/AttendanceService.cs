@@ -39,7 +39,7 @@ namespace HRMS.Application.Services
             var Attendances = await _attendanceRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<AttendanceResponseDto>>(Attendances);
         }
-        public async Task<IEnumerable<AttendanceResponseDto>?> GetByEmployeeIdAsync(int EmployeeId)
+        public async Task<IEnumerable<AttendanceResponseDto>> GetByEmployeeIdAsync(int EmployeeId)
         {
             var Employee = await _employeeRepository.GetbyIdAsync(EmployeeId);
             if (Employee is null)
@@ -51,18 +51,18 @@ namespace HRMS.Application.Services
             {
                 throw new NotFoundException("Attendance Record is not found!");
             }
-            return _mapper.Map<IEnumerable<AttendanceResponseDto>?>(Attendances);
+            return _mapper.Map<IEnumerable<AttendanceResponseDto>>(Attendances);
         }
-        public async Task<IEnumerable<AttendanceResponseDto>?> GetByStatusAsync(AttendanceStatus status)
+        public async Task<IEnumerable<AttendanceResponseDto>> GetByStatusAsync(AttendanceStatus status)
         {
             var Attendances = await _attendanceRepository.GetByStatusAsync(status);
             if (Attendances == null)
             {
                 throw new NotFoundException("Attendance Record is not found!");
             }
-            return _mapper.Map<IEnumerable<AttendanceResponseDto>?>(Attendances);
+            return _mapper.Map<IEnumerable<AttendanceResponseDto>>(Attendances);
         }
-        public async Task<IEnumerable<AttendanceResponseDto>?> GetByEmployeeAndStatusAsync(int id, AttendanceStatus status)
+        public async Task<IEnumerable<AttendanceResponseDto>> GetByEmployeeAndStatusAsync(int id, AttendanceStatus status)
         {
             var Employee = await _employeeRepository.GetbyIdAsync(id);
             if (Employee is null)
@@ -70,7 +70,7 @@ namespace HRMS.Application.Services
                 throw new NotFoundException("Employee is not found!");
             }
             var Attendances = await _attendanceRepository.GetByEmployeeAndStatusAsync(Employee.Id, status);
-            return _mapper.Map<IEnumerable<AttendanceResponseDto>?>(Attendances); 
+            return _mapper.Map<IEnumerable<AttendanceResponseDto>>(Attendances); 
         }
         public async Task<AttendanceResponseDto> CreateAsync(CreateAttendanceDto dto)
         {
@@ -94,7 +94,7 @@ namespace HRMS.Application.Services
             var isadded = await _attendanceRepository.SaveChangesAsync();
             if (!isadded)
             {
-
+                throw new Exception("The Create action hasnt been successful!");
             }
             return _mapper.Map<AttendanceResponseDto>(Attendance);
         }

@@ -13,7 +13,7 @@ namespace HRMS.Application.DTOs.Company
         public string Address { get; set; } = string.Empty;
         public string RegNum { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
-        public UserDto User { get; set; }
+        public List<UserDto> Users { get; set; } = new();
     }
     public class UserDto
     {

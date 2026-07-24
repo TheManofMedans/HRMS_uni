@@ -65,7 +65,7 @@ namespace HRMS.Application.Services
                 Role = dto.Role,
             });
            await _companyRepository.AddAsync(Company);
-            bool isAdded = await _userRepository.SaveChangesAsync();
+            bool isAdded = await _companyRepository.SaveChangesAsync();
             if (!isAdded)
             {
 
@@ -95,8 +95,8 @@ namespace HRMS.Application.Services
         }
         public async Task<CompanyResponseDto> AddUsertoCompanyAsync(int CompanyId, int UserId,CompanyRole Role)
         {
-            var Company = await _companyRepository.GetByIdAsync(CompanyId);
-            if (Company is null)
+            var _Company = await _companyRepository.GetByIdAsync(CompanyId);
+            if (_Company is null)
             {
                 throw new NotFoundException("Company is not found!");
             }
@@ -105,20 +105,24 @@ namespace HRMS.Application.Services
             {
                 throw new NotFoundException("User is not found!");
             }
-            Company.UserCompanies.Add(new UserCompany
+            if (_Company.UserCompanies.Any(uc => uc.UserId == User.Id))
             {
-                company = Company,
+                throw new ConflictException("The User is already a member of the company");
+            }
+            _Company.UserCompanies.Add(new UserCompany
+            {
+                company = _Company,
                 user = User,
                 Role = Role,
 
             });
-            _companyRepository.Update(Company);
+            _companyRepository.Update(_Company);
             bool isAdded = await _companyRepository.SaveChangesAsync();
             if (!isAdded)
             {
-
+                throw new Exception("Failed to add user to the company");
             }
-            return _mapper.Map<CompanyResponseDto>(Company);
+            return _mapper.Map<CompanyResponseDto>(_Company);
         }
     }
 }

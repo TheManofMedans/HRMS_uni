@@ -19,6 +19,7 @@ namespace HRMS.Application.Mappings
                 ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.EmployeeID)).
                 ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.Employee.FirstName)).
                 ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.Employee.LastName));
+            CreateMap<CreateDepartmentDto, Department>();
         }
     }
 }
