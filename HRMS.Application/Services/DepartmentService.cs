@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using HRMS.Application.DTOs.Department;
+using HRMS.Application.Exceptions;
 using HRMS.Application.Interfaces.Repositories;
 using HRMS.Application.Interfaces.Services;
 using HRMS.domain.Entities;
@@ -24,11 +25,19 @@ namespace HRMS.Application.Services
         public async Task<DepartmentResponseDto?> GetByIdAsync(int id)
         {
             var department = await _departdmentRepository.GetByIdAsync(id);
+            if (department == null)
+            {
+                throw new NotFoundException("Department is not found!");
+            }
             return department is null ? null : _mapper.Map<DepartmentResponseDto?>(department);
         }
         public async Task<IEnumerable<DepartmentResponseDto>> GetByCompanyIdAsync (int CompanyId)
         { 
             var departments = await _departdmentRepository.FindByCompanyIdAsync(CompanyId);
+            if (departments == null)
+            {
+                throw new NotFoundException("No Department is found!");
+            }
             return _mapper.Map<IEnumerable<DepartmentResponseDto>>(departments);
         }
         public async Task<IEnumerable<DepartmentResponseDto>> GetAllAsync()

@@ -10,6 +10,7 @@ using HRMS.Application.Interfaces.Repositories;
 using HRMS.Application.Interfaces.Services;
 using AutoMapper;
 using HRMS.Application.DTOs.Attendance;
+using HRMS.Application.Exceptions;
 
 namespace HRMS.Application.Services
 {
@@ -43,12 +44,12 @@ namespace HRMS.Application.Services
             var Employee = await _employeeRepository.GetbyIdAsync(EmployeeId);
             if (Employee is null)
             {
-
+                throw new NotFoundException("Employee is not found!");
             }
             var Attendances = await _attendanceRepository.GetByEmployeeIdAsync(EmployeeId);
             if (Attendances == null)
             {
-
+                throw new NotFoundException("Attendance Record is not found!");
             }
             return _mapper.Map<IEnumerable<AttendanceResponseDto>?>(Attendances);
         }
@@ -57,7 +58,7 @@ namespace HRMS.Application.Services
             var Attendances = await _attendanceRepository.GetByStatusAsync(status);
             if (Attendances == null)
             {
-
+                throw new NotFoundException("Attendance Record is not found!");
             }
             return _mapper.Map<IEnumerable<AttendanceResponseDto>?>(Attendances);
         }
@@ -66,7 +67,7 @@ namespace HRMS.Application.Services
             var Employee = await _employeeRepository.GetbyIdAsync(id);
             if (Employee is null)
             {
-
+                throw new NotFoundException("Employee is not found!");
             }
             var Attendances = await _attendanceRepository.GetByEmployeeAndStatusAsync(Employee.Id, status);
             return _mapper.Map<IEnumerable<AttendanceResponseDto>?>(Attendances); 
@@ -79,15 +80,15 @@ namespace HRMS.Application.Services
             var Shift = await _shiftRepository.GetByIdAsync(dto.ShiftId);
             if (Employee is null)
             {
-
+                throw new NotFoundException("Employee is not found!");
             }
             if (Department is null)
             {
-
+                throw new NotFoundException("Department is not found!");
             }
             if (Shift is null)
             {
-
+                throw new NotFoundException("Shift is not found!");
             }
             await _attendanceRepository.AddAsync(Attendance);
             var isadded = await _attendanceRepository.SaveChangesAsync();

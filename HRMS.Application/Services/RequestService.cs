@@ -9,6 +9,7 @@ using HRMS.Application.DTOs;
 using HRMS.Application.Interfaces.Services;
 using HRMS.Application.Interfaces.Repositories;
 using HRMS.Application.DTOs.Request;
+using HRMS.Application.Exceptions;
 
 namespace HRMS.Application.Services
 {
@@ -57,6 +58,14 @@ namespace HRMS.Application.Services
         {
             var request = _mapper.Map<Request>(requestDto);
             var employee = await _employeeRepository.GetbyIdAsync(requestDto.EmployeeId);
+            if (employee == null)
+            {
+                throw new NotFoundException("Employee is not found!");
+            }
+            if (request.EndDate < DateTime.UtcNow)
+            {
+                throw new ConflictException("The End Date is before Today!");
+            }
             request.EmployeeId = employee.Id;
             await _requestRepository.AddAsync(request);
             await _requestRepository.SaveChangesAsync();

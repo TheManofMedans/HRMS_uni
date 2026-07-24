@@ -10,6 +10,7 @@ using HRMS.Application.Interfaces.Services;
 using AutoMapper;
 using HRMS.Application.DTOs.Company;
 using HRMS.domain.Enums;
+using HRMS.Application.Exceptions;
 
 namespace HRMS.Application.Services
 {
@@ -39,7 +40,7 @@ namespace HRMS.Application.Services
             var user = await _userRepository.GetByIdAsync(UserId);
             if (user is null)
             {
-
+                throw new NotFoundException("User is not found!");
             }
             var Company = await _companyRepository.GetWithUserAsync(UserId);
             return _mapper.Map<CompanyResponseDto>(Company);
@@ -55,7 +56,7 @@ namespace HRMS.Application.Services
             var User = await _userRepository.GetByIdAsync(dto.UserId);
             if (User is null)
             {
-
+                throw new NotFoundException("User is not found!");
             }
             Company.UserCompanies.Add(new UserCompany
             {
@@ -76,7 +77,7 @@ namespace HRMS.Application.Services
             var Company = await _companyRepository.GetByIdAsync(id);
             if (Company is null)
             {
-
+                throw new NotFoundException("Company is not found!");
             }
             Company.Address = dto.Address;
             _companyRepository.Update(Company);
@@ -87,7 +88,7 @@ namespace HRMS.Application.Services
             var Company = await _companyRepository.GetByIdAsync(id);
             if (Company is null) 
             {
-                
+                throw new NotFoundException("Company is not found!");
             }
             _companyRepository.Delete(id);
             return await _companyRepository.SaveChangesAsync();
@@ -97,12 +98,12 @@ namespace HRMS.Application.Services
             var Company = await _companyRepository.GetByIdAsync(CompanyId);
             if (Company is null)
             {
-
+                throw new NotFoundException("Company is not found!");
             }
             var User = await  _userRepository.GetByIdAsync(UserId);
             if (User is null)
             {
-
+                throw new NotFoundException("User is not found!");
             }
             Company.UserCompanies.Add(new UserCompany
             {

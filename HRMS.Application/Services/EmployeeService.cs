@@ -9,6 +9,7 @@ using HRMS.Application.Interfaces.Repositories;
 using HRMS.Application.Interfaces.Services;
 using AutoMapper;
 using HRMS.domain.Entities;
+using HRMS.Application.Exceptions;
 
 namespace HRMS.Application.Services
 {
@@ -28,11 +29,11 @@ namespace HRMS.Application.Services
         {
             if (await _employeeRepository.EmailExistsAsync(dto.Email))
             {
-
+                throw new RepeatDataException("Email",dto.Email);
             }
             if (await _employeeRepository.SSNExistsAsync(dto.SSN))
             {
-
+                throw new RepeatDataException("SSN", dto.SSN);
             }
             var employee = _mapper.Map<Employee>(dto);
             await _employeeRepository.AddAsync(employee);

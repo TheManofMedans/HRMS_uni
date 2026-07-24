@@ -13,7 +13,7 @@ namespace HRMS.Application.Services
 {
     public class ShiftService : IShiftService
     {
-        private readonly Mapper _mapper;
+        private readonly IMapper _mapper;
         private readonly IShiftRepository _shiftRepository;
         private readonly ICompanyRepository _companyRepository;
         public ShiftService(Mapper mapper, IShiftRepository shiftRepository, ICompanyRepository companyRepository)
