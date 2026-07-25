@@ -8,10 +8,10 @@ namespace HRMS.Application.DTOs.User
 {
     public class UserResponseDto
     {
-        public int id { get; set; }
+        public int Id { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
-        public string email { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
         public string SSN { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
         public List<UserCompanyDto> Companies { get; set; } = new();

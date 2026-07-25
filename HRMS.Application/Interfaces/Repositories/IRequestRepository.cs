@@ -1,4 +1,5 @@
 ﻿using HRMS.domain.Entities;
+using HRMS.domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,9 @@ namespace HRMS.Application.Interfaces.Repositories
         Task<Request> GetByIdAsync(int id);
         Task<IEnumerable<Request>> GetAllAsync();
         Task<IEnumerable<Request>?> GetByEmployeeIdAsync(int id);
-        Task<IEnumerable<Request>?> GetWithStatusAsync(int status);
-        Task<IEnumerable<Request>?> GetWithTypeAsync(int type);
-        Task<IEnumerable<Request>?> GetWithCustomDataAsync(int? EmployeeId,int? status,int? type);
+        Task<IEnumerable<Request>?> GetWithStatusAsync(RequestStatus status);
+        Task<IEnumerable<Request>?> GetWithTypeAsync(RequestType type);
+        Task<IEnumerable<Request>?> GetWithCustomDataAsync(int? EmployeeId,RequestStatus? status,RequestType? type);
         Task AddAsync(Request request);
         void Update(Request request);
         void Delete(int id);

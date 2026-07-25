@@ -1,4 +1,5 @@
 ﻿using HRMS.Application.DTOs.Request;
+using HRMS.domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,9 @@ namespace HRMS.Application.Interfaces.Services
         Task<RequestResponseDto?> GetByIdAsync(int id);
         Task<IEnumerable<RequestResponseDto>> GetAllAsync();
         Task<IEnumerable<RequestResponseDto>?> GetByEmployeeIdAsync(int Employeeid);
-        Task<IEnumerable<RequestResponseDto>?> GetWithStatusAsync(int status);
-        Task<IEnumerable<RequestResponseDto>?> GetWithTypeAsync(int type);
-        Task<IEnumerable<RequestResponseDto>?> GetWithCustomDataAsync(int? EmployeeId, int? Status, int? Type);
+        Task<IEnumerable<RequestResponseDto>?> GetWithStatusAsync(RequestStatus status);
+        Task<IEnumerable<RequestResponseDto>?> GetWithTypeAsync(RequestType type);
+        Task<IEnumerable<RequestResponseDto>?> GetWithCustomDataAsync(int? EmployeeId, RequestStatus? Status, RequestType? Type);
         Task<RequestResponseDto> CreateAsync(CreateRequestDto dto);
         Task<bool> UpdateAsync(int id,UpdateRequestDto dto);
         Task<bool> DeleteAsync(int id);

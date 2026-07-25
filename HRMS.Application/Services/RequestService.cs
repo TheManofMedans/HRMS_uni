@@ -10,6 +10,7 @@ using HRMS.Application.Interfaces.Services;
 using HRMS.Application.Interfaces.Repositories;
 using HRMS.Application.DTOs.Request;
 using HRMS.Application.Exceptions;
+using HRMS.domain.Enums;
 
 namespace HRMS.Application.Services
 {
@@ -36,20 +37,25 @@ namespace HRMS.Application.Services
         }
         public async Task<IEnumerable<RequestResponseDto>?> GetByEmployeeIdAsync(int id)
         {
+            var employee = await _employeeRepository.GetbyIdAsync(id);
+            if (employee == null)
+            {
+                throw new NotFoundException(nameof(employee),id);
+            }
             var requests = await _requestRepository.GetByEmployeeIdAsync(id);
             return _mapper.Map<IEnumerable<RequestResponseDto>?>(requests);
         }
-        public async Task<IEnumerable<RequestResponseDto>?> GetWithStatusAsync(int status)
+        public async Task<IEnumerable<RequestResponseDto>?> GetWithStatusAsync(RequestStatus status)
         {
             var requests = await _requestRepository.GetWithStatusAsync(status);
             return _mapper.Map<IEnumerable<RequestResponseDto>>(requests);
         }
-        public async Task<IEnumerable<RequestResponseDto>> GetWithTypeAsync(int type)
+        public async Task<IEnumerable<RequestResponseDto>> GetWithTypeAsync(RequestType type)
         {
             var requests = await _requestRepository.GetWithTypeAsync(type);
             return _mapper.Map<IEnumerable<RequestResponseDto>>(requests); 
         }
-        public async Task<IEnumerable<RequestResponseDto>> GetWithCustomDataAsync(int? EmployeeId, int? Status, int? Type)
+        public async Task<IEnumerable<RequestResponseDto>> GetWithCustomDataAsync(int? EmployeeId, RequestStatus? Status, RequestType? Type)
         {
             var requests = await _requestRepository.GetWithCustomDataAsync(EmployeeId, Status, Type);
             return _mapper.Map<IEnumerable<RequestResponseDto>>(requests);
@@ -68,7 +74,11 @@ namespace HRMS.Application.Services
             }
             request.EmployeeId = employee.Id;
             await _requestRepository.AddAsync(request);
-            await _requestRepository.SaveChangesAsync();
+           bool saved =  await _requestRepository.SaveChangesAsync();
+            if (!saved)
+            {
+                throw new Exception("Couldnt save the new request!");
+            }
             return _mapper.Map<RequestResponseDto>(request);
         }
         public async Task<bool> UpdateAsync(int id,UpdateRequestDto requestDto)
@@ -76,24 +86,24 @@ namespace HRMS.Application.Services
             var request = await _requestRepository.GetByIdAsync(id);
             if (request is null)
             {
-                return false;
+                throw new NotFoundException(nameof(request),id);
             }
             request.ReviewedAt = requestDto.ReviewedAt;
             if ((requestDto.Status != null))
             {
-                request.Status = (domain.Enums.RequestStatus)requestDto.Status;
+                request.Status = requestDto.Status.Value;
             }
             if ((requestDto.StartDate != null))
             {
-                request.StartDate = (DateTime)requestDto.StartDate;
+                request.StartDate = requestDto.StartDate.Value;
             }
             if (requestDto.EndDate != null)
             {
-                request.EndDate = (DateTime)requestDto.EndDate;
+                request.EndDate = requestDto.EndDate.Value;
             }
             if (requestDto.Description != null)
             {
-                request.description = requestDto.Description;
+                request.Description = requestDto.Description;
             }
             
             _requestRepository.Update(request);
@@ -104,7 +114,7 @@ namespace HRMS.Application.Services
             var request = await _requestRepository.GetByIdAsync(id);
             if (request is null)
             {
-                return false;
+                throw new NotFoundException(nameof(request), id);
             }
             _requestRepository.Delete(id);
             return await _requestRepository.SaveChangesAsync();

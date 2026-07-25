@@ -14,7 +14,7 @@ namespace HRMS.domain.Entities
         public Employee Employee { get; set; } = null!;
         public RequestType Type { get; set; }
         public RequestStatus Status { get; set; }
-        public string description { get; set; }
+        public string Description { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }

@@ -17,7 +17,8 @@ namespace HRMS.Application.Mappings
             CreateMap<User,UserResponseDto>()
                 .ForMember(dest => dest.Companies, opt => opt.MapFrom(src => src.UserCompanies));
             CreateMap<UserCompany, UserCompanyDto>().ForMember(dest => dest.CompanyId, opt => opt.MapFrom(opt => opt.CompanyId))
-                .ForMember(dest => dest.CompanyName,opt => opt.MapFrom(src => src.company.Name))
+                .ForMember(dest => dest.CompanyName,opt => opt.MapFrom(src => src.company.Name)).
+                ForMember(dest => dest.CompanyId, opt => opt.MapFrom(src => src.CompanyId))
                 .ForMember(dest => dest.Role,opt => opt.MapFrom(src => src.Role));
             CreateMap<CreateUserDto, User>().
                 ForMember(dest => dest.PhoneNumber,opt => opt.MapFrom(src => src.Phone));

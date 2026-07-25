@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using HRMS.Application.DTOs.User;
+using HRMS.Application.Exceptions;
 using HRMS.Application.Interfaces.Repositories;
 using HRMS.Application.Interfaces.Services;
 using HRMS.domain.Entities;
+using HRMS.domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,11 +17,13 @@ namespace HRMS.Application.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly ICompanyRepository _companyRepository;
         private readonly IMapper _mapper;
-        public UserService(IUserRepository userRepository, IMapper mapper)
+        public UserService(IUserRepository userRepository, IMapper mapper,ICompanyRepository companyRepository)
         {
             _userRepository = userRepository;
             _mapper = mapper;
+            _companyRepository = companyRepository;
         }
         public async Task<UserResponseDto?> GetByIdAsync(int id)
         {
@@ -35,15 +39,33 @@ namespace HRMS.Application.Services
         {
             if (await _userRepository.EmailExistsAsync(dto.Email))
             {
-
+                throw new ConflictException("This Email already exists!");
             }
-            if (await _userRepository.EmailExistsAsync(dto.SSN))
+            if (await _userRepository.SSNExistsAsync(dto.SSN))
             {
-
+                throw new ConflictException("This SSN already exists!");
             }
             var user = _mapper.Map<User>(dto);
+            if (dto.CompanyId != null)
+            {
+                var company = await _companyRepository.GetByIdAsync(dto.CompanyId.Value);
+                if (company is null)
+                {
+                    throw new NotFoundException(nameof(company), dto.CompanyId);
+                }
+                user.UserCompanies.Add(new UserCompany
+                {
+                    CompanyId = dto.CompanyId.Value,
+                    user = user,
+                    Role = CompanyRole.View_Only
+                });
+            }
             await _userRepository.AddAsync(user);
-            await _userRepository.SaveChangesAsync();
+            bool saved = await _userRepository.SaveChangesAsync();
+            if (!saved)
+            {
+                throw new Exception("The user could not be saved!");
+            }
             return _mapper.Map<UserResponseDto>(user);
         }
         public async Task<bool> UpdateUserAsync(int id, UpdateUserDto dto)
@@ -51,7 +73,7 @@ namespace HRMS.Application.Services
             var user = await _userRepository.GetByIdAsync(id);
             if (user is null)
             {
-                return false;
+                throw new NotFoundException(nameof(user),id);
             }
             user.FirstName = dto.FirstName;
             user.LastName = dto.LastName;
@@ -64,7 +86,7 @@ namespace HRMS.Application.Services
             var user = await _userRepository.GetByIdAsync(id);
             if (user is null)
             {
-                return false;
+                throw new NotFoundException(nameof(user), id);
             }
             _userRepository.Delete(id);
             return await _userRepository.SaveChangesAsync();
