@@ -17,7 +17,7 @@ namespace HRMS.Application.Interfaces.Repositories
         Task<IEnumerable<Attendance>> GetByEmployeeAndStatusAsync(int employeeId, AttendanceStatus status);
         Task AddAsync(Attendance attendance);
         void Update(Attendance attendance);
-        void Delete(int id);
+        void Delete(Attendance attendance);
         Task<bool> SaveChangesAsync();
     }
 }

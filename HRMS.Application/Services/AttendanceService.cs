@@ -124,7 +124,7 @@ namespace HRMS.Application.Services
             {
                 return false;
             }
-            _attendanceRepository.Delete(id);
+            _attendanceRepository.Delete(Attendance);
             return await _attendanceRepository.SaveChangesAsync();
         }
     }
