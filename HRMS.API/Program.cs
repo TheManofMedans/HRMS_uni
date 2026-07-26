@@ -1,12 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using HRMS.Infrastructure.Persistence;
 using HRMS.API.Middleware;
+using HRMS.API.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<HRMSDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddControllers();
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
+builder.Services.AddApplicationServices();
+builder.Services.AddInfrustructureServices();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

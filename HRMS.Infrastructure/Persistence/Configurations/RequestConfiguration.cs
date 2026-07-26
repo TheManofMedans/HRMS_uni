@@ -15,7 +15,7 @@ namespace HRMS.Infrastructure.Persistence.Configurations
         {
             builder.ToTable("Request");
             builder.HasKey(r => r.Id);
-            builder.Property(r => r.description).HasMaxLength(1000);
+            builder.Property(r => r.Description).HasMaxLength(1000);
             builder.Property(r => r.Type).IsRequired();
             builder.Property(r => r.Status).IsRequired();
         }
