@@ -10,7 +10,7 @@ using HRMS.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 namespace HRMS.Infrastructure.Repositories
 {
-    public class DepartmentRepository : IDepartdmentRepository
+    public class DepartmentRepository : IDepartmentRepository
     {
         private readonly HRMSDbContext _context;
         public DepartmentRepository(HRMSDbContext context)

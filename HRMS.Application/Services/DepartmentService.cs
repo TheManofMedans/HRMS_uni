@@ -16,8 +16,8 @@ namespace HRMS.Application.Services
     public class DepartmentService : IDepartmentService
     {
         private readonly IMapper _mapper;
-        private readonly IDepartdmentRepository _departdmentRepository;
-        public DepartmentService (IMapper mapper, IDepartdmentRepository departdmentRepository)
+        private readonly IDepartmentRepository _departdmentRepository;
+        public DepartmentService (IMapper mapper, IDepartmentRepository departdmentRepository)
         {
             _mapper = mapper;
             _departdmentRepository = departdmentRepository;

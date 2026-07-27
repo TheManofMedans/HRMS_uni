@@ -17,7 +17,7 @@ namespace HRMS.Application.Services
         private readonly IMapper _mapper;
         private readonly IShiftRepository _shiftRepository;
         private readonly ICompanyRepository _companyRepository;
-        public ShiftService(Mapper mapper, IShiftRepository shiftRepository, ICompanyRepository companyRepository)
+        public ShiftService(IMapper mapper, IShiftRepository shiftRepository, ICompanyRepository companyRepository)
         {
             _mapper = mapper;
            _shiftRepository = shiftRepository;

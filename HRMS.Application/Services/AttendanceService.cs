@@ -20,8 +20,8 @@ namespace HRMS.Application.Services
         private readonly IMapper _mapper;
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IShiftRepository _shiftRepository;
-        private readonly IDepartdmentRepository _departmentRepository;
-        public AttendanceService(IAttendanceRepository attendanceRepository, IMapper mapper, IEmployeeRepository employeeRepository, IShiftRepository shiftRepository, IDepartdmentRepository departdmentRepository)
+        private readonly IDepartmentRepository _departmentRepository;
+        public AttendanceService(IAttendanceRepository attendanceRepository, IMapper mapper, IEmployeeRepository employeeRepository, IShiftRepository shiftRepository, IDepartmentRepository departdmentRepository)
         {
             _attendanceRepository = attendanceRepository;
             _mapper = mapper;

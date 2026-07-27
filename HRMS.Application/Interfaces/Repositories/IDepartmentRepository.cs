@@ -8,7 +8,7 @@ using HRMS.domain.Entities;
 
 namespace HRMS.Application.Interfaces.Repositories
 {
-    public interface IDepartdmentRepository
+    public interface IDepartmentRepository
     {
         Task<Department?> GetByIdAsync(int id);
         Task<IEnumerable<Department>> GetByCompanyIdAsync(int id);

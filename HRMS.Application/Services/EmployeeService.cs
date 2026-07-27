@@ -16,9 +16,9 @@ namespace HRMS.Application.Services
     public class EmployeeService : IEmployeeService
     {
         private readonly IEmployeeRepository _employeeRepository;
-        private readonly IDepartdmentRepository _departdmentRepository;
+        private readonly IDepartmentRepository _departdmentRepository;
         private readonly IMapper _mapper;
-        public EmployeeService(IEmployeeRepository employeeRepository,IDepartdmentRepository departdmentRepository, IMapper mapper)
+        public EmployeeService(IEmployeeRepository employeeRepository,IDepartmentRepository departdmentRepository, IMapper mapper)
         {
             _employeeRepository = employeeRepository;
             _departdmentRepository = departdmentRepository;
