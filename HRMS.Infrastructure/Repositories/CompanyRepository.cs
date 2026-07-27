@@ -24,20 +24,20 @@ namespace HRMS.Infrastructure.Repositories
         {
             return await _context.Companies
                 .Include (c => c.UserCompanies)
-                .ThenInclude (uc => uc.user).FirstOrDefaultAsync(c => c.RegNum == RegNum);
+                .ThenInclude (uc => uc.User).FirstOrDefaultAsync(c => c.RegNum == RegNum);
         }
         public async Task<Company?> GetWithUserAsync(int id)
         {
             return await _context.Companies
                 .Include(c => c.UserCompanies)
-                .ThenInclude(uc => uc.user)
+                .ThenInclude(uc => uc.User)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
         public async Task<IEnumerable<Company>> GetByUserIdAsync(int id)
         {
             return await _context.Companies
                 .Include(c => c.UserCompanies)
-                .ThenInclude(uc => uc.user)
+                .ThenInclude(uc => uc.User)
                 .Where(c => c.UserCompanies.Where(uc => uc.UserId == id).Any()).
                 ToListAsync();
         }
@@ -45,7 +45,7 @@ namespace HRMS.Infrastructure.Repositories
         {
             return await _context.Companies
                 .Include(c => c.UserCompanies)
-                .ThenInclude(uc => uc.user)
+                .ThenInclude(uc => uc.User)
                 .ToListAsync();
         }
         public async Task AddAsync (Company company)

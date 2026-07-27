@@ -60,8 +60,8 @@ namespace HRMS.Application.Services
             }
             Company.UserCompanies.Add(new UserCompany
             {
-                user = User,
-                company = Company,
+                User = User,
+                Company = Company,
                 Role = dto.Role,
             });
            await _companyRepository.AddAsync(Company);
@@ -111,8 +111,8 @@ namespace HRMS.Application.Services
             }
             _Company.UserCompanies.Add(new UserCompany
             {
-                company = _Company,
-                user = User,
+                Company = _Company,
+                User = User,
                 Role = Role,
 
             });

@@ -17,9 +17,9 @@ namespace HRMS.Application.Mappings
                 ForMember(dest => dest.Users,opt => opt.MapFrom(src => src.UserCompanies));
             CreateMap<UserCompany,UserDto>().
                 ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.UserId)).
-                ForMember(dest => dest.FirstName,opt => opt.MapFrom(src => src.user.FirstName)).
-                ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.user.LastName)).
-                ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.user.Email));
+                ForMember(dest => dest.FirstName,opt => opt.MapFrom(src => src.User.FirstName)).
+                ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.User.LastName)).
+                ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email));
             CreateMap<CreateCompanyDto, Company>();
             
         }

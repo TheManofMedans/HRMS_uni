@@ -15,11 +15,11 @@ namespace HRMS.Infrastructure.Persistence.Configurations
         {
             builder.ToTable("UserCompanies");
             builder.HasKey(uc => new {uc.UserId, uc.CompanyId});
-            builder.HasOne(u=>u.user)
+            builder.HasOne(u=>u.User)
                 .WithMany(u=>u.UserCompanies)
                 .HasForeignKey(u=>u.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
-            builder.HasOne(uc => uc.company)
+            builder.HasOne(uc => uc.Company)
                 .WithMany(c => c.UserCompanies)
                 .HasForeignKey(uc => uc.CompanyId)
                 .OnDelete(DeleteBehavior.Cascade);

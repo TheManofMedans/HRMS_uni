@@ -45,7 +45,7 @@ namespace HRMS.Infrastructure.Repositories
         }
         public void Delete(Shift shift) 
         {
-            _context?.Shifts.Remove(shift);
+            _context.Shifts.Remove(shift);
         }
         public async Task<bool> SaveChangesAsync()
         {

@@ -10,9 +10,9 @@ namespace HRMS.domain.Entities
     public class UserCompany
     {
         public int UserId { get; set; }
-        public User user { get; set; } = null!;
+        public User User { get; set; } = null!;
         public int CompanyId { get; set; }
-        public Company company { get; set; } = null!;
+        public Company Company { get; set; } = null!;
         public CompanyRole Role { get; set; }
         public DateTime JoinedAt = DateTime.UtcNow;
     }

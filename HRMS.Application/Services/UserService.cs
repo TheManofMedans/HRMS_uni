@@ -56,7 +56,7 @@ namespace HRMS.Application.Services
                 user.UserCompanies.Add(new UserCompany
                 {
                     CompanyId = dto.CompanyId.Value,
-                    user = user,
+                    User = user,
                     Role = CompanyRole.View_Only
                 });
             }
@@ -88,7 +88,7 @@ namespace HRMS.Application.Services
             {
                 throw new NotFoundException(nameof(user), id);
             }
-            _userRepository.Delete(id);
+            _userRepository.Delete(user);
             return await _userRepository.SaveChangesAsync();
         }
     }
