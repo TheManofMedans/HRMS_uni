@@ -116,7 +116,7 @@ namespace HRMS.Application.Services
             {
                 throw new NotFoundException(nameof(request), id);
             }
-            _requestRepository.Delete(id);
+            _requestRepository.Delete(request);
             return await _requestRepository.SaveChangesAsync();
         }
     }

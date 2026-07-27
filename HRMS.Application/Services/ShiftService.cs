@@ -87,7 +87,7 @@ namespace HRMS.Application.Services
             {
 
             }
-            _shiftRepository.Delete(id);
+            _shiftRepository.Delete(shift);
             return await _shiftRepository.SaveChangesAsync();
         }
     }
