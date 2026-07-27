@@ -24,7 +24,7 @@ namespace HRMS.Infrastructure.Persistence.Configurations
                 .OnDelete(DeleteBehavior.Cascade);
             
             builder.HasMany(s => s.Attendances)
-                   .WithOne(a => a.shift)
+                   .WithOne(a => a.Shift)
                    .HasForeignKey(a => a.ShiftId)
                    .OnDelete(DeleteBehavior.Restrict);
         }

@@ -90,7 +90,7 @@ namespace HRMS.Application.Services
             {
                 throw new NotFoundException("Company is not found!");
             }
-            _companyRepository.Delete(id);
+            _companyRepository.Delete(Company);
             return await _companyRepository.SaveChangesAsync();
         }
         public async Task<CompanyResponseDto> AddUsertoCompanyAsync(int CompanyId, int UserId,CompanyRole Role)

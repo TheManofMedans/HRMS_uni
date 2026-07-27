@@ -33,7 +33,7 @@ namespace HRMS.Application.Services
         }
         public async Task<IEnumerable<DepartmentResponseDto>> GetByCompanyIdAsync (int CompanyId)
         { 
-            var departments = await _departdmentRepository.FindByCompanyIdAsync(CompanyId);
+            var departments = await _departdmentRepository.GetByCompanyIdAsync(CompanyId);
             if (departments == null)
             {
                 throw new NotFoundException("No Department is found!");

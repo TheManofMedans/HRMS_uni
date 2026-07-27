@@ -16,7 +16,7 @@ namespace HRMS.Application.Interfaces.Repositories
         Task<IEnumerable<Company>> GetByUserIdAsync(int userId);
         Task AddAsync(Company company);
         void Update(Company company);
-        void Delete(int id);
+        void Delete(Company company);
         Task <bool> SaveChangesAsync();
     }
 }

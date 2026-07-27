@@ -21,33 +21,33 @@ namespace HRMS.Infrastructure.Repositories
         public async Task<Attendance?> GetByIdAsync(int id)
         {
             return await _context.Attendances.Include(a => a.Employee)
-                .Include(a => a.shift).Include(a => a.department).FirstOrDefaultAsync(a => a.Id == id);
+                .Include(a => a.Shift).Include(a => a.Department).FirstOrDefaultAsync(a => a.Id == id);
         }
         public async Task<IEnumerable<Attendance>> GetAllAsync()
         {
-            return await _context.Attendances.Include(a => a.shift)
-                .Include(a => a.department)
+            return await _context.Attendances.Include(a => a.Shift)
+                .Include(a => a.Department)
                 .Include(a => a.Employee).ToListAsync();
         }
         public async Task<IEnumerable<Attendance>> GetByEmployeeIdAsync(int id)
         {
-            return await _context.Attendances.Include(a => a.shift)
-                .Include(a => a.department)
+            return await _context.Attendances.Include(a => a.Shift)
+                .Include(a => a.Department)
                 .Include(a => a.Employee).Where(a => a.Employee.Id == id)
                 .ToListAsync();
         }
         public async Task<IEnumerable<Attendance>> GetByStatusAsync(AttendanceStatus status)
         {
-            return await _context.Attendances.Include(a => a.shift)
-                .Include(a => a.department)
+            return await _context.Attendances.Include(a => a.Shift)
+                .Include(a => a.Department)
                 .Include(a => a.Employee)
                 .Where(a => a.AttendanceStatus == status)
                 .ToListAsync();
         }
         public async Task<IEnumerable<Attendance>> GetByEmployeeAndStatusAsync(int id, AttendanceStatus status)
         {
-            return await _context.Attendances.Include(a => a.shift)
-                .Include(a => a.department)
+            return await _context.Attendances.Include(a => a.Shift)
+                .Include(a => a.Department)
                 .Include(a => a.Employee)
                 .Where(a => a.Employee.Id == id && a.AttendanceStatus == status)
                 .ToListAsync();

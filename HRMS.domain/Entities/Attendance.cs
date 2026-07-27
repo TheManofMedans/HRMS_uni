@@ -14,9 +14,9 @@ namespace HRMS.domain.Entities
         public int EmployeeId { get; set; }
         public Employee Employee { get; set; } = null!;
         public int ShiftId { get; set; }
-        public Shift shift { get; set; } = null!;
+        public Shift Shift { get; set; } = null!;
         public int departmentId { get; set; }
-        public Department department { get; set; } = null!;
+        public Department Department { get; set; } = null!;
         public DateTime Date { get; set; }
         public DateTime? Clockedin {  get; set; }
         public DateTime? Clockedout { get; set; }

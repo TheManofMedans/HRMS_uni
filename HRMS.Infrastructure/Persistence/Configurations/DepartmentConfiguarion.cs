@@ -19,7 +19,7 @@ namespace HRMS.Infrastructure.Persistence.Configurations
             builder.Property(d => d.Description).HasMaxLength(300);
 
             builder.HasMany(d => d.Attendances)
-                .WithOne(a=> a.department)
+                .WithOne(a=> a.Department)
                 .HasForeignKey(a =>a.departmentId)
                 .OnDelete(DeleteBehavior.Restrict);
 
