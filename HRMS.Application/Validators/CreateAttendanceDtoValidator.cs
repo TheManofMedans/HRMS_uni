@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using FluentValidation;
@@ -12,7 +13,11 @@ namespace HRMS.Application.Validators
     {
         public CreateAttendanceDtoValidator() 
         {
-            
+            RuleFor(a => a.AttendanceStatus).NotEmpty();
+            RuleFor(a =>a.Date).NotEmpty();
+            RuleFor(a => a.EmployeeId).NotEmpty();
+            RuleFor(a => a.ShiftId).NotEmpty();
+            RuleFor(a => a.DepartmentId).NotEmpty();
         }
     }
 }
