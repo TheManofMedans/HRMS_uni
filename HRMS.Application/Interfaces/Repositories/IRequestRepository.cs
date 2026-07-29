@@ -12,6 +12,8 @@ namespace HRMS.Application.Interfaces.Repositories
     {
         Task<Request?> GetByIdAsync(int id);
         Task<IEnumerable<Request>> GetAllAsync();
+        Task<IEnumerable<Request>> GetByCompanyIdAsync(int companyId);
+        Task<IEnumerable<Request>> GetByDepartmentIdAsync(int departmentId);
         Task<IEnumerable<Request>> GetByEmployeeIdAsync(int id);
         Task<IEnumerable<Request>> GetWithStatusAsync(RequestStatus status);
         Task<IEnumerable<Request>> GetWithTypeAsync(RequestType type);

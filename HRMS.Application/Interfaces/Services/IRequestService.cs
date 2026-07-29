@@ -12,10 +12,12 @@ namespace HRMS.Application.Interfaces.Services
     {
         Task<RequestResponseDto?> GetByIdAsync(int id);
         Task<IEnumerable<RequestResponseDto>> GetAllAsync();
-        Task<IEnumerable<RequestResponseDto>?> GetByEmployeeIdAsync(int Employeeid);
-        Task<IEnumerable<RequestResponseDto>?> GetWithStatusAsync(RequestStatus status);
-        Task<IEnumerable<RequestResponseDto>?> GetWithTypeAsync(RequestType type);
-        Task<IEnumerable<RequestResponseDto>?> GetWithCustomDataAsync(int? EmployeeId, RequestStatus? Status, RequestType? Type);
+        Task<IEnumerable<RequestResponseDto>> GetByEmployeeIdAsync(int Employeeid);
+        Task<IEnumerable<RequestResponseDto>> GetWithStatusAsync(RequestStatus status);
+        Task<IEnumerable<RequestResponseDto>> GetWithTypeAsync(RequestType type);
+        Task<IEnumerable<RequestResponseDto>> GetWithCompanyIdAsync(int companyid);
+        Task<IEnumerable<RequestResponseDto>> GetWithDepartmentIdAsync(int departmentid);
+        Task<IEnumerable<RequestResponseDto>> GetWithCustomDataAsync(int? EmployeeId, RequestStatus? Status, RequestType? Type);
         Task<RequestResponseDto> CreateAsync(CreateRequestDto dto);
         Task<bool> UpdateAsync(int id,UpdateRequestDto dto);
         Task<bool> DeleteAsync(int id);

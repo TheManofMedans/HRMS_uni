@@ -45,6 +45,16 @@ namespace HRMS.Application.Services
             var requests = await _requestRepository.GetByEmployeeIdAsync(id);
             return _mapper.Map<IEnumerable<RequestResponseDto>?>(requests);
         }
+        public async Task<IEnumerable<RequestResponseDto>> GetWithCompanyIdAsync(int companyId)
+        {
+            var requests = await _requestRepository.GetByCompanyIdAsync(companyId);
+            return _mapper.Map<IEnumerable<RequestResponseDto>>(requests);
+        }
+        public async Task<IEnumerable<RequestResponseDto>> GetWithDepartmentIdAsync(int departmentId)
+        {
+            var requests = await _requestRepository.GetByDepartmentIdAsync(departmentId);
+            return _mapper.Map<IEnumerable<RequestResponseDto>>(requests);
+        }
         public async Task<IEnumerable<RequestResponseDto>?> GetWithStatusAsync(RequestStatus status)
         {
             var requests = await _requestRepository.GetWithStatusAsync(status);

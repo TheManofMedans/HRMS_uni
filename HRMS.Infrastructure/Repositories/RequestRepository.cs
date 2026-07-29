@@ -70,6 +70,22 @@ namespace HRMS.Infrastructure.Repositories
             }
             return await query.ToListAsync();
         }
+        public async Task<IEnumerable<Request>> GetByCompanyIdAsync(int companyId)
+        {
+            return await _context.Requests.Include(r => r.Employee)
+                .ThenInclude(e => e.EmployeeDepartments)
+                .ThenInclude(ed => ed.Department)
+                .ThenInclude(d => d.Company)
+                .Where(r => r.Employee.EmployeeDepartments.Any(ed => ed.Department.CompanyId == companyId))
+                .ToListAsync();
+        }
+        public async Task<IEnumerable<Request>> GetByDepartmentIdAsync(int departmentId)
+        {
+            return await _context.Requests.Include(r => r.Employee)
+                .ThenInclude (e => e.EmployeeDepartments)
+                .Where(r => r.Employee.EmployeeDepartments.Any(ed => ed.DepartmentID == departmentId))
+                .ToListAsync();
+        }
         public async Task AddAsync(Request request)
         {
             await _context.Requests.AddAsync(request);

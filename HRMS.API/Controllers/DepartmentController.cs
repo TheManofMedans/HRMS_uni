@@ -27,7 +27,7 @@ namespace HRMS.API.Controllers
             var department = await _departmentService.GetByIdAsync(id);
             return department is null ? NotFound() : Ok(department);
         }
-        [HttpGet("/Company/{Companyid}")]
+        [HttpGet("company/{Companyid}")]
         public async Task<IActionResult> GetByCompanyId(int Companyid)
         {
             var departments = await _departmentService.GetByCompanyIdAsync(Companyid);
