@@ -32,37 +32,37 @@ namespace HRMS.API.Controllers
         public async Task<IActionResult> GetByEmployeeId(int employeeId)
         {
             var requests = await _requestService.GetByEmployeeIdAsync(employeeId);
-            return requests is null ? NotFound() : Ok(requests);
+            return Ok(requests);
         }
         [HttpGet("status/{status}")]
         public async Task<IActionResult> GetByStatus(RequestStatus status)
         {
             var requests = await _requestService.GetWithStatusAsync(status);
-            return requests is null ? NotFound() : Ok(requests);
+            return Ok(requests);
         }
         [HttpGet("type/{type}")]
         public async Task<IActionResult> GetByType(RequestType type)
         {
             var requests = await _requestService.GetWithTypeAsync(type);
-            return requests is null ? NotFound() : Ok(requests);
+            return Ok(requests);
         }
         [HttpGet("company/{companyId}")]
         public async Task<IActionResult> GetByCompanyId(int companyId)
         {
             var requests = await _requestService.GetWithCompanyIdAsync(companyId);
-            return requests is null ? NotFound() : Ok(requests);
+            return Ok(requests);
         }
         [HttpGet("department/{departmentId}")]
         public async Task<IActionResult> GetByDepartmentId(int  departmentId)
         {
             var requests = await _requestService.GetWithDepartmentIdAsync(departmentId);
-            return requests is null ? NotFound() : Ok(requests);
+            return Ok(requests);
         }
         [HttpGet("employee/{employeeId}/Status/{status}/Type/{type}")]
         public async Task<IActionResult> GetWithCustomDataAsync(int? employeeId, RequestStatus? status, RequestType? type)
         {
             var requests = await _requestService.GetWithCustomDataAsync(employeeId, status, type);
-            return requests is null ? NotFound() : Ok(requests);
+            return Ok(requests);
         }
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateRequestDto dto)
