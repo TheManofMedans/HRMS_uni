@@ -9,10 +9,10 @@ namespace HRMS.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RequestController : ControllerBase
+    public class RequestsController : ControllerBase
     {
         private readonly IRequestService _requestService;
-        public RequestController(IRequestService requestService)
+        public RequestsController(IRequestService requestService)
         {
             _requestService = requestService;
         }
@@ -58,8 +58,10 @@ namespace HRMS.API.Controllers
             var requests = await _requestService.GetWithDepartmentIdAsync(departmentId);
             return Ok(requests);
         }
-        [HttpGet("employee/{employeeId}/Status/{status}/Type/{type}")]
-        public async Task<IActionResult> GetWithCustomDataAsync(int? employeeId, RequestStatus? status, RequestType? type)
+        [HttpGet("search")]
+        public async Task<IActionResult> GetWithCustomDataAsync([FromQuery]int? employeeId,
+            [FromQuery]RequestStatus? status, 
+            [FromQuery] RequestType? type)
         {
             var requests = await _requestService.GetWithCustomDataAsync(employeeId, status, type);
             return Ok(requests);
