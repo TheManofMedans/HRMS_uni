@@ -51,7 +51,7 @@ namespace HRMS.API.Controllers
         public async Task<IActionResult> Create([FromBody] CreateAttendanceDto dto)
         {
             var created = await _attendanceService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetByIdAsync),new {id =  created.id},created);
+            return CreatedAtAction(nameof(GetByIdAsync),new {id =  created.Id},created);
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateAttendanceDto dto)

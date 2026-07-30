@@ -9,7 +9,7 @@ namespace HRMS.Application.DTOs.Attendance
 {
     public class AttendanceResponseDto
     {
-        public int id {  get; set; }
+        public int Id {  get; set; }
         public EmployeeDto Employee { get; set; }
         public DepartmentDto Department { get; set; }
         public ShiftDto Shift { get; set; }
