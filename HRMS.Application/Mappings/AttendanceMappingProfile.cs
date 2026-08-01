@@ -18,7 +18,7 @@ namespace HRMS.Application.Mappings
             CreateMap<Employee, EmployeeDto>();
             CreateMap<Department, DepartmentDto>();
             CreateMap<Shift, ShiftDto>();
-            CreateMap<CreateAttendanceDto, Attendance>();
+            CreateMap<CreateAttendanceDto, Attendance>().ForMember(ca => ca.departmentId, opt => opt.MapFrom(src => src.DepartmentId));
         }
     }
 }

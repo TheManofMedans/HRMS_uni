@@ -68,7 +68,7 @@ namespace HRMS.Application.Services
             bool isAdded = await _companyRepository.SaveChangesAsync();
             if (!isAdded)
             {
-
+                throw new Exception("Failed to add the data to the database");
             }
             return _mapper.Map<CompanyResponseDto>(Company);
         }
