@@ -13,7 +13,7 @@ namespace HRMS.Application.Validators
         public CreateCompanyDtoValidator() 
         {
             RuleFor(c => c.Name).NotEmpty().MaximumLength(100);
-            RuleFor(c => c.Role).NotEmpty();
+            RuleFor(c => c.Role).IsInEnum();
             RuleFor(c => c.RegNum).NotEmpty().MaximumLength(100);
             RuleFor(c => c.Address).NotEmpty().MaximumLength(500);
             RuleFor(c => c.UserId).NotNull();

@@ -13,10 +13,10 @@ namespace HRMS.Application.Mappings
     {
         public RequestMappingProfile() 
         {
-            CreateMap<Request, EmployeeDto>().
-                ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Employee.Id)).
-                ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.Employee.FirstName)).
-                ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.Employee.LastName));
+            CreateMap<Request, RequestResponseDto>()
+                .ForMember(dest => dest.Employee,opt => opt.MapFrom(src => src.Employee));
+            CreateMap<Employee, EmployeeDto>();
+            CreateMap<CreateRequestDto, Request>();
         }
     }
 }

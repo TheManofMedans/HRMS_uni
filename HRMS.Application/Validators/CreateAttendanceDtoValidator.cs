@@ -13,7 +13,7 @@ namespace HRMS.Application.Validators
     {
         public CreateAttendanceDtoValidator() 
         {
-            RuleFor(a => a.AttendanceStatus).NotEmpty();
+            RuleFor(a => a.AttendanceStatus).IsInEnum();
             RuleFor(a =>a.Date).NotEmpty();
             RuleFor(a => a.EmployeeId).NotEmpty();
             RuleFor(a => a.ShiftId).NotEmpty();

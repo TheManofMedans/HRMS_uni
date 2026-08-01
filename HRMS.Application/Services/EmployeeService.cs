@@ -97,7 +97,7 @@ namespace HRMS.Application.Services
         }
         public async Task<EmployeeResponseDto?> GetByIdAsync(int id)
         {
-            var employee = await _employeeRepository.GetbyIdAsync(id);
+            var employee = await _employeeRepository.GetByIdWithDepartmentsAsync (id);
            return employee is null ? null : _mapper.Map<EmployeeResponseDto?>(employee);
         }
         public async Task<IEnumerable<EmployeeResponseDto>> GetAllAsync()

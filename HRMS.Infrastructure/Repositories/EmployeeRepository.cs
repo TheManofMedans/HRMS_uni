@@ -24,7 +24,8 @@ namespace HRMS.Infrastructure.Repositories
         }
         public async Task<IEnumerable<Employee>> GetAllAsync()
         {
-            return await _context.Employees.ToListAsync();
+            return await _context.Employees.Include(e => e.EmployeeDepartments)
+                .ThenInclude(ed => ed.Department).ToListAsync();
         }
         public async Task<Employee?> GetByIdWithDepartmentsAsync(int id)
         {

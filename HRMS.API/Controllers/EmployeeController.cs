@@ -46,15 +46,15 @@ namespace HRMS.API.Controllers
             return NoContent();
         }
         [HttpPost("{Employeeid}/departments/{DepartmentId}/primary")]
-        public async Task<IActionResult> SetPrimary(int Employeeid,int Departmentid)
+        public async Task<IActionResult> SetPrimary(int Employeeid,int DepartmentId)
         {
-            await _employeeService.SetPrimary(Employeeid, Departmentid);
+            await _employeeService.SetPrimary(Employeeid, DepartmentId);
             return NoContent();
         }
         [HttpPost("{Employeeid}/department/{DepartmentId}")]
-        public async Task<IActionResult> AddToDepartmentAsync(int Employeeid,int Departmentid)
+        public async Task<IActionResult> AddToDepartmentAsync(int Employeeid,int DepartmentId)
         {
-            await _employeeService.AddToDepartmentAsync(Employeeid, Departmentid);
+            await _employeeService.AddToDepartmentAsync(Employeeid, DepartmentId);
             return NoContent();
         }
     }

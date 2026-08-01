@@ -13,9 +13,9 @@ namespace HRMS.Application.Validators
         public CreateRequestDtoValidator() 
         {
             RuleFor(r => r.EmployeeId).NotNull();
-            RuleFor(r => r.StartDate).NotEmpty().LessThanOrEqualTo(DateTime.UtcNow);
-            RuleFor(r => r.EndDate).NotEmpty().LessThanOrEqualTo(DateTime.UtcNow);
-            RuleFor(r => r.Type).NotEmpty();
+            //RuleFor(r => r.StartDate).NotEmpty().LessThanOrEqualTo(DateTime.UtcNow);
+            //RuleFor(r => r.EndDate).NotEmpty().GreaterThanOrEqualTo(DateTime.UtcNow);
+            RuleFor(r => r.Type).IsInEnum();
             RuleFor(r => r.Description).MaximumLength(500);
         }
     }

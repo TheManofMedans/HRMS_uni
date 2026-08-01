@@ -35,7 +35,7 @@ namespace HRMS.Application.Services
             var Requests = await _requestRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<RequestResponseDto>>(Requests);
         }
-        public async Task<IEnumerable<RequestResponseDto>?> GetByEmployeeIdAsync(int id)
+        public async Task<IEnumerable<RequestResponseDto>> GetByEmployeeIdAsync(int id)
         {
             var employee = await _employeeRepository.GetbyIdAsync(id);
             if (employee == null)
@@ -43,7 +43,7 @@ namespace HRMS.Application.Services
                 throw new NotFoundException(nameof(employee),id);
             }
             var requests = await _requestRepository.GetByEmployeeIdAsync(id);
-            return _mapper.Map<IEnumerable<RequestResponseDto>?>(requests);
+            return _mapper.Map<IEnumerable<RequestResponseDto>>(requests);
         }
         public async Task<IEnumerable<RequestResponseDto>> GetWithCompanyIdAsync(int companyId)
         {
@@ -55,7 +55,7 @@ namespace HRMS.Application.Services
             var requests = await _requestRepository.GetByDepartmentIdAsync(departmentId);
             return _mapper.Map<IEnumerable<RequestResponseDto>>(requests);
         }
-        public async Task<IEnumerable<RequestResponseDto>?> GetWithStatusAsync(RequestStatus status)
+        public async Task<IEnumerable<RequestResponseDto>> GetWithStatusAsync(RequestStatus status)
         {
             var requests = await _requestRepository.GetWithStatusAsync(status);
             return _mapper.Map<IEnumerable<RequestResponseDto>>(requests);
@@ -78,11 +78,12 @@ namespace HRMS.Application.Services
             {
                 throw new NotFoundException("Employee is not found!");
             }
-            if (request.EndDate < DateTime.UtcNow)
+            if (request.EndDate < DateTime.Today)
             {
                 throw new ConflictException("The End Date is before Today!");
             }
             request.EmployeeId = employee.Id;
+            request.Status = RequestStatus.Pending;
             await _requestRepository.AddAsync(request);
            bool saved =  await _requestRepository.SaveChangesAsync();
             if (!saved)

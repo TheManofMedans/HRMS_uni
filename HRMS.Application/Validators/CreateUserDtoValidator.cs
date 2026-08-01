@@ -13,7 +13,7 @@ namespace HRMS.Application.Validators
         public CreateUserDtoValidator() 
         {
             RuleFor(u => u.Email).NotEmpty().MaximumLength(256);
-            RuleFor(u => u.Role).NotEmpty();
+            //RuleFor(u => u.Role).NotEmpty();
             RuleFor(u => u.Phone).NotEmpty();
             RuleFor(u => u.FirstName).NotEmpty().MaximumLength(100);
             RuleFor(u => u.LastName).NotEmpty().MaximumLength(100);

@@ -16,7 +16,7 @@ namespace HRMS.Application.Validators
             RuleFor(x => x.Phone).NotEmpty();
             RuleFor(x => x.Email).NotEmpty().EmailAddress().MaximumLength(256);
             RuleFor(x => x.SSN).NotEmpty().MaximumLength(10);
-            RuleFor(x => x.HireDate).NotEmpty().LessThanOrEqualTo(DateTime.Today).WithMessage("Hire date cannot be in future!");
+            RuleFor(x => x.HireDate).NotEmpty().LessThanOrEqualTo(DateTime.UtcNow).WithMessage("Hire date cannot be in future!");
         }
     }
 }
