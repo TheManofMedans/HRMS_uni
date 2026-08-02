@@ -90,6 +90,10 @@ namespace HRMS.Application.Services
             {
                 throw new NotFoundException("Shift is not found!");
             }
+            if (!Employee.EmployeeDepartments.Any(ed => ed.DepartmentID == dto.DepartmentId))
+            {
+                throw new ConflictException("The Employee doesnt work in this department!");
+            }
             await _attendanceRepository.AddAsync(Attendance);
             var isadded = await _attendanceRepository.SaveChangesAsync();
             if (!isadded)

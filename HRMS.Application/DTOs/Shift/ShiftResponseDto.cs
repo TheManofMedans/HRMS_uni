@@ -12,12 +12,12 @@ namespace HRMS.Application.DTOs.Shift
         public string ShiftName { get; set; } = string.Empty;
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
-        public CompanyDto User { get; set; } = new();
+        public CompanyDto Company { get; set; } = new();
         
     }
     public class CompanyDto
     {
-        public int CompanyId { get; set; }
-        public string CompanyName { get; set;} = string.Empty;
+        public int Id { get; set; }
+        public string Name { get; set;} = string.Empty;
     }
 }

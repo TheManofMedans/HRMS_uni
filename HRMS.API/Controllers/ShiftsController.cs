@@ -23,7 +23,7 @@ namespace HRMS.API.Controllers
             return Ok(shifts);
         }
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetByIdAsync(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             var shift = await _shiftService.GetByIdAsync(id);
             return shift is null ? NotFound() : Ok(shift);
@@ -38,7 +38,7 @@ namespace HRMS.API.Controllers
         public async Task<IActionResult> Create([FromBody] CreateShiftDto dto)
         {
             var created = await _shiftService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetByIdAsync),new {id =  created.Id},created);
+            return CreatedAtAction(nameof(GetById),new {id =  created.Id},created);
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateShiftDto dto)

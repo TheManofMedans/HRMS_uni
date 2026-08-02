@@ -14,8 +14,8 @@ namespace HRMS.Application.Mappings
         public ShiftMappingProfile() 
         {
             CreateMap<Shift,ShiftResponseDto>();
-            CreateMap<Shift, CompanyDto> ().ForMember(dest => dest.CompanyId, opt => opt.MapFrom(src => src.Company.Id)).
-                ForMember(dest => dest.CompanyName, opt => opt.MapFrom(src => src.Company.Name));
+            CreateMap<Company, CompanyDto>().ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
             CreateMap<CreateShiftDto, Shift>();
         }
     }

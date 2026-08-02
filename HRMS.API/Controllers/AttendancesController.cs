@@ -24,7 +24,7 @@ namespace HRMS.API.Controllers
             return Ok(attendances);
         }
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetByIdAsync(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             var attendance = await _attendanceService.GetByIdAsync(id);
             return attendance is null ? NotFound() : Ok(attendance); 
@@ -51,7 +51,7 @@ namespace HRMS.API.Controllers
         public async Task<IActionResult> Create([FromBody] CreateAttendanceDto dto)
         {
             var created = await _attendanceService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetByIdAsync),new {id =  created.Id},created);
+            return CreatedAtAction(nameof(GetById),new {id =  created.Id},created);
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateAttendanceDto dto)
