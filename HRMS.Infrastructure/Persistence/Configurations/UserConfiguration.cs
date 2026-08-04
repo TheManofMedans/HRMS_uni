@@ -13,15 +13,13 @@ namespace HRMS.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.ToTable("Users");
-            builder.HasKey(u => u.Id);
+
             builder.Property(u=>u.FirstName).IsRequired().HasMaxLength(100);
             builder.Property(u=>u.LastName).IsRequired().HasMaxLength(100);
-            builder.Property(u=>u.Email).IsRequired().HasMaxLength(256);
-            builder.Property(u => u.PhoneNumber).IsRequired().HasMaxLength(50);
-            builder.HasIndex(u => u.Email).IsUnique();
-            builder.HasIndex(u=>u.PhoneNumber).IsUnique();
+            builder.Property(u => u.SSN).IsRequired().HasMaxLength(10);
+            builder.Property(u => u.PhoneNumber).IsRequired().HasMaxLength(100);
             builder.HasIndex(u => u.SSN).IsUnique();
+            builder.HasIndex(u => u.PhoneNumber).IsUnique();
         }
     }
 }

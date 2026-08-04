@@ -7,6 +7,7 @@ using AutoMapper;
 using FluentValidation;
 using HRMS.Application.DTOs.User;
 using HRMS.domain.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace HRMS.Application.Mappings
 {

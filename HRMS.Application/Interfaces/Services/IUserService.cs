@@ -12,7 +12,6 @@ namespace HRMS.Application.Interfaces.Services
     {
         Task<UserResponseDto?> GetByIdAsync(int id);
         Task<IEnumerable<UserResponseDto>> GetAllAsync();
-        Task<UserResponseDto> CreateUserAsync(CreateUserDto dto);
         Task<bool> UpdateUserAsync(int id, UpdateUserDto dto);
         Task<bool> DeleteUserAsync(int id);
     }

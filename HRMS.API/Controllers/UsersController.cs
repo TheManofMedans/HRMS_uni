@@ -27,12 +27,6 @@ namespace HRMS.API.Controllers
             var user = await _userService.GetByIdAsync(id);
             return user is null ? NotFound() : Ok(user);
         }
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateUserDto dto)
-        {
-            var created = await _userService.CreateUserAsync(dto);
-            return CreatedAtAction(nameof(GetById), new {id = created.Id}, created);
-        }
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateUserDto dto)
         {

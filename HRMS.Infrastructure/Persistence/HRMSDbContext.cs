@@ -5,15 +5,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace HRMS.Infrastructure.Persistence
 {
-    public class HRMSDbContext : DbContext
+    public class HRMSDbContext : IdentityDbContext<User,IdentityRole<int>,int>
     {
         public HRMSDbContext(DbContextOptions<HRMSDbContext> options): base(options) 
         { 
         }
-        public DbSet<User> Users => Set<User>();
         public DbSet<Company> Companies => Set<Company>();
         public DbSet<UserCompany> UserCompanies => Set<UserCompany>();
         public DbSet<Department> Departments => Set<Department>();

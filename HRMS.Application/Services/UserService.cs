@@ -35,39 +35,7 @@ namespace HRMS.Application.Services
             var Users = await _userRepository.GetAllAsync();
             return _mapper.Map <IEnumerable< UserResponseDto >> (Users);
         }
-        public async Task<UserResponseDto> CreateUserAsync(CreateUserDto dto)
-        {
-            if (await _userRepository.EmailExistsAsync(dto.Email))
-            {
-                throw new ConflictException("This Email already exists!");
-            }
-            if (await _userRepository.SSNExistsAsync(dto.SSN))
-            {
-                throw new ConflictException("This SSN already exists!");
-            }
-            var user = _mapper.Map<User>(dto);
-            if (dto.CompanyId != null)
-            {
-                var company = await _companyRepository.GetByIdAsync(dto.CompanyId.Value);
-                if (company is null)
-                {
-                    throw new NotFoundException(nameof(company), dto.CompanyId);
-                }
-                user.UserCompanies.Add(new UserCompany
-                {
-                    CompanyId = dto.CompanyId.Value,
-                    User = user,
-                    Role = CompanyRole.View_Only
-                });
-            }
-            await _userRepository.AddAsync(user);
-            bool saved = await _userRepository.SaveChangesAsync();
-            if (!saved)
-            {
-                throw new Exception("The user could not be saved!");
-            }
-            return _mapper.Map<UserResponseDto>(user);
-        }
+
         public async Task<bool> UpdateUserAsync(int id, UpdateUserDto dto)
         {
             var user = await _userRepository.GetByIdAsync(id);
