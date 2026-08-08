@@ -14,7 +14,7 @@ namespace HRMS.Application.Mappings
         public EmployeeMappingProfile() 
         { 
             CreateMap<Employee, EmployeeResponseDto>().ForMember(dest=> dest.DepartmentNames,
-                opt=> opt.MapFrom(src => src.EmployeeDepartments.Select(ed =>ed.Department)));
+                opt=> opt.MapFrom(src => src.EmployeeDepartments));
             CreateMap<Department, DepartmentDto>();
             CreateMap<CreateEmployeeDto, Employee>().ForMember(dest => dest.EmployeeDepartments, opt => opt.Ignore());
             CreateMap<RegisterEmployeeDto, Employee>();

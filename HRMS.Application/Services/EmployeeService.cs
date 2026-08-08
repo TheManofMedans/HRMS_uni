@@ -55,7 +55,7 @@ namespace HRMS.Application.Services
             }
             return _mapper.Map<EmployeeResponseDto>(employee);
         }
-        public async Task<bool> AddToDepartmentAsync(int EmployeeId,int DepartmentId)
+        public async Task<bool> AddToDepartmentAsync(int EmployeeId,int DepartmentId,UpdateEmployeeDto dto)
         {
             var Employee = await _employeeRepository.GetByIdWithDepartmentsAsync(EmployeeId);
             if (Employee == null)
@@ -71,12 +71,18 @@ namespace HRMS.Application.Services
             {
                 throw new ConflictException($"The employee {Employee.Id} already is in this department!");
             }
+            if (dto.Salary is null || dto.EmploymentStatus is null)
+            {
+                throw new ConflictException("No Salary Or Employment Status!");
+            }
             Employee.EmployeeDepartments.Add(new EmployeeDepartment
             {
                 EmployeeID = Employee.Id,
                 DepartmentID = DepartmentId,
                 AssignedAt = DateTime.UtcNow,
-                IsPrimary = false
+                IsPrimary = false,
+                Salary = dto.Salary,
+                EmploymentStatus = dto.EmploymentStatus.Value,
             }); 
             _employeeRepository.Update(Employee);
             return await _employeeRepository.SaveChangesAsync();
@@ -123,12 +129,64 @@ namespace HRMS.Application.Services
             {
                 throw new NotFoundException(nameof(employee),id);
             }
-            employee.FirstName = dto.FirstName;
-            employee.LastName = dto.LastName;
-            employee.Phone = dto.Phone;
-            employee.Address = dto.Address;
+            var user = await _userRepository.GetByIdAsync(employee.UserId);
+            if (user is null)
+            {
+                throw new NotFoundException(nameof (user),employee.UserId);
+            }
+            if (dto.FirstName != null)
+            {
+                employee.FirstName = dto.FirstName;
+                user.FirstName = dto.FirstName;
+            }
+            if (dto.LastName != null)
+            {
+                employee.LastName = dto.LastName;
+                user.LastName = dto.LastName;
+            }
+            if (dto.Address != null)
+            {
+                employee.Address = dto.Address;
+            }
+            if (dto.Phone != null)
+            {
+                employee.Phone = dto.Phone;
+                user.PhoneNumber = dto.Phone;
+            }
+            _employeeRepository.Update(employee);
+            _userRepository.Update(user);
+            var emp = await _employeeRepository.SaveChangesAsync();
+            var us = await _userManager.UpdateAsync(user);
+            return (emp && us.Succeeded);
+        }
+        public async Task<bool> UpdateDepartmentInfoAsync(int empId,int depId, UpdateEmployeeDto dto)
+        {
+            var employee = await _employeeRepository.GetByIdWithDepartmentsAsync(empId);
+            if (employee is null)
+            {
+                throw new NotFoundException(nameof (employee),empId);
+            }
+            var department = await _departdmentRepository.GetByIdAsync(depId);
+            if (department is null)
+            {
+                throw new NotFoundException(nameof(department),depId);
+            }
+           var ed =  employee.EmployeeDepartments.FirstOrDefault(e => e.DepartmentID == depId);
+            if (ed is null)
+            {
+                throw new NotFoundException("this employee doesnt work in this department!");
+            }
+            if (dto.EmploymentStatus !=  null)
+            {
+                ed.EmploymentStatus = dto.EmploymentStatus.Value;
+            }
+            if (dto.Salary != null)
+            {
+                ed.Salary = dto.Salary;
+            }
             _employeeRepository.Update(employee);
             return await _employeeRepository.SaveChangesAsync();
+            
         }
         public async Task<bool> DeleteAsync (int id)
         {

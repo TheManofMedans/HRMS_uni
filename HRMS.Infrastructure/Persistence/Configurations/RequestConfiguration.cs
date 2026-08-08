@@ -22,7 +22,7 @@ namespace HRMS.Infrastructure.Persistence.Configurations
             builder.HasOne(r => r.Department)
                 .WithMany()
                 .HasForeignKey(r => r.DepartmentId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

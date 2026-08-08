@@ -58,9 +58,9 @@ namespace HRMS.API.Controllers
             return NoContent();
         }
         [HttpPost("{Employeeid}/department/{DepartmentId}")]
-        public async Task<IActionResult> AddToDepartmentAsync(int Employeeid,int DepartmentId)
+        public async Task<IActionResult> AddToDepartmentAsync(int Employeeid,int DepartmentId, [FromBody] UpdateEmployeeDto dto)
         {
-            await _employeeService.AddToDepartmentAsync(Employeeid, DepartmentId);
+            await _employeeService.AddToDepartmentAsync(Employeeid, DepartmentId,dto);
             return NoContent();
         }
     }
