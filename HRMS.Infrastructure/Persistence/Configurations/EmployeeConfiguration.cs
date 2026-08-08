@@ -33,6 +33,9 @@ namespace HRMS.Infrastructure.Persistence.Configurations
                 .WithOne(a => a.Employee)
                 .HasForeignKey(a => a.EmployeeId)
                 .OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne(e => e.User)
+                .WithOne()
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

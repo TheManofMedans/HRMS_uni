@@ -17,6 +17,7 @@ namespace HRMS.Application.Mappings
                 opt=> opt.MapFrom(src => src.EmployeeDepartments.Select(ed =>ed.Department)));
             CreateMap<Department, DepartmentDto>();
             CreateMap<CreateEmployeeDto, Employee>().ForMember(dest => dest.EmployeeDepartments, opt => opt.Ignore());
+            CreateMap<RegisterEmployeeDto, Employee>();
         }
     }
 }

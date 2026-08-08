@@ -10,6 +10,7 @@ namespace HRMS.Application.DTOs.Request
     public class CreateRequestDto
     {
         public int EmployeeId { get; set; }
+        public int DepartmentId { get; set; }
         public RequestType Type { get; set; }
         public string Description { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }

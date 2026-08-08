@@ -12,6 +12,8 @@ namespace HRMS.domain.Entities
         public int Id { get; set; }
         public int EmployeeId { get; set; }
         public Employee Employee { get; set; } = null!;
+        public int DepartmentId { get; set; }
+        public Department Department { get; set; } = null!;
         public RequestType Type { get; set; }
         public RequestStatus Status { get; set; }
         public string Description { get; set; } = string.Empty;

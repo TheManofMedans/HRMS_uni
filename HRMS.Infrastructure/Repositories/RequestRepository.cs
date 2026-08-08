@@ -22,18 +22,21 @@ namespace HRMS.Infrastructure.Repositories
         {
             return await _context.Requests
                 .Include(c => c.Employee)
+                .Include(c => c.Department)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
         public async Task<IEnumerable<Request>> GetAllAsync()
         {
             return await _context.Requests
                 .Include(c => c.Employee)
+                .Include (c => c.Department)
                 .ToListAsync();
         }
         public async Task<IEnumerable<Request>> GetByEmployeeIdAsync(int id)
         {
             return await _context.Requests
                 .Include(c => c.Employee)
+                .Include(c => c.Department)
                 .Where(r => r.EmployeeId == id)
                 .ToListAsync();
         }
@@ -41,6 +44,7 @@ namespace HRMS.Infrastructure.Repositories
         {
             return await _context.Requests
                 .Include(r => r.Employee)
+                .Include(r => r.Department)
                 .Where(r => r.Status == status)
                 .ToListAsync();
         }
@@ -48,6 +52,7 @@ namespace HRMS.Infrastructure.Repositories
         {
             return await _context.Requests
                 .Include(r => r.Employee)
+                .Include(r => r.Department)
                 .Where(r => r.Type == type)
                 .ToListAsync();
         }
@@ -55,6 +60,7 @@ namespace HRMS.Infrastructure.Repositories
         {
             var query = _context.Requests
                 .Include(r => r.Employee)
+                .Include(r => r.Department)
                 .AsQueryable();
             if (id.HasValue)
             {
@@ -81,7 +87,8 @@ namespace HRMS.Infrastructure.Repositories
         }
         public async Task<IEnumerable<Request>> GetByDepartmentIdAsync(int departmentId)
         {
-            return await _context.Requests.Include(r => r.Employee)
+            return await _context.Requests.Include(r => r.Department)
+                .Include(r => r.Employee)
                 .ThenInclude (e => e.EmployeeDepartments)
                 .Where(r => r.Employee.EmployeeDepartments.Any(ed => ed.DepartmentID == departmentId))
                 .ToListAsync();

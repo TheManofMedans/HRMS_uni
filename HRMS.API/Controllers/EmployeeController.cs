@@ -33,6 +33,12 @@ namespace HRMS.API.Controllers
             var Created = await _employeeService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetById), new { id = Created.Id }, Created);
         }
+        [HttpPost("Register")]
+        public async Task<IActionResult> Register([FromBody] RegisterEmployeeDto dto)
+        {
+            var created = await _employeeService.RegisterEmployeeAsync(dto);
+            return CreatedAtAction(nameof(Register),new { id = created.Id }, created);
+        }
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateEmployeeDto dto)
         {

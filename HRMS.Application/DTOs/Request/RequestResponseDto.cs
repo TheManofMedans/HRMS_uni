@@ -11,6 +11,7 @@ namespace HRMS.Application.DTOs.Request
     {
         public int Id { get; set; }
         public int EmployeeId { get; set; }
+        public int DepartmentId { get; set; }
         public string? Description { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
@@ -26,5 +27,10 @@ namespace HRMS.Application.DTOs.Request
         public int Id { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
+    }
+    public class DepartmentDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 }

@@ -10,19 +10,24 @@ using HRMS.Application.Interfaces.Services;
 using AutoMapper;
 using HRMS.domain.Entities;
 using HRMS.Application.Exceptions;
+using Microsoft.AspNetCore.Identity;
 
 namespace HRMS.Application.Services
 {
     public class EmployeeService : IEmployeeService
     {
+        private readonly UserManager<User> _userManager;
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IDepartmentRepository _departdmentRepository;
         private readonly IMapper _mapper;
-        public EmployeeService(IEmployeeRepository employeeRepository,IDepartmentRepository departdmentRepository, IMapper mapper)
+        public EmployeeService(IEmployeeRepository employeeRepository,IDepartmentRepository departdmentRepository, IMapper mapper, IUserRepository userRepository, UserManager<User> userManager)
         {
             _employeeRepository = employeeRepository;
             _departdmentRepository = departdmentRepository;
             _mapper = mapper;
+            _userRepository = userRepository;
+            _userManager = userManager;
         }
 
         public async Task<EmployeeResponseDto> CreateAsync(CreateEmployeeDto dto)
@@ -35,9 +40,15 @@ namespace HRMS.Application.Services
             {
                 throw new RepeatDataException("SSN", dto.SSN);
             }
+            var user = await _userManager.FindByIdAsync(dto.UserId.ToString());
+            if (user == null)
+            {
+                throw new NotFoundException(nameof(user), dto.UserId);
+            }
             var employee = _mapper.Map<Employee>(dto);
+            employee.User = user;
             await _employeeRepository.AddAsync(employee);
-           var saved = await _employeeRepository.SaveChangesAsync();
+            var saved = await _employeeRepository.SaveChangesAsync();
             if (!saved)
             {
                 throw new Exception("Failed to save new employee!");
@@ -82,7 +93,7 @@ namespace HRMS.Application.Services
             {
                 throw new NotFoundException(nameof(Department), DepartmentId);
             }
-            if (!employee.EmployeeDepartments.Any(ed => ed.DepartmentID == DepartmentId))
+            if (employee.EmployeeDepartments.Any(ed => ed.DepartmentID == DepartmentId && ed.IsPrimary == true))
             {
                 throw new ConflictException($"The employee {EmployeeId} already prime is in this department!");
             }
@@ -128,6 +139,41 @@ namespace HRMS.Application.Services
             }
             _employeeRepository.Delete(employee);
             return await _employeeRepository.SaveChangesAsync();
+        }
+        public async Task<EmployeeResponseDto> RegisterEmployeeAsync(RegisterEmployeeDto dto)
+        {
+            if (await _employeeRepository.EmailExistsAsync(dto.Email))
+            {
+                throw new ConflictException("This Email already exists!");
+            }
+            if (await _employeeRepository.SSNExistsAsync(dto.SSN))
+            {
+                throw new ConflictException("This SSN already exists!");
+            }
+            var user = new User
+            {
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                Email = dto.Email,
+                SSN = dto.SSN,
+                UserName = dto.Email,
+                PhoneNumber = dto.PhoneNumber,
+            };
+            var result = await _userManager.CreateAsync(user,dto.Password);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+                throw new ValidationException($"Could not create account: {errors}");
+            }
+            var employee = _mapper.Map<Employee>(dto);
+            employee.User = user;
+            await _employeeRepository.AddAsync(employee);
+            var isadded = await _employeeRepository.SaveChangesAsync();
+            if (!isadded)
+            {
+                throw new Exception("Failed to add employee to the database");
+            }
+            return _mapper.Map<EmployeeResponseDto>(employee);
         }
     }
 }

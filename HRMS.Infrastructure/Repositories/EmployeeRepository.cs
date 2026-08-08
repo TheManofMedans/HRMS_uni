@@ -54,6 +54,10 @@ namespace HRMS.Infrastructure.Repositories
         {
             return await _context.Employees.AnyAsync(e => e.SSN == SSN);
         }
+        public async Task<bool> UserIdExistsAsync(int userId)
+        {
+            return await _context.Employees.AnyAsync(e => e.UserId == userId);
+        }
         public async Task<bool> SaveChangesAsync()
         {
             return await _context.SaveChangesAsync() > 0;

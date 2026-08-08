@@ -16,6 +16,7 @@ namespace HRMS.Application.Mappings
             CreateMap<Request, RequestResponseDto>()
                 .ForMember(dest => dest.Employee,opt => opt.MapFrom(src => src.Employee));
             CreateMap<Employee, EmployeeDto>();
+            CreateMap<Department, DepartmentDto>();
             CreateMap<CreateRequestDto, Request>();
         }
     }

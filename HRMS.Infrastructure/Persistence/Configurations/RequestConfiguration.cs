@@ -18,6 +18,11 @@ namespace HRMS.Infrastructure.Persistence.Configurations
             builder.Property(r => r.Description).HasMaxLength(1000);
             builder.Property(r => r.Type).IsRequired();
             builder.Property(r => r.Status).IsRequired();
+
+            builder.HasOne(r => r.Department)
+                .WithMany()
+                .HasForeignKey(r => r.DepartmentId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
