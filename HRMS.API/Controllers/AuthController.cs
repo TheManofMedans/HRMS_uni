@@ -47,6 +47,26 @@ namespace HRMS.API.Controllers
             var token = await GenerateJwtToken(user);
             return Ok(new { token });
         }
+        [HttpPost("Register")]
+        public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+        {
+            var user = new User
+            {
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                Email = dto.Email,
+                PhoneNumber = dto.PhoneNumber,
+                SSN = dto.SSN,
+                UserName = dto.Email
+            };
+            var result = await _userManager.CreateAsync(user, dto.Password);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(";",result.Errors.Select(e => e.Description));
+                return BadRequest(errors);
+            }
+            return Ok(new { user.Id, user.Email });
+        }
         private async Task<string> GenerateJwtToken(User user)
         {
             var claims = new List<Claim>

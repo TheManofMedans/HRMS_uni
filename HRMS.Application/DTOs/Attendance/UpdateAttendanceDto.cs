@@ -11,6 +11,5 @@ namespace HRMS.Application.DTOs.Attendance
     {
         public DateTime? ClockedIn { get; set; }
         public DateTime? ClockedOut { get; set; }
-        public AttendanceStatus AttendanceStatus { get; set; }
     }
 }

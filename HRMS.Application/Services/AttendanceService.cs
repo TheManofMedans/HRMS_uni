@@ -109,15 +109,45 @@ namespace HRMS.Application.Services
             {
                 return false;
             }
-            if (dto.ClockedIn != null)
+            if (Attendance.Clockedin is null)
             {
-                Attendance.Clockedin = dto.ClockedIn;
+                if (dto.ClockedIn != null)
+                {
+                    Attendance.Clockedin = dto.ClockedIn;
+                }
+                else
+                {
+                    throw new ConflictException("Cannot clock out when you havent clocked in!");
+                }
             }
-            if (dto.ClockedOut != null)
+            if (Attendance.Clockedout is null)
             {
-                Attendance.Clockedout = dto.ClockedOut;
+                if (dto.ClockedOut != null)
+                {
+                    Attendance.Clockedout = dto.ClockedOut;
+                    Attendance.AttendanceStatus = AttendanceStatus.Present;
+                }
+                else
+                {
+                    throw new ConflictException("You have already clocked in!");
+                }
             }
-            Attendance.AttendanceStatus = dto.AttendanceStatus;
+            if (dto.ClockedOut != null && dto.ClockedIn != null)
+            {
+                throw new ConflictException("You cannot clock in and clock out at the same time!");
+            }
+            if (DateTime.UtcNow - dto.ClockedIn < TimeSpan.FromMinutes(5))
+            {
+                Attendance.AttendanceStatus = AttendanceStatus.NoClockOut;
+            }
+            if (DateTime.UtcNow - dto.ClockedOut > TimeSpan.FromMinutes(5))
+            {
+                Attendance.AttendanceStatus = AttendanceStatus.Late;
+            }
+            if (DateTime.UtcNow - dto.ClockedIn > TimeSpan.FromMinutes(30))
+            {
+                Attendance.AttendanceStatus = AttendanceStatus.Absent;
+            }
             _attendanceRepository.Update(Attendance);
             return await _attendanceRepository.SaveChangesAsync();
         }

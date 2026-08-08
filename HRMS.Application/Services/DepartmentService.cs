@@ -59,8 +59,14 @@ namespace HRMS.Application.Services
             {
                 return false;
             }
-            department.Name = dto.Name;
-            department.Description = dto.Description;
+            if (dto.Name is not null)
+            {
+                department.Name = dto.Name;
+            }
+            if (dto.Description is not null)
+            {
+                department.Description = dto.Description;
+            }
             _departdmentRepository.Update(department);
             return await _departdmentRepository.SaveChangesAsync();
         }

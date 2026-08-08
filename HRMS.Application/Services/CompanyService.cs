@@ -79,7 +79,10 @@ namespace HRMS.Application.Services
             {
                 throw new NotFoundException("Company is not found!");
             }
-            Company.Address = dto.Address;
+            if (dto.Address != null)
+            {
+                Company.Address = dto.Address;
+            }
             _companyRepository.Update(Company);
             return await _companyRepository.SaveChangesAsync();
         }

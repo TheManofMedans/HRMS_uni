@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HRMS.domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,8 @@ namespace HRMS.domain.Entities
         public int DepartmentID { get; set; }
         public Department Department { get; set; } = null!;
         public Boolean IsPrimary { get; set; }
+        public string Salary { get; set; } = string.Empty;
+        public EmploymentStatus EmploymentStatus { get; set; }
         public DateTime AssignedAt { get; set; }
     }
 }

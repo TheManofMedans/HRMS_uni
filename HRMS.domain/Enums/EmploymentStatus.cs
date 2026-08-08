@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HRMS.Application.Validators
+namespace HRMS.domain.Enums
 {
-    public class RegisterUserDto
+    public enum EmploymentStatus
     {
+        Active,
+        Fired,
+        Temporary_onLeave
     }
 }

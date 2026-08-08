@@ -8,6 +8,6 @@ namespace HRMS.Application.DTOs.Company
 {
     public class UpdateCompanyDto
     {
-        public string Address { get; set; } = string.Empty;
+        public string? Address { get; set; } = string.Empty;
     }
 }
