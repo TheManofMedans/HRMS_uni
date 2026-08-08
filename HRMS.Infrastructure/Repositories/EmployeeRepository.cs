@@ -34,6 +34,11 @@ namespace HRMS.Infrastructure.Repositories
                 ThenInclude(ed => ed.Department).
                 FirstOrDefaultAsync(e => e.Id == id);
         }
+        public async Task<Employee?> GetByUserIdAsync(int userId)
+        {
+            return await _context.Employees.Include(e => e.User)
+                .FirstOrDefaultAsync(e => e.UserId == userId);
+        }
         public async Task AddAsync(Employee employee)
         {
             await _context.Employees.AddAsync(employee);

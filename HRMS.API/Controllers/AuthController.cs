@@ -8,6 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using HRMS.Application.Interfaces.Repositories;
+using HRMS.Application.Exceptions;
 
 namespace HRMS.API.Controllers
 {
@@ -19,12 +20,14 @@ namespace HRMS.API.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly IConfiguration _config;
         private readonly IUserRepository _userRepository;
-        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration config,IUserRepository userRepository)
+        private readonly IEmployeeRepository _employeerepository;
+        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration config,IUserRepository userRepository, IEmployeeRepository employeerepository)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _config = config;
             _userRepository = userRepository;
+            _employeerepository = employeerepository;
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
@@ -79,6 +82,11 @@ namespace HRMS.API.Controllers
             foreach (var uc in userCompanies)
             {
                 claims.Add(new Claim("company_role", $"{uc.CompanyId}:{uc.Role}"));
+            }
+            var employee = await _employeerepository.GetByUserIdAsync(user.Id);
+            if (employee is not null)
+            {
+                claims.Add(new Claim("employee_id", $"{employee.Id}"));
             }
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
