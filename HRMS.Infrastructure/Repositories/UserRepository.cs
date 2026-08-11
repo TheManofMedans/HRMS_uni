@@ -26,6 +26,7 @@ namespace HRMS.Infrastructure.Repositories
         {
             return await _context.Users
                 .Include (u => u.UserCompanies)
+                .ThenInclude(uc => uc.Company)
                 .ToListAsync();
         }
         public async Task<User?> GetByIdWithCompanyAsync(int id)

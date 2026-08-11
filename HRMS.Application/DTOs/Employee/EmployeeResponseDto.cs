@@ -17,7 +17,7 @@ namespace HRMS.Application.DTOs.Employee
         public string SSN {  get; set; } = string.Empty;
         public int UserId { get; set; }
         public DateTime HireDate { get; set; }
-        public List<DepartmentDto> DepartmentNames { get; set; } = new List<DepartmentDto>();
+        public List<DepartmentDto> Departments { get; set; } = new List<DepartmentDto>();
     }
     public class DepartmentDto
     {

@@ -87,6 +87,27 @@ namespace HRMS.Application.Services
             _employeeRepository.Update(Employee);
             return await _employeeRepository.SaveChangesAsync();
         }
+        public async Task<bool> RemoveFromDepartmentAsync(int empId,int departmentId)
+        {
+            var employee = await _employeeRepository.GetbyIdAsync(empId);
+            if (employee == null)
+            {
+                throw new NotFoundException(nameof(employee),empId);
+            }
+            var department = await _departdmentRepository.GetByIdAsync(departmentId);
+            if (department == null)
+            {
+                throw new NotFoundException(nameof (department),departmentId);
+            }
+            if (!employee.EmployeeDepartments.Any(ed => ed.DepartmentID == departmentId))
+            {
+                throw new ConflictException("This employee doesnt work in this department!");
+            }
+            var ed = employee.EmployeeDepartments.FirstOrDefault(e => e.DepartmentID == departmentId);
+            employee.EmployeeDepartments.Remove(ed);
+            _employeeRepository.Update(employee);
+            return await _employeeRepository.SaveChangesAsync();
+        }
         public async Task<bool> SetPrimary(int EmployeeId,int DepartmentId)
         {
             var employee = await _employeeRepository.GetByIdWithDepartmentsAsync(EmployeeId);
