@@ -9,6 +9,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using HRMS.API.Authentication;
+using HRMS.domain.Enums;
+using HRMS.API.Authorization.Resolvers;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -52,7 +56,32 @@ builder.Services.AddAuthentication(options =>
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
         };
     });
-builder.Services.AddAuthorization();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<CompanyCompanyResolver>();
+builder.Services.AddScoped<DepartmentCompanyResolver>();
+builder.Services.AddScoped<ShiftCompanyResolver>();
+builder.Services.AddScoped<AttendanceCompanyResolver>();
+builder.Services.AddScoped<RequestCompanyResolver>();
+builder.Services.AddScoped<IAuthorizationHandler, CompanyRoleAuthorizationHandler>();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Company_RequireCEO", policy =>
+        policy.Requirements.Add(new CompanyRoleRequirement(CompanyRole.CEO, typeof(CompanyCompanyResolver), "companyId")));
+    options.AddPolicy("Company_RequireHRManager", policy =>
+        policy.Requirements.Add(new CompanyRoleRequirement(CompanyRole.HRManager, typeof(CompanyCompanyResolver), "companyId")));
+
+    options.AddPolicy("Department_RequireHRManager", policy =>
+        policy.Requirements.Add(new CompanyRoleRequirement(CompanyRole.HRManager, typeof(DepartmentCompanyResolver), "departmentId")));
+
+    options.AddPolicy("Shift_RequireHRManager", policy =>
+        policy.Requirements.Add(new CompanyRoleRequirement(CompanyRole.HRManager, typeof(ShiftCompanyResolver), "shiftId")));
+
+    options.AddPolicy("Attendance_RequireHRManager", policy =>
+        policy.Requirements.Add(new CompanyRoleRequirement(CompanyRole.HRManager, typeof(AttendanceCompanyResolver), "id")));
+
+    options.AddPolicy("Request_RequireHRManager", policy =>
+        policy.Requirements.Add(new CompanyRoleRequirement(CompanyRole.HRManager, typeof(RequestCompanyResolver), "id")));
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -3,26 +3,31 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using HRMS.domain.Enums;
+using HRMS.API.Authorization;
 namespace HRMS.API.Authentication
 {
     public class CompanyRoleAuthorizationHandler : AuthorizationHandler<CompanyRoleRequirement>
     {
         private readonly IHttpContextAccessor _contextAccessor;
-        public CompanyRoleAuthorizationHandler(IHttpContextAccessor contextAccessor)
+        private readonly IServiceProvider _serviceProvider;
+        public CompanyRoleAuthorizationHandler(IHttpContextAccessor contextAccessor, IServiceProvider serviceProvider)
         {
             _contextAccessor = contextAccessor;
+            _serviceProvider = serviceProvider;
         }
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CompanyRoleRequirement requirement)
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, CompanyRoleRequirement requirement)
         {
             var routevalues = _contextAccessor.HttpContext?.Request.RouteValues;
-            if (routevalues is null || !routevalues.TryGetValue("companyId", out var companyIdObj))
+            if (routevalues is null || !routevalues.TryGetValue(requirement.RouteParameters,out var resourceIdObj))
             {
-                return Task.CompletedTask;
+                return ;
             }
-            if (!int.TryParse(companyIdObj.ToString(),out var companyId))
+            if (!int.TryParse(resourceIdObj?.ToString(),out var resourceId))
             {
-                return Task.CompletedTask;
+                return;
             }
+            var resolver = (ICompanyResolver)_serviceProvider.GetRequiredService(requirement.ResolverType);
+            var companyId = await resolver.ResolveCompanyId(resourceId);
             var companyRoleClaims = context.User.Claims.Where(c => c.Type == "company_role");
             foreach(var claim in companyRoleClaims)
             {
@@ -46,11 +51,11 @@ namespace HRMS.API.Authentication
                 if(CompanyRoleHierarchy.Meets(currentRole,requirement.MinimumRole))
                 {
                     context.Succeed(requirement);
-                    return Task.CompletedTask;
+                    return;
                 }
                 
             }
-            return Task.CompletedTask;
+            return;
         }
     }
 }
