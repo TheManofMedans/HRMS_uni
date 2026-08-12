@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using HRMS.API.Authentication;
 using HRMS.domain.Enums;
 using HRMS.API.Authorization.Resolvers;
+using HRMS.API.Authorization;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -81,6 +82,13 @@ builder.Services.AddAuthorization(options =>
 
     options.AddPolicy("Request_RequireHRManager", policy =>
         policy.Requirements.Add(new CompanyRoleRequirement(CompanyRole.HRManager, typeof(RequestCompanyResolver), "id")));
+    options.AddPolicy("Attendance_OwnOrHRManager", policy =>
+        policy.Requirements.Add(new OwnershipOrRoleRequirement(typeof(AttendanceOwnerResolver)
+            , typeof(AttendanceCompanyResolver),CompanyRole.HRManager , "id")));
+
+    options.AddPolicy("Request_OwnOrHRManager", policy =>
+        policy.Requirements.Add(new OwnershipOrRoleRequirement(
+            typeof(RequestOwnerResolver), typeof(RequestCompanyResolver), CompanyRole.HRManager, "id")));
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
