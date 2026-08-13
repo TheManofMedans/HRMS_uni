@@ -3,6 +3,8 @@ using HRMS.Application.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using HRMS.Application.DTOs.Department;
+using Microsoft.AspNetCore.Authorization;
+using HRMS.API.Extensions;
 
 namespace HRMS.API.Controllers
 {
@@ -34,8 +36,13 @@ namespace HRMS.API.Controllers
             return Ok(departments);
         }
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Create([FromBody] CreateDepartmentDto dto)
         {
+            if (!User.hasSufficientCompanyRole(dto.CompanyId,domain.Enums.CompanyRole.CEO))
+            {
+                return Forbid();
+            }
             var created = await _departmentService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetById),new {id = created.Id},created);
         }
