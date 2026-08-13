@@ -140,7 +140,7 @@ namespace HRMS.Application.Services
             {
                 Attendance.AttendanceStatus = AttendanceStatus.NoClockOut;
             }
-            if (DateTime.UtcNow - dto.ClockedOut > TimeSpan.FromMinutes(5))
+            if (DateTime.UtcNow - dto.ClockedIn > TimeSpan.FromMinutes(5))
             {
                 Attendance.AttendanceStatus = AttendanceStatus.Late;
             }
