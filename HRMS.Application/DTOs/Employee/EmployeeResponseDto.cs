@@ -27,5 +27,7 @@ namespace HRMS.Application.DTOs.Employee
         public string Description {  get; set; } = string.Empty;
         public string Salary {  get; set; } = string.Empty;
         public EmploymentStatus EmployementStatus { get; set; }
+        public string JobDescription {  get; set; } = string.Empty;
+        public PayrollStatus PayrollStatus { get; set; }
     }
 }

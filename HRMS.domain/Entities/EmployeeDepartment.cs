@@ -15,7 +15,9 @@ namespace HRMS.domain.Entities
         public Department Department { get; set; } = null!;
         public Boolean IsPrimary { get; set; }
         public string Salary { get; set; } = string.Empty;
+        public string JobDescription {  get; set; } = string.Empty;
         public EmploymentStatus EmploymentStatus { get; set; }
+        public PayrollStatus PayrollStatus { get; set; }
         public DateTime AssignedAt { get; set; }
     }
 }

@@ -83,9 +83,52 @@ namespace HRMS.Application.Services
                 IsPrimary = false,
                 Salary = dto.Salary,
                 EmploymentStatus = dto.EmploymentStatus.Value,
+                JobDescription = dto.JobDescription,
+                PayrollStatus = dto.PayrollStatus.Value,
             }); 
             _employeeRepository.Update(Employee);
             return await _employeeRepository.SaveChangesAsync();
+        }
+        public async Task<bool> ChangeDepartmentRelationAsync(int employeeId, int departmentId,UpdateEmployeeDto dto)
+        {
+            var employee = await _employeeRepository.GetByIdWithDepartmentsAsync(employeeId);
+            if (employee == null)
+            {
+                throw new NotFoundException(nameof(employee),employeeId);
+            }
+            var department = await _departdmentRepository.GetByIdAsync(departmentId);
+            if (department == null)
+            {
+                throw new NotFoundException(nameof(department),departmentId);
+            }
+            var employeedepartment = employee.EmployeeDepartments.FirstOrDefault(ed => ed.DepartmentID == departmentId);
+            if (employeedepartment == null)
+            {
+                throw new Exception("This employee doesnt work in department");
+            }
+            if (dto.Salary != null)
+            {
+                employeedepartment.Salary = dto.Salary;
+            }
+            if (dto.PayrollStatus != null)
+            {
+                employeedepartment.PayrollStatus = dto.PayrollStatus.Value;
+            }
+            if (dto.EmploymentStatus != null)
+            {
+                employeedepartment.EmploymentStatus = dto.EmploymentStatus.Value;
+            }
+            if (dto.JobDescription != null)
+            {
+                employeedepartment.JobDescription = dto.JobDescription;
+            }
+            _employeeRepository.Update(employee);
+            var isadded = await _employeeRepository.SaveChangesAsync();
+            if (!isadded)
+            {
+                throw new Exception("Could not update employee!");
+            }
+            return isadded;
         }
         public async Task<bool> RemoveFromDepartmentAsync(int empId,int departmentId)
         {

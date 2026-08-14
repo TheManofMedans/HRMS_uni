@@ -15,6 +15,7 @@ namespace HRMS.Application.Interfaces.Services
         Task<EmployeeResponseDto> RegisterEmployeeAsync(RegisterEmployeeDto dto);
         Task<bool> AddToDepartmentAsync(int EmployeeId,int DepartmentId,UpdateEmployeeDto dto);
         Task<bool> RemoveFromDepartmentAsync(int EmployeeId,int DepartmentId);
+        Task<bool> ChangeDepartmentRelationAsync(int EmployeeId,int DepartmentId,UpdateEmployeeDto dto);
         Task<bool> SetPrimary(int EmployeeId, int DepartmentId);
         Task<bool> UpdateDepartmentInfoAsync(int employeeId,int departmentId,UpdateEmployeeDto dto);
         Task<bool> UpdateAsync(int id,UpdateEmployeeDto dto);

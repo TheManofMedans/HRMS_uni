@@ -63,7 +63,13 @@ namespace HRMS.API.Controllers
             await _employeeService.AddToDepartmentAsync(Employeeid, DepartmentId,dto);
             return NoContent();
         }
-        [HttpPut("{empId}/department/{departmentId}")]
+        [HttpPut("{employeeId}/department/{departmentId}")]
+        public async Task<IActionResult> ChangeEmployeeRelation (int employeeId, int departmentId, [FromBody] UpdateEmployeeDto dto)
+        {
+            await _employeeService.ChangeDepartmentRelationAsync(employeeId, departmentId,dto);
+            return NoContent();
+        }
+        [HttpDelete("{empId}/department/{departmentId}")]
         public async Task<IActionResult> RemoveFromDepartment(int empId,int departmentId)
         {
             await _employeeService.RemoveFromDepartmentAsync(empId, departmentId);
