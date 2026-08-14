@@ -6,14 +6,9 @@ using System.Threading.Tasks;
 
 namespace HRMS.domain.Enums
 {
-    public enum RequestType
+    public enum GenderType
     {
-        Leave,
-        Remote_Work,
-        Equipment,
-        Shift_Change,
-        Mission,
-        OverTime,
-        Other
+        Male,
+        Female
     }
 }
