@@ -17,6 +17,7 @@ namespace HRMS.Application.Interfaces.Services
         Task<IEnumerable<AttendanceResponseDto>> GetByEmployeeAndStatusAsync(int EmployeeId, AttendanceStatus status);
         Task<AttendanceResponseDto> CreateAsync(CreateAttendanceDto dto);
         Task<bool> UpdateAsync(int id,UpdateAttendanceDto dto);
+        Task<bool> HighClearanceUpdateAsync(int id, UpdateAttendanceDto dto);
         Task<bool> DeleteAsync(int id);
     }
 }

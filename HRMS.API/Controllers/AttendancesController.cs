@@ -59,6 +59,12 @@ namespace HRMS.API.Controllers
             await _attendanceService.UpdateAsync(id,dto);
             return NoContent();
         }
+        [HttpPut("Clearance/{id}")]
+        public async Task<IActionResult> HighClearanceUpdate(int id, [FromBody] UpdateAttendanceDto dto)
+        {
+            await _attendanceService.HighClearanceUpdateAsync(id,dto);
+            return NoContent();
+        }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

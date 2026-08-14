@@ -21,13 +21,15 @@ namespace HRMS.API.Controllers
         private readonly IConfiguration _config;
         private readonly IUserRepository _userRepository;
         private readonly IEmployeeRepository _employeerepository;
-        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration config,IUserRepository userRepository, IEmployeeRepository employeerepository)
+        private readonly ICompanyRepository _companyRepository;
+        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration config,IUserRepository userRepository, IEmployeeRepository employeerepository, ICompanyRepository companyRepository)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _config = config;
             _userRepository = userRepository;
             _employeerepository = employeerepository;
+            _companyRepository = companyRepository;
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
@@ -67,6 +69,33 @@ namespace HRMS.API.Controllers
             {
                 var errors = string.Join(";",result.Errors.Select(e => e.Description));
                 return BadRequest(errors);
+            }
+            if (dto.CompanyId != null)
+            {
+                var company = await _companyRepository.GetByIdAsync(dto.CompanyId.Value);
+                if (company == null)
+                {
+                    throw new NotFoundException(nameof(company),dto.CompanyId.Value);
+                }
+                if (dto.Role != null)
+                {
+                    user.UserCompanies.Add(new UserCompany
+                    {
+                        User = user,
+                        Company = company,
+                        Role = dto.Role.Value
+                    });
+                    _userRepository.Update(user);
+                    var isadded = await _userRepository.SaveChangesAsync();
+                    if (!isadded)
+                    {
+                        throw new Exception("Error While adding the user to a company!");
+                    }
+                }
+                else
+                {
+                    throw new Exception("Cant add a company without Role!");
+                }
             }
             return Ok(new { user.Id, user.Email });
         }

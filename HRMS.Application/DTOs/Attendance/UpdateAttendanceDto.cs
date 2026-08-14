@@ -9,6 +9,8 @@ namespace HRMS.Application.DTOs.Attendance
 {
     public class UpdateAttendanceDto
     {
+        public int? ShiftId { get; set; }
+        public AttendanceStatus? attendanceStatus { get; set; }
         public DateTime? ClockedIn { get; set; }
         public DateTime? ClockedOut { get; set; }
     }

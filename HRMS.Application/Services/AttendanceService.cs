@@ -151,6 +151,42 @@ namespace HRMS.Application.Services
             _attendanceRepository.Update(Attendance);
             return await _attendanceRepository.SaveChangesAsync();
         }
+        public async Task<bool> HighClearanceUpdateAsync(int id, UpdateAttendanceDto dto)
+        {
+            var attendance = await _attendanceRepository.GetByIdAsync(id);
+            if (attendance == null)
+            {
+                throw new NotFoundException(nameof(attendance),id);
+            }
+            if (dto.ShiftId != null)
+            {
+                var shift = await _shiftRepository.GetByIdAsync(dto.ShiftId.Value);
+                if (shift == null)
+                {
+                    throw new NotFoundException(nameof(shift),dto.ShiftId);
+                }
+                attendance.Shift = shift;
+            }
+            if (dto.ClockedIn != null)
+            {
+                attendance.Clockedin = dto.ClockedIn.Value;
+            }
+            if (dto.ClockedOut != null)
+            {
+                attendance.Clockedout = dto.ClockedOut.Value;
+            }
+            if (dto.attendanceStatus != null)
+            {
+                attendance.AttendanceStatus = dto.attendanceStatus.Value;
+            }
+            _attendanceRepository.Update(attendance);
+            var isadded = await _attendanceRepository.SaveChangesAsync();
+            if (!isadded)
+            {
+                throw new Exception("Could not update attendance!");
+            }
+            return isadded;
+        }
         public async Task<bool> DeleteAsync(int id)
         {
             var Attendance = await _attendanceRepository.GetByIdAsync(id);
