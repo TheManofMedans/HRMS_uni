@@ -13,6 +13,7 @@ namespace HRMS.Application.DTOs.Employee
         public string? LastName { get; set; } = string.Empty;
         public string? Address { get; set; } = string.Empty;
         public string? Phone { get; set; } = string.Empty;
+        public GenderType? Gender { get; set; }
         public string? Salary {  get; set; } = string.Empty;
         public EmploymentStatus? EmploymentStatus { get; set; }
     }

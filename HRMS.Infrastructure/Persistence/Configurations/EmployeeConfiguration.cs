@@ -20,6 +20,7 @@ namespace HRMS.Infrastructure.Persistence.Configurations
             builder.Property(e => e.LastName).IsRequired().HasMaxLength(100);
             builder.Property(e => e.Email).IsRequired().HasMaxLength(256);
             builder.Property(e => e.Phone).IsRequired().HasMaxLength(100);
+            builder.Property(e => e.Gender).IsRequired();
 
             builder.HasIndex(e =>e.Email).IsUnique();
             builder.HasIndex(e => e.Phone).IsUnique();

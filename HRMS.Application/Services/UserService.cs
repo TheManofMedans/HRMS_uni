@@ -5,6 +5,7 @@ using HRMS.Application.Interfaces.Repositories;
 using HRMS.Application.Interfaces.Services;
 using HRMS.domain.Entities;
 using HRMS.domain.Enums;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,14 +17,16 @@ namespace HRMS.Application.Services
 {
     public class UserService : IUserService
     {
+        private readonly UserManager<User> _userManager;
         private readonly IUserRepository _userRepository;
         private readonly ICompanyRepository _companyRepository;
         private readonly IMapper _mapper;
-        public UserService(IUserRepository userRepository, IMapper mapper,ICompanyRepository companyRepository)
+        public UserService(IUserRepository userRepository, IMapper mapper,ICompanyRepository companyRepository,UserManager<User> userManager)
         {
             _userRepository = userRepository;
             _mapper = mapper;
             _companyRepository = companyRepository;
+            _userManager = userManager;
         }
         public async Task<UserResponseDto?> GetByIdAsync(int id)
         {
@@ -43,11 +46,28 @@ namespace HRMS.Application.Services
             {
                 throw new NotFoundException(nameof(user),id);
             }
-            user.FirstName = dto.FirstName;
-            user.LastName = dto.LastName;
-            user.PhoneNumber = dto.Phone;
-            _userRepository.Update(user);
-            return await _userRepository.SaveChangesAsync();
+            if (dto.FirstName != null)
+            {
+                user.FirstName = dto.FirstName;
+            }
+            if (dto.LastName != null)
+            {
+                user.LastName = dto.LastName;
+            }
+            if (dto.Phone != null)
+            {
+                user.PhoneNumber = dto.Phone;
+            }
+            if (dto.Gender != null)
+            {
+                user.Gender = dto.Gender.Value;
+            }
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                throw new Exception("Could not update user info!");
+            }
+            return true;
         }
         public async Task<bool> DeleteUserAsync(int id)
         {
@@ -56,8 +76,12 @@ namespace HRMS.Application.Services
             {
                 throw new NotFoundException(nameof(user), id);
             }
-            _userRepository.Delete(user);
-            return await _userRepository.SaveChangesAsync();
+            var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+                throw new Exception("Couldnt delete the user!");
+            }
+            return true;
         }
     }
 }

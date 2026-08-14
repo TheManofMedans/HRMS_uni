@@ -14,6 +14,7 @@ namespace HRMS.Application.DTOs.Auth
         public string LastName { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
         public string SSN {  get; set; } = string.Empty;
+        public GenderType Gender { get; set; }
         public string Password { get; set; } = string.Empty;
         public int? CompanyId { get; set; }
         public CompanyRole? Role { get; set; }

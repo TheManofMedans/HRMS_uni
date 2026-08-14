@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HRMS.domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,9 @@ namespace HRMS.Application.DTOs.User
 {
     public class UpdateUserDto
     {
-        public string FirstName { get; set; } = string.Empty;
-        public string LastName { get; set; } = string.Empty;
-        public string Phone { get; set; } = string.Empty;
+        public string? FirstName { get; set; } = string.Empty;
+        public string? LastName { get; set; } = string.Empty;
+        public string? Phone { get; set; } = string.Empty;
+        public GenderType? Gender { get; set; }
     }
 }

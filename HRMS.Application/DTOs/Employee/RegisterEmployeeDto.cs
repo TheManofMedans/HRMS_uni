@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HRMS.domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,7 @@ namespace HRMS.Application.DTOs.Employee
         public string PhoneNumber { get; set; } = string.Empty;
         public string SSN {  get; set; } = string.Empty;
         public string Address {  get; set; } = string.Empty;
+        public GenderType Gender { get; set; }
         public DateTime HireDate { get; set; }
         public string Password {  get; set; } = string.Empty;
     }

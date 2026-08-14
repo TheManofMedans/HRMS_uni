@@ -18,6 +18,7 @@ namespace HRMS.Application.Validators
             RuleFor(r => r.PhoneNumber).NotEmpty();
             RuleFor(r => r.Password).NotEmpty().MinimumLength(8);
             RuleFor(r => r.SSN).NotEmpty().MinimumLength(10);
+            RuleFor(r => r.Gender).NotEmpty();
         }
     }
 }

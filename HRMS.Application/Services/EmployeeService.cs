@@ -174,6 +174,11 @@ namespace HRMS.Application.Services
                 employee.Phone = dto.Phone;
                 user.PhoneNumber = dto.Phone;
             }
+            if (dto.Gender != null)
+            {
+                employee.Gender = dto.Gender.Value;
+                user.Gender = dto.Gender.Value;
+            }
             _employeeRepository.Update(employee);
             _userRepository.Update(user);
             var emp = await _employeeRepository.SaveChangesAsync();
@@ -237,6 +242,7 @@ namespace HRMS.Application.Services
                 SSN = dto.SSN,
                 UserName = dto.Email,
                 PhoneNumber = dto.PhoneNumber,
+                Gender = dto.Gender,
             };
             var result = await _userManager.CreateAsync(user,dto.Password);
             if (!result.Succeeded)

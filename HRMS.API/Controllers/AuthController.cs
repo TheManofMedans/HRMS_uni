@@ -62,7 +62,8 @@ namespace HRMS.API.Controllers
                 Email = dto.Email,
                 PhoneNumber = dto.PhoneNumber,
                 SSN = dto.SSN,
-                UserName = dto.Email
+                UserName = dto.Email,
+                Gender = dto.Gender,
             };
             var result = await _userManager.CreateAsync(user, dto.Password);
             if (!result.Succeeded)
