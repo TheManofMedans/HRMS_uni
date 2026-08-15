@@ -23,16 +23,16 @@ namespace HRMS.API.Controllers
             var Departments = await _departmentService.GetAllAsync();
             return Ok(Departments);
         }
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        [HttpGet("{departmentId}")]
+        public async Task<IActionResult> GetById(int departmentId)
         {
-            var department = await _departmentService.GetByIdAsync(id);
+            var department = await _departmentService.GetByIdAsync(departmentId);
             return department is null ? NotFound() : Ok(department);
         }
-        [HttpGet("company/{Companyid}")]
-        public async Task<IActionResult> GetByCompanyId(int Companyid)
+        [HttpGet("company/{companyId}")]
+        public async Task<IActionResult> GetByCompanyId(int companyId)
         {
-            var departments = await _departmentService.GetByCompanyIdAsync(Companyid);
+            var departments = await _departmentService.GetByCompanyIdAsync(companyId);
             return Ok(departments);
         }
         [HttpPost]
@@ -46,16 +46,18 @@ namespace HRMS.API.Controllers
             var created = await _departmentService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetById),new {id = created.Id},created);
         }
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateDepartmentDto dto)
+        [HttpPut("{departmentId}")]
+        [Authorize(Policy = "Department_HRManager")]
+        public async Task<IActionResult> Update(int departmentId, [FromBody] UpdateDepartmentDto dto)
         {
-            await _departmentService.UpdateAsync(id,dto);
+            await _departmentService.UpdateAsync(departmentId,dto);
             return NoContent();
         }
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete("{departmentId}")]
+        [Authorize(Policy = "Department_HRManager")]
+        public async Task<IActionResult> Delete(int departmentId)
         {
-            await _departmentService.DeleteAsync(id);
+            await _departmentService.DeleteAsync(departmentId);
             return NoContent();
         }
     }

@@ -55,6 +55,14 @@ namespace HRMS.API.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
+            if (await _userRepository.EmailExistsAsync(dto.Email))
+            {
+                throw new RepeatDataException("This Email already exists!");
+            }
+            if (await _userRepository.SSNExistsAsync(dto.SSN))
+            {
+                throw new RepeatDataException("This SSN already exists!");
+            }
             var user = new User
             {
                 FirstName = dto.FirstName,
@@ -108,7 +116,7 @@ namespace HRMS.API.Controllers
                 new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
-            var userCompanies = user.UserCompanies; // requires User to be loaded with .Include(u => u.UserCompanies)
+            var userCompanies = user.UserCompanies; 
             foreach (var uc in userCompanies)
             {
                 claims.Add(new Claim("company_role", $"{uc.CompanyId}:{uc.Role}"));

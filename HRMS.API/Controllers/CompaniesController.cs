@@ -4,6 +4,8 @@ using HRMS.Application.Interfaces.Services;
 using HRMS.Application.DTOs;
 using HRMS.domain.Enums;
 using HRMS.Application.DTOs.Company;
+using Microsoft.AspNetCore.Authorization;
+using HRMS.API.Extensions;
 
 namespace HRMS.API.Controllers
 {
@@ -22,10 +24,11 @@ namespace HRMS.API.Controllers
             var companies = await _companyService.GetAllAsync();
             return Ok(companies);
         }
-        [HttpGet("{id}")]
-        public async  Task<IActionResult> GetById(int id)
+        [HttpGet("{companyId}")]
+        [Authorize(Policy = "Company_RequireCEO")]
+        public async  Task<IActionResult> GetById(int companyId)
         {
-            var company = await _companyService.GetByIdAsync(id);
+            var company = await _companyService.GetByIdAsync(companyId);
             return company is null ? NotFound() : Ok(company);
         }
         [HttpGet("User/{userId}")]
@@ -41,6 +44,7 @@ namespace HRMS.API.Controllers
             return company is null ? NotFound() : Ok(company);
         }
         [HttpPost("{companyId}/User/{userId}")]
+        [Authorize(Policy = "Company_RequireCEO")]
         public async Task<IActionResult> AddUserToCompany(int companyId, int userId,[FromQuery]CompanyRole role)
         {
             var created = await _companyService.AddUsertoCompanyAsync(companyId, userId, role);
@@ -52,16 +56,18 @@ namespace HRMS.API.Controllers
             var created = await _companyService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetById),new {id = created.Id},created);
         }
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateCompanyDto dto)
+        [HttpPut("{companyId}")]
+        [Authorize(Policy = "Company_RequireCEO")]
+        public async Task<IActionResult> Update(int companyId, [FromBody] UpdateCompanyDto dto)
         {
-            await _companyService.UpdateAsync(id,dto);
+            await _companyService.UpdateAsync(companyId,dto);
             return NoContent();
         }
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete("{companyId}")]
+        [Authorize(Policy = "Company_RequireCEO")]
+        public async Task<IActionResult> Delete(int companyId)
         {
-            await _companyService.DeleteAsync(id);
+            await _companyService.DeleteAsync(companyId);
             return NoContent();
         }
     }
