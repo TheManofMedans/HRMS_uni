@@ -51,16 +51,16 @@ namespace HRMS.API.Controllers
             await _employeeService.DeleteAsync(id);
             return NoContent();
         }
-        [HttpPost("{Employeeid}/departments/{DepartmentId}/primary")]
-        public async Task<IActionResult> SetPrimary(int Employeeid,int DepartmentId)
+        [HttpPost("{employeeId}/departments/{departmentId}/primary")]
+        public async Task<IActionResult> SetPrimary(int employeeId,int departmentId)
         {
-            await _employeeService.SetPrimary(Employeeid, DepartmentId);
+            await _employeeService.SetPrimary(employeeId, departmentId);
             return NoContent();
         }
-        [HttpPost("{Employeeid}/department/{DepartmentId}")]
-        public async Task<IActionResult> AddToDepartmentAsync(int Employeeid,int DepartmentId, [FromBody] UpdateEmployeeDto dto)
+        [HttpPost("{employeeId}/department/{departmentId}")]
+        public async Task<IActionResult> AddToDepartmentAsync(int employeeId,int departmentId, [FromBody] UpdateEmployeeDto dto)
         {
-            await _employeeService.AddToDepartmentAsync(Employeeid, DepartmentId,dto);
+            await _employeeService.AddToDepartmentAsync(employeeId, departmentId,dto);
             return NoContent();
         }
         [HttpPut("{employeeId}/department/{departmentId}")]
