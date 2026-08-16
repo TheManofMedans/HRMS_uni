@@ -4,6 +4,7 @@ using HRMS.Application.DTOs;
 using HRMS.Application.Interfaces.Services;
 using HRMS.Application.Interfaces.Repositories;
 using HRMS.Application.DTOs.Shift;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HRMS.API.Controllers
 {
@@ -17,6 +18,7 @@ namespace HRMS.API.Controllers
             _shiftService = shiftService;
         }
         [HttpGet]
+        [Authorize(Roles = "SuperAdmin")]
         public async Task<IActionResult> GetAll()
         {
             var shifts = await _shiftService.GetAllAsync();

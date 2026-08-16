@@ -15,6 +15,11 @@ namespace HRMS.API.Authorization
         }
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, OwnershipOrRoleRequirement requirement)
         {
+            if (context.User.IsInRole("SuperAdmin"))
+            {
+                context.Succeed(requirement);
+                return;
+            }
             var routeValues = _contextAccessor.HttpContext?.Request.RouteValues;
             if (routeValues == null ||! routeValues.TryGetValue(requirement.RouteParameterName,out var resourceIdObj))
             {

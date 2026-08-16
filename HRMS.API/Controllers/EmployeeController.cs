@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using HRMS.Application.DTOs;
 using HRMS.Application.Interfaces.Services;
 using HRMS.Application.DTOs.Employee;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HRMS.API.Controllers
 {
@@ -70,6 +71,7 @@ namespace HRMS.API.Controllers
             return NoContent();
         }
         [HttpDelete("{empId}/department/{departmentId}")]
+        [Authorize(Policy = "Department_RequireCEO")]
         public async Task<IActionResult> RemoveFromDepartment(int empId,int departmentId)
         {
             await _employeeService.RemoveFromDepartmentAsync(empId, departmentId);

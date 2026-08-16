@@ -4,6 +4,7 @@ using HRMS.Application.DTOs;
 using HRMS.Application.Interfaces.Services;
 using HRMS.domain.Enums;
 using HRMS.Application.DTOs.Request;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HRMS.API.Controllers
 {
@@ -17,6 +18,7 @@ namespace HRMS.API.Controllers
             _requestService = requestService;
         }
         [HttpGet]
+        [Authorize(Roles = "SuperAdmin")]
         public async Task<IActionResult> GetAll()
         {
             var requests = await _requestService.GetAllAsync();

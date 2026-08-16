@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using HRMS.Application.Interfaces.Repositories;
 using HRMS.Application.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HRMS.API.Controllers
 {
@@ -53,6 +54,7 @@ namespace HRMS.API.Controllers
             return Ok(new { token });
         }
         [HttpPost("Register")]
+        [Authorize(Roles = "SuperAdmin")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
             if (await _userRepository.EmailExistsAsync(dto.Email))
@@ -125,6 +127,11 @@ namespace HRMS.API.Controllers
             if (employee is not null)
             {
                 claims.Add(new Claim("employee_id", $"{employee.Id}"));
+            }
+            var roles = await _userManager.GetRolesAsync(user);
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
             }
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
