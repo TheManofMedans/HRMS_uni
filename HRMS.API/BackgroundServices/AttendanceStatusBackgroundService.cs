@@ -6,11 +6,12 @@ namespace HRMS.API.BackgroundServices
 {
     public class AttendanceStatusBackgroundService : BackgroundService
     {
-        private readonly ILogger _logger;
+        private readonly ILogger<AttendanceStatusBackgroundService> _logger;
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly TimeSpan _interval = TimeSpan.FromHours(1);
         private readonly TimeSpan graceperiod = TimeSpan.FromMinutes(5);
-        public AttendanceStatusBackgroundService (IServiceScopeFactory scopeFactory,ILogger logger)
+        private readonly TimeSpan AbsentPeriod = TimeSpan.FromMinutes(30);
+        public AttendanceStatusBackgroundService (IServiceScopeFactory scopeFactory,ILogger<AttendanceStatusBackgroundService> logger)
         {
             _scopeFactory = scopeFactory;
             _logger = logger;
@@ -19,7 +20,7 @@ namespace HRMS.API.BackgroundServices
         {
             try
             {
-
+                await UpdateAttendanceStatusAsync();
             }
             catch (Exception ex)
             {
@@ -33,14 +34,56 @@ namespace HRMS.API.BackgroundServices
             var attendancerepository = scope.ServiceProvider.GetRequiredService<IAttendanceRepository>();
             var now = DateTime.UtcNow;
             var pendingattendances = await attendancerepository.GetByStatusAsync(AttendanceStatus.Pending);
+            int updatecount = 0;
             foreach ( var attendance in pendingattendances )
             {
+                var shiftstart = CalculateShiftStart(attendance.Date, attendance.Shift.StartTime);
                 var shiftend = CalculateShiftEnd(attendance.Date,attendance.Shift.StartTime,attendance.Shift.EndTime);
                 if (now < shiftend)
                 {
                     continue;
                 }
+                if (now < shiftstart)
+                {
+                    continue;
+                }
+                if (attendance.Clockedin is null)
+                {
+                    attendance.AttendanceStatus = AttendanceStatus.Absent;
+                }
+                else if (attendance.Clockedout is null)
+                { 
+                    attendance.AttendanceStatus = AttendanceStatus.NoClockOut;
+                }
+                else
+                {
+                    var late = shiftstart.Add(graceperiod);
+                    var absent = shiftstart.Add(AbsentPeriod);
+                    if (now >= late &&  now < absent)
+                    {
+                        attendance.AttendanceStatus = AttendanceStatus.Late;
+                    }
+                    else if (now >= absent)
+                    {
+                        attendance.AttendanceStatus = AttendanceStatus.Absent;
+                    }
+                    else
+                    {
+                        attendance.AttendanceStatus = AttendanceStatus.Present;
+                    }
+                }
+                attendancerepository.Update(attendance);
+                updatecount++;
             }
+            if (updatecount > 0)
+            {
+                var isadded = await attendancerepository.SaveChangesAsync();
+                if (!isadded)
+                {
+                    throw new Exception("Could not save changes to attendances!");
+                }
+            }
+            _logger.LogInformation("Attendance status check completed. {Count} records updated.",updatecount);
         }
         private static DateTime CalculateShiftEnd(DateTime date, TimeSpan shiftstart, TimeSpan shiftend)
         {
@@ -50,6 +93,11 @@ namespace HRMS.API.BackgroundServices
                end = end.AddDays(1);
             }
             return end;
+        }
+        private static DateTime  CalculateShiftStart(DateTime date,TimeSpan startShift)
+        {
+            var shiftstart = date.Date.Add(startShift);
+            return shiftstart;
         }
     }
 }

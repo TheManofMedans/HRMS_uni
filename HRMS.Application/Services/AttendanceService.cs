@@ -138,7 +138,7 @@ namespace HRMS.Application.Services
             }
             if (DateTime.UtcNow - dto.ClockedIn < TimeSpan.FromMinutes(5))
             {
-                Attendance.AttendanceStatus = AttendanceStatus.NoClockOut;
+                Attendance.AttendanceStatus = AttendanceStatus.Pending;
             }
             if (DateTime.UtcNow - dto.ClockedIn > TimeSpan.FromMinutes(5))
             {
