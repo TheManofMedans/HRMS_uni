@@ -18,12 +18,15 @@ namespace HRMS.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
+        private readonly RoleManager<IdentityRole<int>> _roleManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IConfiguration _config;
         private readonly IUserRepository _userRepository;
         private readonly IEmployeeRepository _employeerepository;
         private readonly ICompanyRepository _companyRepository;
-        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration config,IUserRepository userRepository, IEmployeeRepository employeerepository, ICompanyRepository companyRepository)
+        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration config
+            ,IUserRepository userRepository, IEmployeeRepository employeerepository, ICompanyRepository companyRepository
+            , RoleManager<IdentityRole<int>> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -31,6 +34,7 @@ namespace HRMS.API.Controllers
             _userRepository = userRepository;
             _employeerepository = employeerepository;
             _companyRepository = companyRepository;
+            _roleManager = roleManager;
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
@@ -109,6 +113,22 @@ namespace HRMS.API.Controllers
                 }
             }
             return Ok(new { user.Id, user.Email });
+        }
+        [HttpPost("Add-to-admin/{userId}")]
+        [Authorize(Roles = "SuperAdmin")]
+        public async Task<IActionResult> AddtoAdminRole(int userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+            {
+                throw new NotFoundException(nameof(user),userId);
+            }
+            var isadded = await _userManager.AddToRoleAsync(user, "SuperAdmin");
+            if (!isadded.Succeeded)
+            {
+                throw new Exception("Error in adding to role in database!");
+            }
+            return Ok();
         }
         private async Task<string> GenerateJwtToken(User user)
         {
