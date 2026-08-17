@@ -66,6 +66,8 @@ builder.Services.AddScoped<ShiftCompanyResolver>();
 builder.Services.AddScoped<AttendanceCompanyResolver>();
 builder.Services.AddScoped<RequestCompanyResolver>();
 builder.Services.AddScoped<IAuthorizationHandler, CompanyRoleAuthorizationHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, EmployeeCompanyAuthorizationHandler>();
+builder.Services.AddScoped<IAuthorizationHandler,OwnerOrRoleAuthorizationHandler>();
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Company_RequireCEO", policy =>
@@ -78,22 +80,24 @@ builder.Services.AddAuthorization(options =>
         policy.Requirements.Add(new CompanyRoleRequirement(CompanyRole.CEO, typeof(DepartmentCompanyResolver), "departmentId")));
     options.AddPolicy("Department_RequireHRManager", policy =>
         policy.Requirements.Add(new CompanyRoleRequirement(CompanyRole.HRManager, typeof(DepartmentCompanyResolver), "departmentId")));
-
     options.AddPolicy("Shift_RequireHRManager", policy =>
         policy.Requirements.Add(new CompanyRoleRequirement(CompanyRole.HRManager, typeof(ShiftCompanyResolver), "shiftId")));
-
     options.AddPolicy("Attendance_RequireHRManager", policy =>
         policy.Requirements.Add(new CompanyRoleRequirement(CompanyRole.HRManager, typeof(AttendanceCompanyResolver), "id")));
-
     options.AddPolicy("Request_RequireHRManager", policy =>
         policy.Requirements.Add(new CompanyRoleRequirement(CompanyRole.HRManager, typeof(RequestCompanyResolver), "id")));
     options.AddPolicy("Attendance_OwnOrHRManager", policy =>
         policy.Requirements.Add(new OwnershipOrRoleRequirement(typeof(AttendanceOwnerResolver)
             , typeof(AttendanceCompanyResolver),CompanyRole.HRManager , "id")));
-
     options.AddPolicy("Request_OwnOrHRManager", policy =>
         policy.Requirements.Add(new OwnershipOrRoleRequirement(
             typeof(RequestOwnerResolver), typeof(RequestCompanyResolver), CompanyRole.HRManager, "id")));
+    options.AddPolicy("Employee_RequireCEO", policy =>
+        policy.Requirements.Add(new EmployeeCompanyRequirement(CompanyRole.CEO)));
+    options.AddPolicy("Employee_RequireHRManager", policy =>
+        policy.Requirements.Add(new EmployeeCompanyRequirement(CompanyRole.HRManager)));
+    options.AddPolicy("Employee_RequireHREmployee", policy =>
+        policy.Requirements.Add(new EmployeeCompanyRequirement(CompanyRole.HREmployee)));
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

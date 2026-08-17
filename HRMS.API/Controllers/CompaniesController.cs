@@ -19,6 +19,7 @@ namespace HRMS.API.Controllers
             _companyService = companyService;
         }
         [HttpGet]
+        [Authorize(Roles = "SuperAdmin")]
         public async Task<IActionResult> GetAll()
         {
             var companies = await _companyService.GetAllAsync();
@@ -32,6 +33,7 @@ namespace HRMS.API.Controllers
             return company is null ? NotFound() : Ok(company);
         }
         [HttpGet("User/{userId}")]
+        [Authorize(Roles = "SuperAdmin")]
         public async Task<IActionResult> GetByUser(int userId)
         {
             var companies = await _companyService.GetWithUserAsync(userId);
@@ -51,6 +53,7 @@ namespace HRMS.API.Controllers
             return Ok(created);
         }
         [HttpPost]
+        [Authorize(Roles = "SuperAdmin")]
         public async Task<IActionResult> Create([FromBody] CreateCompanyDto dto)
         {
             var created = await _companyService.CreateAsync(dto);
