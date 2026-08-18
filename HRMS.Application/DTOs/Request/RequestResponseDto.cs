@@ -17,7 +17,7 @@ namespace HRMS.Application.DTOs.Request
         public DateTime EndDate { get; set; }
         public DateTime? ReviewedAt { get; set; }
         public RequestStatus Status { get; set; }
-        public RequestType RequestType { get; set; }
+        public RequestType Type { get; set; }
         public EmployeeDto Employee { get; set; }
         
 

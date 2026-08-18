@@ -8,6 +8,7 @@ using HRMS.Application.Interfaces.Repositories;
 using HRMS.domain.Enums;
 using HRMS.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using HRMS.Application.Exceptions;
 
 namespace HRMS.Infrastructure.Repositories
 {
@@ -64,15 +65,16 @@ namespace HRMS.Infrastructure.Repositories
                 .AsQueryable();
             if (id.HasValue)
             {
-                query.Where(r => r.EmployeeId == id);
+                //throw new NotFoundException(nameof(id),id);
+               query = query.Where(r => r.EmployeeId == id);
             }
             if (status.HasValue)
             {
-                query.Where (r => r.Status == status);
+                query = query.Where (r => r.Status == status);
             }
             if (type.HasValue)
             {
-                query.Where(r => r.Type == type);
+                query = query.Where(r => r.Type == type);
             }
             return await query.ToListAsync();
         }

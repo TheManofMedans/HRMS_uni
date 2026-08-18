@@ -73,7 +73,7 @@ namespace HRMS.Application.Services
         public async Task<RequestResponseDto> CreateAsync(CreateRequestDto requestDto)
         {
             var request = _mapper.Map<Request>(requestDto);
-            var employee = await _employeeRepository.GetbyIdAsync(requestDto.EmployeeId);
+            var employee = await _employeeRepository.GetByIdWithDepartmentsAsync(requestDto.EmployeeId);
             if (employee == null)
             {
                 throw new NotFoundException("Employee is not found!");
@@ -81,6 +81,10 @@ namespace HRMS.Application.Services
             if (request.EndDate < DateTime.Today)
             {
                 throw new ConflictException("The End Date is before Today!");
+            }
+            if (!employee.EmployeeDepartments.Any(ed => ed.DepartmentID == requestDto.DepartmentId))
+            {
+                throw new ConflictException("This Employee doesnt work in the selected department!");
             }
             request.EmployeeId = employee.Id;
             request.Status = RequestStatus.Pending;
