@@ -86,12 +86,17 @@ builder.Services.AddAuthorization(options =>
         policy.Requirements.Add(new CompanyRoleRequirement(CompanyRole.HRManager, typeof(AttendanceCompanyResolver), "id")));
     options.AddPolicy("Request_RequireHRManager", policy =>
         policy.Requirements.Add(new CompanyRoleRequirement(CompanyRole.HRManager, typeof(RequestCompanyResolver), "id")));
+    options.AddPolicy("Request_RequireHREmployee", policy =>
+        policy.Requirements.Add(new CompanyRoleRequirement(CompanyRole.HREmployee, typeof(RequestCompanyResolver), "id")));
     options.AddPolicy("Attendance_OwnOrHRManager", policy =>
         policy.Requirements.Add(new OwnershipOrRoleRequirement(typeof(AttendanceOwnerResolver)
             , typeof(AttendanceCompanyResolver),CompanyRole.HRManager , "id")));
     options.AddPolicy("Request_OwnOrHRManager", policy =>
         policy.Requirements.Add(new OwnershipOrRoleRequirement(
             typeof(RequestOwnerResolver), typeof(RequestCompanyResolver), CompanyRole.HRManager, "id")));
+    options.AddPolicy("Request_OwnOrHREmployee", policy =>
+        policy.Requirements.Add(new OwnershipOrRoleRequirement(typeof(RequestCompanyResolver), typeof(RequestOwnerResolver), CompanyRole.HREmployee,
+        "id")));
     options.AddPolicy("Employee_RequireCEO", policy =>
         policy.Requirements.Add(new EmployeeCompanyRequirement(CompanyRole.CEO)));
     options.AddPolicy("Employee_RequireHRManager", policy =>
