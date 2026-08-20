@@ -33,6 +33,10 @@ namespace HRMS.API.Authentication
             }
             var resolver = (ICompanyResolver)_serviceProvider.GetRequiredService(requirement.ResolverType);
             var companyId = await resolver.ResolveCompanyId(resourceId);
+            if (companyId == null)
+            {
+                return;
+            }
             var companyRoleClaims = context.User.Claims.Where(c => c.Type == "company_role");
             foreach(var claim in companyRoleClaims)
             {

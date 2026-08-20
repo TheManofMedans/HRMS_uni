@@ -31,6 +31,7 @@ namespace HRMS.API.Middleware
                 ConflictException => (HttpStatusCode.Conflict, "Conflict"),
                 RepeatDataException => (HttpStatusCode.Conflict,"Unauthorized Repeated Data"),
                 ValidationException => (HttpStatusCode.BadRequest,"Invalid Request"),
+                ForbiddenException => (HttpStatusCode.Forbidden,"Forbidden"),
                 _ => (HttpStatusCode.InternalServerError,"An unexpected Error Occured!")
             };
             if (StatusCode == HttpStatusCode.InternalServerError)

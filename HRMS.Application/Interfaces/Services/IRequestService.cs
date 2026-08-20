@@ -19,6 +19,7 @@ namespace HRMS.Application.Interfaces.Services
         Task<IEnumerable<RequestResponseDto>> GetWithDepartmentIdAsync(int departmentid);
         Task<IEnumerable<RequestResponseDto>> GetWithCustomDataAsync(int? EmployeeId, RequestStatus? Status, RequestType? Type);
         Task<RequestResponseDto> CreateAsync(CreateRequestDto dto);
+        Task UpdateByEmployeeAsync(int id, UpdateRequestDto dto);
         Task<bool> UpdateAsync(int id,UpdateRequestDto dto);
         Task<bool> DeleteAsync(int id);
     }

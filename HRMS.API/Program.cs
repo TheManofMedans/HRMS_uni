@@ -16,6 +16,7 @@ using HRMS.API.Authorization.Resolvers;
 using HRMS.API.Authorization;
 using Microsoft.OpenApi.Models;
 using HRMS.API.BackgroundServices;
+using HRMS.Application.Interfaces;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -60,6 +61,7 @@ builder.Services.AddAuthentication(options =>
         };
     });
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService,CurrentUserService>();
 builder.Services.AddScoped<CompanyCompanyResolver>();
 builder.Services.AddScoped<DepartmentCompanyResolver>();
 builder.Services.AddScoped<ShiftCompanyResolver>();
@@ -103,6 +105,8 @@ builder.Services.AddAuthorization(options =>
         policy.Requirements.Add(new EmployeeCompanyRequirement(CompanyRole.HRManager)));
     options.AddPolicy("Employee_RequireHREmployee", policy =>
         policy.Requirements.Add(new EmployeeCompanyRequirement(CompanyRole.HREmployee)));
+    options.AddPolicy("Employee_ViewOrEditScoped", policy =>
+        policy.Requirements.Add(new EmployeeCompanyRequirement(CompanyRole.HRManager)));
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

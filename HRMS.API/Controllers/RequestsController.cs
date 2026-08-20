@@ -18,7 +18,7 @@ namespace HRMS.API.Controllers
             _requestService = requestService;
         }
         [HttpGet]
-        [Authorize(Roles = "SuperAdmin")]
+        [Authorize]
         public async Task<IActionResult> GetAll()
         {
             var requests = await _requestService.GetAllAsync();
@@ -32,35 +32,35 @@ namespace HRMS.API.Controllers
             return request is null ? NotFound() : Ok(request);
         }
         [HttpGet("employee/{employeeId}")]
-        [Authorize(Policy = "Request_RequireHREmployee")]
+        [Authorize]
         public async Task<IActionResult> GetByEmployeeId(int employeeId)
         {
             var requests = await _requestService.GetByEmployeeIdAsync(employeeId);
             return Ok(requests);
         }
         [HttpGet("status/{status}")]
-        [Authorize(Policy = "Request_RequireHREmployee")]
+        [Authorize]
         public async Task<IActionResult> GetByStatus(RequestStatus status)
         {
             var requests = await _requestService.GetWithStatusAsync(status);
             return Ok(requests);
         }
         [HttpGet("type/{type}")]
-        [Authorize(Policy = "Request_RequireHREmployee")]
+        [Authorize]
         public async Task<IActionResult> GetByType(RequestType type)
         {
             var requests = await _requestService.GetWithTypeAsync(type);
             return Ok(requests);
         }
         [HttpGet("company/{companyId}")]
-        [Authorize(Policy = "Request_RequireHREmployee")]
+        [Authorize(Policy = "Company_RequireHREmployee")]
         public async Task<IActionResult> GetByCompanyId(int companyId)
         {
             var requests = await _requestService.GetWithCompanyIdAsync(companyId);
             return Ok(requests);
         }
         [HttpGet("department/{departmentId}")]
-        [Authorize(Policy = "Request_RequireHREmployee")]
+        [Authorize(Policy = "Department_RequireHRManager")]
         public async Task<IActionResult> GetByDepartmentId(int  departmentId)
         {
             var requests = await _requestService.GetWithDepartmentIdAsync(departmentId);
@@ -76,10 +76,10 @@ namespace HRMS.API.Controllers
             return Ok(requests);
         }
         [HttpPost]
-        [Authorize(Policy = "Request_OwnOrHRManager")]
+        //[Authorize(Policy = "Request_OwnOrHRManager")]
         public async Task<IActionResult> Create([FromBody] CreateRequestDto dto)
         {
-           var created = await _requestService.CreateAsync(dto);
+            var created = await _requestService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetById),new {id = created.Id},created);
         }
         [HttpPut("{id}")]
@@ -87,6 +87,13 @@ namespace HRMS.API.Controllers
         public async Task<IActionResult> Update(int id, [FromBody] UpdateRequestDto dto)
         {
             await _requestService.UpdateAsync(id, dto);
+            return NoContent();
+        }
+        [HttpPut("{id}/Employee")]
+        [Authorize]
+        public async Task<IActionResult> UpdateByEmployee(int id, [FromBody] UpdateRequestDto dto)
+        {
+            await _requestService.UpdateByEmployeeAsync(id, dto);
             return NoContent();
         }
         [HttpDelete("{id}")]

@@ -34,13 +34,14 @@ namespace HRMS.API.Authorization
             {
                 return;
             }
-            var employeeIdClaim = context.User.Claims.FirstOrDefault(c => c.Type == "employee_id").Value;
-            if (employeeIdClaim is not null && int.TryParse(employeeIdClaim,out var calleremployeeId) && calleremployeeId == employeeId)
+            var employeeIdClaim = context.User.Claims.FirstOrDefault(c => c.Type == "employee_id");
+            if (employeeIdClaim is not null && int.TryParse(employeeIdClaim.Value,out var calleremployeeId) && calleremployeeId == employeeId)
             {
                 context.Succeed(requirement);
                 return;
             }
-            if (!httpcontext.Request.Query.TryGetValue("companyId",out var companyId))
+            if (!httpcontext.Request.Query.TryGetValue("companyId",out var companyIdValues) || 
+                !int.TryParse(companyIdValues.ToString(),out var companyId))
             {
                 return;
             }
@@ -51,6 +52,10 @@ namespace HRMS.API.Authorization
                 return;
             }
             bool worksatcompany = employee.EmployeeDepartments.Any(ed => ed.Department.CompanyId == companyId);
+            if (!worksatcompany)
+            {
+                return;
+            }
             foreach (var claim in claims)
             {
                 var items = claim.Value.Split(":");

@@ -11,19 +11,23 @@ using HRMS.Application.Interfaces.Repositories;
 using HRMS.Application.DTOs.Request;
 using HRMS.Application.Exceptions;
 using HRMS.domain.Enums;
+using HRMS.Application.Interfaces;
+
 
 namespace HRMS.Application.Services
 {
     public class RequestService : IRequestService
     {
+        private readonly ICurrentUserService _currentUser;
         private readonly IMapper _mapper;
         private readonly IRequestRepository _requestRepository;
         private readonly IEmployeeRepository _employeeRepository;
-        public RequestService(IMapper mapper, IRequestRepository requestRepository, IEmployeeRepository employeeRepository)
+        public RequestService(IMapper mapper, IRequestRepository requestRepository, IEmployeeRepository employeeRepository,ICurrentUserService currentUser)
         {
             _mapper = mapper;
             _requestRepository = requestRepository;
             _employeeRepository = employeeRepository;
+            _currentUser = currentUser;
         }
         public async Task<RequestResponseDto?> GetByIdAsync(int id) 
         {
@@ -33,7 +37,8 @@ namespace HRMS.Application.Services
         public async Task<IEnumerable<RequestResponseDto>> GetAllAsync()
         {
             var Requests = await _requestRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<RequestResponseDto>>(Requests);
+            var visible = FilterVisible(Requests);
+            return _mapper.Map<IEnumerable<RequestResponseDto>>(visible);
         }
         public async Task<IEnumerable<RequestResponseDto>> GetByEmployeeIdAsync(int id)
         {
@@ -43,7 +48,8 @@ namespace HRMS.Application.Services
                 throw new NotFoundException(nameof(employee),id);
             }
             var requests = await _requestRepository.GetByEmployeeIdAsync(id);
-            return _mapper.Map<IEnumerable<RequestResponseDto>>(requests);
+            var filtered = FilterVisible(requests);
+            return _mapper.Map<IEnumerable<RequestResponseDto>>(filtered);
         }
         public async Task<IEnumerable<RequestResponseDto>> GetWithCompanyIdAsync(int companyId)
         {
@@ -58,34 +64,47 @@ namespace HRMS.Application.Services
         public async Task<IEnumerable<RequestResponseDto>> GetWithStatusAsync(RequestStatus status)
         {
             var requests = await _requestRepository.GetWithStatusAsync(status);
-            return _mapper.Map<IEnumerable<RequestResponseDto>>(requests);
+            var visible = FilterVisible(requests);
+            return _mapper.Map<IEnumerable<RequestResponseDto>>(visible);
         }
         public async Task<IEnumerable<RequestResponseDto>> GetWithTypeAsync(RequestType type)
         {
             var requests = await _requestRepository.GetWithTypeAsync(type);
-            return _mapper.Map<IEnumerable<RequestResponseDto>>(requests); 
+            var visible = FilterVisible(requests);
+            return _mapper.Map<IEnumerable<RequestResponseDto>>(visible); 
         }
         public async Task<IEnumerable<RequestResponseDto>> GetWithCustomDataAsync(int? EmployeeId, RequestStatus? Status, RequestType? Type)
         {
             var requests = await _requestRepository.GetWithCustomDataAsync(EmployeeId, Status, Type);
-            return _mapper.Map<IEnumerable<RequestResponseDto>>(requests);
+            var filtered = FilterVisible(requests);
+            return _mapper.Map<IEnumerable<RequestResponseDto>>(filtered);
         }
         public async Task<RequestResponseDto> CreateAsync(CreateRequestDto requestDto)
         {
-            var request = _mapper.Map<Request>(requestDto);
             var employee = await _employeeRepository.GetByIdWithDepartmentsAsync(requestDto.EmployeeId);
             if (employee == null)
             {
                 throw new NotFoundException("Employee is not found!");
             }
+            var membership = employee.EmployeeDepartments.FirstOrDefault(ed => ed.DepartmentID == requestDto.DepartmentId);
+            if (membership == null)
+            {
+                throw new ConflictException("This Employee doesnt work in the selected department!");
+            }
+            bool isOwn = _currentUser.EmployeeId == requestDto.EmployeeId;
+            bool hasSufficientRole = (_currentUser.IsSuperAdmin ||
+                _currentUser.CompanyRoles.TryGetValue(membership.Department.CompanyId, out var RoleValues) && Enum.TryParse<CompanyRole>(RoleValues, out var Role)
+                && Role <= CompanyRole.HREmployee);
+            if (!isOwn && !hasSufficientRole)
+            {
+                throw new ForbiddenException("You dont have authorizaion to add a request!");
+            }
+            var request = _mapper.Map<Request>(requestDto);
             if (request.EndDate < DateTime.Today)
             {
                 throw new ConflictException("The End Date is before Today!");
             }
-            if (!employee.EmployeeDepartments.Any(ed => ed.DepartmentID == requestDto.DepartmentId))
-            {
-                throw new ConflictException("This Employee doesnt work in the selected department!");
-            }
+
             request.EmployeeId = employee.Id;
             request.Status = RequestStatus.Pending;
             await _requestRepository.AddAsync(request);
@@ -124,6 +143,17 @@ namespace HRMS.Application.Services
             _requestRepository.Update(request);
             return await _requestRepository.SaveChangesAsync();
         }
+        public async Task UpdateByEmployeeAsync(int id, UpdateRequestDto dto)
+        {
+            var request = await _requestRepository.GetByIdAsync(id);
+            if (request is null)
+            {
+                throw new NotFoundException(nameof(Request),id);
+            }
+            bool isown = _currentUser.EmployeeId == request.EmployeeId;
+            bool hasSufficientRole = (_currentUser.IsSuperAdmin || (_currentUser.CompanyRoles.TryGetValue(request.Department.CompanyId,out var RoleValues)
+                && Enum.TryParse<CompanyRole>(RoleValues,out var Role) && Role <= CompanyRole.HREmployee));
+        }
         public async Task<bool> DeleteAsync(int id)
         {
             var request = await _requestRepository.GetByIdAsync(id);
@@ -133,6 +163,17 @@ namespace HRMS.Application.Services
             }
             _requestRepository.Delete(request);
             return await _requestRepository.SaveChangesAsync();
+        }
+        private IEnumerable<Request> FilterVisible(IEnumerable<Request> requests)
+        {
+            if (_currentUser.IsSuperAdmin)
+            {
+                return requests;
+            }
+            return requests.Where(r => r.EmployeeId == _currentUser.EmployeeId ||
+            (_currentUser.CompanyRoles.TryGetValue(r.DepartmentId != 0 ? r.Department.CompanyId : -1, out var role) &&
+            Enum.TryParse<CompanyRole>(role, out var parsedRole) &&
+            parsedRole <= CompanyRole.HREmployee)).ToList();
         }
     }
 }

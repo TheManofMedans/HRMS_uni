@@ -30,7 +30,7 @@ namespace HRMS.API.Authorization
                 return; 
             }
             var employeerIdClaim = context.User.Claims.FirstOrDefault(c => c.Type == "employee_id");
-            if (employeerIdClaim != null &&  int.TryParse(employeerIdClaim.ToString(),out var callerEmployeeId))
+            if (employeerIdClaim != null &&  int.TryParse(employeerIdClaim.Value.ToString(),out var callerEmployeeId))
             {
                 var ownerResolver =(IResourceOwnerResolver) _serviceProvider.GetRequiredService(requirement.OwnerResolverType);
                 var employeeId = await ownerResolver.ResolveEmployeeId(resourceId);

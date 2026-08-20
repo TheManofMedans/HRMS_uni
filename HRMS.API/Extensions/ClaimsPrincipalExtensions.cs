@@ -35,5 +35,21 @@ namespace HRMS.API.Extensions
             }
             return false;
         }
+        public static bool HasAnySufficientCompanyRole(this ClaimsPrincipal user, CompanyRole minimumRole)
+        {
+            var companyRoleClaims = user.Claims.Where(c => c.Type == "company_role");
+
+            foreach (var claim in companyRoleClaims)
+            {
+                var items = claim.Value.Split(':');
+                if (items.Length != 2) continue;
+                if (!Enum.TryParse<CompanyRole>(items[1], out var claimRole)) continue;
+
+                if (CompanyRoleHierarchy.Meets(claimRole, minimumRole))
+                    return true;
+            }
+
+            return false;
+        }
     }
 }
