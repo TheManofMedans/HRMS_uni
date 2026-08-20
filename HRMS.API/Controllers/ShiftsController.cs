@@ -27,6 +27,7 @@ namespace HRMS.API.Controllers
             return Ok(shifts);
         }
         [HttpGet("{id}")]
+        [Authorize(Policy = "Shift_RequireHREmployee")]
         public async Task<IActionResult> GetById(int id)
         {
             var shift = await _shiftService.GetByIdAsync(id);
@@ -40,9 +41,10 @@ namespace HRMS.API.Controllers
             return Ok(shifts);
         }
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Create([FromBody] CreateShiftDto dto)
         {
-            if (!User.HasAnySufficientCompanyRole(domain.Enums.CompanyRole.HRManager))
+            if (!User.IsInRole("SuperAdmin") &&!User.HasAnySufficientCompanyRole(domain.Enums.CompanyRole.HRManager))
             {
                 throw new ForbiddenException("You cannot create a new Shift!");
             }

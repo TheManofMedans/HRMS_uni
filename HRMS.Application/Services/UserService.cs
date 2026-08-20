@@ -41,10 +41,14 @@ namespace HRMS.Application.Services
 
         public async Task<bool> UpdateUserAsync(int id, UpdateUserDto dto)
         {
-            var user = await _userRepository.GetByIdAsync(id);
+            var user = await _userManager.FindByIdAsync(id.ToString());
             if (user is null)
             {
                 throw new NotFoundException(nameof(user),id);
+            }
+            if (dto.NewPassword != null && dto.CurrentPass != null)
+            {
+               await _userManager.ChangePasswordAsync(user, dto.CurrentPass, dto.NewPassword);
             }
             if (dto.FirstName != null)
             {
@@ -62,6 +66,7 @@ namespace HRMS.Application.Services
             {
                 user.Gender = dto.Gender.Value;
             }
+
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {

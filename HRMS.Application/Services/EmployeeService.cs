@@ -11,23 +11,27 @@ using AutoMapper;
 using HRMS.domain.Entities;
 using HRMS.Application.Exceptions;
 using Microsoft.AspNetCore.Identity;
+using HRMS.domain.Enums;
 
 namespace HRMS.Application.Services
 {
     public class EmployeeService : IEmployeeService
     {
+        private readonly ICurrentUserService _currentUser;
         private readonly UserManager<User> _userManager;
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IUserRepository _userRepository;
         private readonly IDepartmentRepository _departdmentRepository;
         private readonly IMapper _mapper;
-        public EmployeeService(IEmployeeRepository employeeRepository,IDepartmentRepository departdmentRepository, IMapper mapper, IUserRepository userRepository, UserManager<User> userManager)
+        public EmployeeService(IEmployeeRepository employeeRepository,IDepartmentRepository departdmentRepository, IMapper mapper, IUserRepository userRepository
+            , UserManager<User> userManager, ICurrentUserService currentUser)
         {
             _employeeRepository = employeeRepository;
             _departdmentRepository = departdmentRepository;
             _mapper = mapper;
             _userRepository = userRepository;
             _userManager = userManager;
+            _currentUser = currentUser;
         }
 
         public async Task<EmployeeResponseDto> CreateAsync(CreateEmployeeDto dto)
@@ -184,7 +188,8 @@ namespace HRMS.Application.Services
         public async Task<IEnumerable<EmployeeResponseDto>> GetAllAsync()
         {
             var employeelist = await _employeeRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<EmployeeResponseDto>>(employeelist);
+            var visible = FilterVisible(employeelist);
+            return _mapper.Map<IEnumerable<EmployeeResponseDto>>(visible);
         }
         public async Task<bool> UpdateAsync (int id,UpdateEmployeeDto dto)
         {
@@ -302,6 +307,28 @@ namespace HRMS.Application.Services
                 throw new Exception("Failed to add employee to the database");
             }
             return _mapper.Map<EmployeeResponseDto>(employee);
+        }
+        private IEnumerable<Employee> FilterVisible(IEnumerable<Employee> employees)
+        {
+            if (_currentUser.IsSuperAdmin)
+            {
+                return employees;
+            }
+            List<Employee> result = new List<Employee>();
+            foreach (var employee in employees)
+            {
+                var companies = employee.EmployeeDepartments.Select(e => e.Department.Company).ToList();
+                if(companies.Any(c => c is not null && (_currentUser.CompanyRoles.TryGetValue(c.Id, out var rolevalues) 
+                && Enum.TryParse<CompanyRole>(rolevalues, out var role) && role <= CompanyRole.HREmployee)))
+                {
+                    result.Add(employee);
+                }
+                if (_currentUser.EmployeeId == employee.Id)
+                {
+                    result.Add(employee);
+                }
+            }
+            return result;
         }
     }
 }

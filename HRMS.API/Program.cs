@@ -86,6 +86,8 @@ builder.Services.AddAuthorization(options =>
         policy.Requirements.Add(new CompanyRoleRequirement(CompanyRole.HREmployee, typeof(DepartmentCompanyResolver), "departmentId")));
     options.AddPolicy("Shift_RequireHRManager", policy =>
         policy.Requirements.Add(new CompanyRoleRequirement(CompanyRole.HRManager, typeof(ShiftCompanyResolver), "id")));
+    options.AddPolicy("Shift_RequireHREmployee", policy =>
+        policy.Requirements.Add(new CompanyRoleRequirement(CompanyRole.HREmployee, typeof(ShiftCompanyResolver), "id")));
     options.AddPolicy("Attendance_RequireHRManager", policy =>
         policy.Requirements.Add(new CompanyRoleRequirement(CompanyRole.HRManager, typeof(AttendanceCompanyResolver), "id")));
     options.AddPolicy("Request_RequireHRManager", policy =>
