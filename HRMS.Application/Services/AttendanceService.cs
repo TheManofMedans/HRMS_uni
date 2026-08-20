@@ -11,23 +11,27 @@ using HRMS.Application.Interfaces.Services;
 using AutoMapper;
 using HRMS.Application.DTOs.Attendance;
 using HRMS.Application.Exceptions;
+using HRMS.Application.Interfaces;
 
 namespace HRMS.Application.Services
 {
     public class AttendanceService : IAttendanceService
     {
+        private readonly ICurrentUserService _currentUser;
         private readonly IAttendanceRepository _attendanceRepository;
         private readonly IMapper _mapper;
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IShiftRepository _shiftRepository;
         private readonly IDepartmentRepository _departmentRepository;
-        public AttendanceService(IAttendanceRepository attendanceRepository, IMapper mapper, IEmployeeRepository employeeRepository, IShiftRepository shiftRepository, IDepartmentRepository departdmentRepository)
+        public AttendanceService(IAttendanceRepository attendanceRepository, IMapper mapper, IEmployeeRepository employeeRepository, IShiftRepository shiftRepository
+            , IDepartmentRepository departdmentRepository, ICurrentUserService currentUser)
         {
             _attendanceRepository = attendanceRepository;
             _mapper = mapper;
             _employeeRepository = employeeRepository;
             _shiftRepository = shiftRepository;
             _departmentRepository = departdmentRepository;
+            _currentUser = currentUser;
         }
         public async Task<AttendanceResponseDto?> GetByIdAsync(int id)
         {
@@ -37,7 +41,8 @@ namespace HRMS.Application.Services
         public async Task<IEnumerable<AttendanceResponseDto>> GetAllAsync()
         {
             var Attendances = await _attendanceRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<AttendanceResponseDto>>(Attendances);
+            var visible = FilterVisible(Attendances);
+            return _mapper.Map<IEnumerable<AttendanceResponseDto>>(visible);
         }
         public async Task<IEnumerable<AttendanceResponseDto>> GetByEmployeeIdAsync(int EmployeeId)
         {
@@ -51,7 +56,8 @@ namespace HRMS.Application.Services
             {
                 throw new NotFoundException("Attendance Record is not found!");
             }
-            return _mapper.Map<IEnumerable<AttendanceResponseDto>>(Attendances);
+            var visible = FilterVisible(Attendances);
+            return _mapper.Map<IEnumerable<AttendanceResponseDto>>(visible);
         }
         public async Task<IEnumerable<AttendanceResponseDto>> GetByStatusAsync(AttendanceStatus status)
         {
@@ -60,7 +66,8 @@ namespace HRMS.Application.Services
             {
                 throw new NotFoundException("Attendance Record is not found!");
             }
-            return _mapper.Map<IEnumerable<AttendanceResponseDto>>(Attendances);
+            var visible = FilterVisible(Attendances);
+            return _mapper.Map<IEnumerable<AttendanceResponseDto>>(visible);
         }
         public async Task<IEnumerable<AttendanceResponseDto>> GetByEmployeeAndStatusAsync(int id, AttendanceStatus status)
         {
@@ -70,7 +77,8 @@ namespace HRMS.Application.Services
                 throw new NotFoundException("Employee is not found!");
             }
             var Attendances = await _attendanceRepository.GetByEmployeeAndStatusAsync(Employee.Id, status);
-            return _mapper.Map<IEnumerable<AttendanceResponseDto>>(Attendances); 
+            var visible = FilterVisible(Attendances);
+            return _mapper.Map<IEnumerable<AttendanceResponseDto>>(visible); 
         }
         public async Task<AttendanceResponseDto> CreateAsync(CreateAttendanceDto dto)
         {
@@ -196,6 +204,16 @@ namespace HRMS.Application.Services
             }
             _attendanceRepository.Delete(Attendance);
             return await _attendanceRepository.SaveChangesAsync();
+        }
+        private IEnumerable<Attendance> FilterVisible(IEnumerable<Attendance> attendances)
+        {
+            if (_currentUser.IsSuperAdmin)
+            {
+                return attendances;
+            }
+            return attendances.Where(a => a.EmployeeId == _currentUser.EmployeeId || 
+            (_currentUser.CompanyRoles.TryGetValue(a.Department.CompanyId,out var rolevalues) && 
+            Enum.TryParse<CompanyRole>(rolevalues,out var role) && role <= CompanyRole.HREmployee)).ToList();
         }
     }
 }

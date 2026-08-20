@@ -284,7 +284,7 @@ namespace HRMS.Application.Services
                 Email = dto.Email,
                 SSN = dto.SSN,
                 UserName = dto.Email,
-                PhoneNumber = dto.PhoneNumber,
+                PhoneNumber = dto.Phone,
                 Gender = dto.Gender,
             };
             var result = await _userManager.CreateAsync(user,dto.Password);

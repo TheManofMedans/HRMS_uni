@@ -26,6 +26,10 @@ namespace HRMS.Infrastructure.Repositories
                 .Include (c => c.UserCompanies)
                 .ThenInclude (uc => uc.User).FirstOrDefaultAsync(c => c.RegNum == RegNum);
         }
+        public async Task<bool> RegNumExistsAsync(string RegNum)
+        {
+            return await _context.Companies.AnyAsync(c => c.RegNum.Equals(RegNum));
+        }
         public async Task<Company?> GetWithUserAsync(int id)
         {
             return await _context.Companies

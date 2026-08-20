@@ -67,7 +67,7 @@ namespace HRMS.API.Controllers
             return Ok(requests);
         }
         [HttpGet("search")]
-        [Authorize(Policy = "Request_RequireHREmployee")]
+        [Authorize]
         public async Task<IActionResult> GetWithCustomDataAsync([FromQuery]int? employeeId,
             [FromQuery]RequestStatus? status, 
             [FromQuery] RequestType? type)
@@ -76,7 +76,7 @@ namespace HRMS.API.Controllers
             return Ok(requests);
         }
         [HttpPost]
-        //[Authorize(Policy = "Request_OwnOrHRManager")]
+        [Authorize]
         public async Task<IActionResult> Create([FromBody] CreateRequestDto dto)
         {
             var created = await _requestService.CreateAsync(dto);

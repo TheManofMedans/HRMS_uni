@@ -5,6 +5,8 @@ using HRMS.Application.Interfaces.Services;
 using HRMS.Application.Interfaces.Repositories;
 using HRMS.Application.DTOs.Shift;
 using Microsoft.AspNetCore.Authorization;
+using HRMS.API.Extensions;
+using HRMS.Application.Exceptions;
 
 namespace HRMS.API.Controllers
 {
@@ -18,7 +20,7 @@ namespace HRMS.API.Controllers
             _shiftService = shiftService;
         }
         [HttpGet]
-        [Authorize(Roles = "SuperAdmin")]
+        [Authorize]
         public async Task<IActionResult> GetAll()
         {
             var shifts = await _shiftService.GetAllAsync();
@@ -31,6 +33,7 @@ namespace HRMS.API.Controllers
             return shift is null ? NotFound() : Ok(shift);
         }
         [HttpGet("Company/{companyId}")]
+        [Authorize]
         public async Task<IActionResult> GetByCompanyId(int companyId)
         {
             var shifts = await _shiftService.GetByCompanyIdAsync(companyId);
@@ -39,16 +42,22 @@ namespace HRMS.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateShiftDto dto)
         {
+            if (!User.HasAnySufficientCompanyRole(domain.Enums.CompanyRole.HRManager))
+            {
+                throw new ForbiddenException("You cannot create a new Shift!");
+            }
             var created = await _shiftService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetById),new {id =  created.Id},created);
         }
         [HttpPut("{id}")]
+        [Authorize(Policy = "Shift_RequireHRManager")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateShiftDto dto)
         {
             await _shiftService.UpdateAsync(id,dto);
             return NoContent();
         }
         [HttpDelete("{id}")]
+        [Authorize(Policy = "Shift_RequireHRManager")]
         public async Task<IActionResult> Delete(int id)
         {
             await _shiftService.DeleteAsync(id);

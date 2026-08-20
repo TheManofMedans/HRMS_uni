@@ -19,7 +19,7 @@ namespace HRMS.API.Controllers
             _employeeService = employeeService;
         }
         [HttpGet]
-        [Authorize(Roles = "SuperAdmin")]
+        [Authorize]
         public async Task<IActionResult> GetAll()
         {
             var Employees = await _employeeService.GetAllAsync();

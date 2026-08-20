@@ -6,21 +6,25 @@ using System.Threading.Tasks;
 using AutoMapper;
 using HRMS.Application.DTOs.Department;
 using HRMS.Application.Exceptions;
+using HRMS.Application.Interfaces;
 using HRMS.Application.Interfaces.Repositories;
 using HRMS.Application.Interfaces.Services;
 using HRMS.domain.Entities;
+using HRMS.domain.Enums;
 
 
 namespace HRMS.Application.Services
 {
     public class DepartmentService : IDepartmentService
     {
+        private readonly ICurrentUserService _currentUser;
         private readonly IMapper _mapper;
         private readonly IDepartmentRepository _departdmentRepository;
-        public DepartmentService (IMapper mapper, IDepartmentRepository departdmentRepository)
+        public DepartmentService (IMapper mapper, IDepartmentRepository departdmentRepository,ICurrentUserService currentUser)
         {
             _mapper = mapper;
             _departdmentRepository = departdmentRepository;
+            _currentUser = currentUser;
         }
         public async Task<DepartmentResponseDto?> GetByIdAsync(int id)
         {
@@ -38,12 +42,14 @@ namespace HRMS.Application.Services
             {
                 throw new NotFoundException("No Department is found!");
             }
-            return _mapper.Map<IEnumerable<DepartmentResponseDto>>(departments);
+            var visible = FilterVisible(departments, CompanyRole.HREmployee);
+            return _mapper.Map<IEnumerable<DepartmentResponseDto>>(visible);
         }
         public async Task<IEnumerable<DepartmentResponseDto>> GetAllAsync()
         {
             var department = await _departdmentRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<DepartmentResponseDto>>(department);
+            var visible = FilterVisible(department,CompanyRole.HREmployee);
+            return _mapper.Map<IEnumerable<DepartmentResponseDto>>(visible);
         }
         public async Task<DepartmentResponseDto> CreateAsync (CreateDepartmentDto dto)
         {
@@ -79,6 +85,15 @@ namespace HRMS.Application.Services
             }
             _departdmentRepository.DeleteAsync(department);
             return await _departdmentRepository.SaveChangesAsync();
+        }
+        private IEnumerable<Department> FilterVisible(IEnumerable<Department> departments, CompanyRole requiredRole)
+        {
+            if (_currentUser.IsSuperAdmin)
+            {
+                return departments;
+            }
+            return departments.Where(d =>d is not null && (_currentUser.CompanyRoles.TryGetValue(d.CompanyId,out var rolevalues) &&
+            Enum.TryParse<CompanyRole>(rolevalues, out var role) && role <= requiredRole)).ToList();
         }
     }
 }

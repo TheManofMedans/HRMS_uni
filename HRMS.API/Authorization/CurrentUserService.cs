@@ -17,7 +17,7 @@ namespace HRMS.API.Authorization
             get
             {
                 var claim = User?.Claims?.FirstOrDefault(c => c.Type == "employee_id");
-                return claim is not null && int.TryParse(claim.ToString(),out var employeeId) ? employeeId : null;
+                return claim is not null && int.TryParse(claim.Value,out var employeeId) ? employeeId : null;
             }
         }
         public IReadOnlyDictionary<int, string> CompanyRoles
@@ -25,10 +25,10 @@ namespace HRMS.API.Authorization
             get
             {
                 var result = new Dictionary<int, string>();
-                var claims = User?.Claims.Where(c => c.Type == "Company_Role").ToList() ?? Enumerable.Empty<Claim>();
+                var claims = User?.Claims.Where(c => c.Type == "company_role") ?? Enumerable.Empty<Claim>();
                 foreach (var claim in claims)
                 {
-                    var items = claim.Value.Split(":");
+                    var items = claim.Value.Split(':');
                     if (items.Length != 2)
                     {
                         continue;

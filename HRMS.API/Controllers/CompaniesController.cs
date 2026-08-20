@@ -19,27 +19,28 @@ namespace HRMS.API.Controllers
             _companyService = companyService;
         }
         [HttpGet]
-        [Authorize(Roles = "SuperAdmin")]
+        [Authorize]
         public async Task<IActionResult> GetAll()
         {
             var companies = await _companyService.GetAllAsync();
             return Ok(companies);
         }
         [HttpGet("{companyId}")]
-        [Authorize(Policy = "Company_RequireCEO")]
+        [Authorize(Policy = "Company_RequireHREmployee")]
         public async  Task<IActionResult> GetById(int companyId)
         {
             var company = await _companyService.GetByIdAsync(companyId);
             return company is null ? NotFound() : Ok(company);
         }
         [HttpGet("User/{userId}")]
-        [Authorize(Roles = "SuperAdmin")]
+        [Authorize]
         public async Task<IActionResult> GetByUser(int userId)
         {
-            var companies = await _companyService.GetWithUserAsync(userId);
+            var companies = await _companyService.GetByUserIdAsync(userId);
             return Ok(companies);
         }
         [HttpGet("RegNum/{RegNum}")]
+        [Authorize]
         public async Task<IActionResult> GetByRegNum(string RegNum)
         {
             var company = await _companyService.GetByRegNumAsync(RegNum);
@@ -57,7 +58,7 @@ namespace HRMS.API.Controllers
         public async Task<IActionResult> Create([FromBody] CreateCompanyDto dto)
         {
             var created = await _companyService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById),new {id = created.Id},created);
+            return CreatedAtAction(nameof(GetById),new {companyId = created.Id},created);
         }
         [HttpPut("{companyId}")]
         [Authorize(Policy = "Company_RequireCEO")]

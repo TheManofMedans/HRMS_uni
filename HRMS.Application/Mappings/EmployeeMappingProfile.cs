@@ -14,13 +14,15 @@ namespace HRMS.Application.Mappings
         public EmployeeMappingProfile() 
         { 
             CreateMap<Employee, EmployeeResponseDto>().ForMember(dest=> dest.Departments,
-                opt=> opt.MapFrom(src => src.EmployeeDepartments));
+                opt=> opt.MapFrom(src => src.EmployeeDepartments))
+                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.Phone));
             CreateMap<EmployeeDepartment, DepartmentDto>()
                 .ForMember(dto => dto.Name,opt => opt.MapFrom(src => src.Department.Name))
                 .ForMember(dto => dto.Id, opt => opt.MapFrom(src => src.DepartmentID))
                 .ForMember(dto => dto.Description, opt => opt.MapFrom(src => src.Department.Description));
             CreateMap<CreateEmployeeDto, Employee>().ForMember(dest => dest.EmployeeDepartments, opt => opt.Ignore());
-            CreateMap<RegisterEmployeeDto, Employee>();
+            CreateMap<RegisterEmployeeDto, Employee>()
+                .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone));
         }
     }
 }

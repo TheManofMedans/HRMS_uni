@@ -13,6 +13,7 @@ namespace HRMS.Application.Interfaces.Services
         Task<CompanyResponseDto?> GetByIdAsync(int id);
         Task<CompanyResponseDto?> GetByRegNumAsync(string RegNum);
         Task<CompanyResponseDto?> GetWithUserAsync(int id);
+        Task<IEnumerable<CompanyResponseDto>> GetByUserIdAsync(int userId);
         Task<IEnumerable<CompanyResponseDto>> GetAllAsync();
         Task<CompanyResponseDto> CreateAsync(CreateCompanyDto dto);
         Task<CompanyResponseDto> AddUsertoCompanyAsync(int CompanyId,int UserId,CompanyRole Role);

@@ -11,19 +11,26 @@ using AutoMapper;
 using HRMS.Application.DTOs.Company;
 using HRMS.domain.Enums;
 using HRMS.Application.Exceptions;
+using HRMS.Application.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace HRMS.Application.Services
 {
     public class CompanyService : ICompanyService
     {
+        private readonly UserManager<User> _userManager;
+        private readonly ICurrentUserService _currentUser;
         private readonly IMapper _mapper;
         private readonly ICompanyRepository _companyRepository;
         private readonly IUserRepository _userRepository;
-        public CompanyService (IMapper mapper,ICompanyRepository companyRepository, IUserRepository userRepository)
+        public CompanyService (IMapper mapper,ICompanyRepository companyRepository, IUserRepository userRepository,ICurrentUserService currentUser,
+            UserManager<User> userManager)
         {
             _mapper = mapper;
             _companyRepository = companyRepository;
             _userRepository = userRepository;
+            _currentUser = currentUser;
+            _userManager = userManager;
         }
         public async Task<CompanyResponseDto?> GetByIdAsync(int id)
         {
@@ -35,20 +42,27 @@ namespace HRMS.Application.Services
             var company = await _companyRepository.GetByRegNumAsync(RegNum);
             return company is null ? null : _mapper.Map<CompanyResponseDto>(company);
         }
-        public async Task<CompanyResponseDto?> GetWithUserAsync(int UserId)
+        public async Task<CompanyResponseDto?> GetWithUserAsync(int Id)
         {
-            var user = await _userRepository.GetByIdAsync(UserId);
-            if (user is null)
-            {
-                throw new NotFoundException("User is not found!");
-            }
-            var Company = await _companyRepository.GetWithUserAsync(UserId);
+            var Company = await _companyRepository.GetWithUserAsync(Id);
             return _mapper.Map<CompanyResponseDto>(Company);
+        }
+        public async Task<IEnumerable<CompanyResponseDto>> GetByUserIdAsync(int userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+            {
+                throw new NotFoundException(nameof(User), userId);
+            }
+            var Companies = await _companyRepository.GetByUserIdAsync(userId);
+            var visible = FilterVisible(Companies, CompanyRole.HREmployee);
+            return _mapper.Map<IEnumerable<CompanyResponseDto>>(visible);
         }
         public async Task<IEnumerable<CompanyResponseDto>> GetAllAsync()
         {
             var companies = await _companyRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<CompanyResponseDto>>(companies);
+            var visible = FilterVisible(companies,CompanyRole.HREmployee);
+            return _mapper.Map<IEnumerable<CompanyResponseDto>>(visible);
         }
         public async Task<CompanyResponseDto> CreateAsync(CreateCompanyDto dto)
         {
@@ -57,6 +71,10 @@ namespace HRMS.Application.Services
             if (User is null)
             {
                 throw new NotFoundException("User is not found!");
+            }
+            if (await _companyRepository.RegNumExistsAsync(dto.RegNum))
+            {
+                throw new ConflictException("This registration number already exists!");
             }
             Company.UserCompanies.Add(new UserCompany
             {
@@ -126,6 +144,15 @@ namespace HRMS.Application.Services
                 throw new Exception("Failed to add user to the company");
             }
             return _mapper.Map<CompanyResponseDto>(_Company);
+        }
+        private IEnumerable<Company> FilterVisible (IEnumerable<Company> companies, CompanyRole minimumRole)
+        {
+            if (_currentUser.IsSuperAdmin)
+            {
+                return companies;
+            }
+            return companies.Where(c => c is not null && (_currentUser.CompanyRoles.TryGetValue(c.Id,out var rolevalues)
+            && Enum.TryParse<CompanyRole>(rolevalues,out var role) && role <= minimumRole)).ToList();
         }
     }
 }

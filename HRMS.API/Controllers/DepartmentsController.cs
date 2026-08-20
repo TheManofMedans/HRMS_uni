@@ -18,18 +18,21 @@ namespace HRMS.API.Controllers
             _departmentService = departmentService;
         }
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAll()
         {
             var Departments = await _departmentService.GetAllAsync();
             return Ok(Departments);
         }
         [HttpGet("{departmentId}")]
+        [Authorize(Policy = "Department_RequireHREmployee")]
         public async Task<IActionResult> GetById(int departmentId)
         {
             var department = await _departmentService.GetByIdAsync(departmentId);
             return department is null ? NotFound() : Ok(department);
         }
         [HttpGet("company/{companyId}")]
+        [Authorize]
         public async Task<IActionResult> GetByCompanyId(int companyId)
         {
             var departments = await _departmentService.GetByCompanyIdAsync(companyId);
@@ -44,17 +47,17 @@ namespace HRMS.API.Controllers
                 return Forbid();
             }
             var created = await _departmentService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById),new {id = created.Id},created);
+            return CreatedAtAction(nameof(GetById),new {departmentId = created.Id},created);
         }
         [HttpPut("{departmentId}")]
-        [Authorize(Policy = "Department_HRManager")]
+        [Authorize(Policy = "Department_RequireCEO")]
         public async Task<IActionResult> Update(int departmentId, [FromBody] UpdateDepartmentDto dto)
         {
             await _departmentService.UpdateAsync(departmentId,dto);
             return NoContent();
         }
         [HttpDelete("{departmentId}")]
-        [Authorize(Policy = "Department_HRManager")]
+        [Authorize(Policy = "Department_RequireCEO")]
         public async Task<IActionResult> Delete(int departmentId)
         {
             await _departmentService.DeleteAsync(departmentId);

@@ -12,6 +12,7 @@ namespace HRMS.Application.Interfaces.Repositories
         Task<Company?> GetByIdAsync(int id);
         Task<Company?> GetByRegNumAsync(string RegNum);
         Task<Company?> GetWithUserAsync(int id);
+        Task<bool> RegNumExistsAsync(string RegNum);
         Task<IEnumerable<Company>> GetAllAsync();
         Task<IEnumerable<Company>> GetByUserIdAsync(int userId);
         Task AddAsync(Company company);
