@@ -12,7 +12,7 @@ namespace HRMS.Application.Validators
     {
         public UpdateShiftDtoValidator() 
         {
-            RuleFor(us => us.ShiftName).MinimumLength(100);
+            RuleFor(us => us.ShiftName).MaximumLength(100);
         }
     }
 }

@@ -16,6 +16,7 @@ namespace HRMS.Application.Validators
             RuleFor(er => er.Address).MaximumLength(500);
             RuleFor(er => er.FirstName).MaximumLength(100).NotEmpty();
             RuleFor(er => er.LastName).MaximumLength(100).NotEmpty();
+            RuleFor(er => er.SSN).NotEmpty().MinimumLength(10).MaximumLength(10);
             RuleFor(er => er.Phone).NotEmpty();
             RuleFor(er => er.Password).NotEmpty().MinimumLength(8);
             RuleFor(er => er.HireDate).NotEmpty().LessThanOrEqualTo(DateTime.UtcNow);

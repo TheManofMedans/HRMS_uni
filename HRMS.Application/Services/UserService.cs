@@ -66,7 +66,10 @@ namespace HRMS.Application.Services
             {
                 user.Gender = dto.Gender.Value;
             }
-
+            if (dto.SSN != null)
+            {
+                user.SSN = dto.SSN;
+            }
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {

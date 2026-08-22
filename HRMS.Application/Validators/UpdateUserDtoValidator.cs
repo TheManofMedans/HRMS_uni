@@ -18,6 +18,7 @@ namespace HRMS.Application.Validators
             RuleFor(uu => uu.CurrentPass).MaximumLength(100);
             RuleFor(uu => uu.NewPassword).MaximumLength(100);
             RuleFor(uu => uu.Gender).IsInEnum();
+            RuleFor(uu => uu.SSN).MinimumLength(10).MinimumLength(10);
         }
     }
 }

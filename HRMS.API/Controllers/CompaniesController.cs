@@ -27,7 +27,7 @@ namespace HRMS.API.Controllers
         }
         [HttpGet("{companyId}")]
         [Authorize(Policy = "Company_RequireHREmployee")]
-        public async  Task<IActionResult> GetById(int companyId)
+        public async Task<IActionResult> GetById(int companyId)
         {
             var company = await _companyService.GetByIdAsync(companyId);
             return company is null ? NotFound() : Ok(company);
@@ -48,7 +48,7 @@ namespace HRMS.API.Controllers
         }
         [HttpPost("{companyId}/User/{userId}")]
         [Authorize(Policy = "Company_RequireCEO")]
-        public async Task<IActionResult> AddUserToCompany(int companyId, int userId,[FromQuery]CompanyRole role)
+        public async Task<IActionResult> AddUserToCompany(int companyId, int userId, [FromQuery] CompanyRole role)
         {
             var created = await _companyService.AddUsertoCompanyAsync(companyId, userId, role);
             return Ok(created);
@@ -58,14 +58,21 @@ namespace HRMS.API.Controllers
         public async Task<IActionResult> Create([FromBody] CreateCompanyDto dto)
         {
             var created = await _companyService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById),new {companyId = created.Id},created);
+            return CreatedAtAction(nameof(GetById), new { companyId = created.Id }, created);
         }
         [HttpPut("{companyId}")]
         [Authorize(Policy = "Company_RequireCEO")]
         public async Task<IActionResult> Update(int companyId, [FromBody] UpdateCompanyDto dto)
         {
-            await _companyService.UpdateAsync(companyId,dto);
+            await _companyService.UpdateAsync(companyId, dto);
             return NoContent();
+        }
+        [HttpPut("{companyId}/User/{userId}")]
+        [Authorize(Policy = "Company_RequireCEO")]
+        public async Task<IActionResult> ChangeUserCompany(int companyId, int userId,[FromQuery] CompanyRole Role)
+        {
+            var companydto = await _companyService.UpdateUserCompanyAsync(userId, companyId, Role);
+            return Ok(companydto);
         }
         [HttpDelete("{companyId}")]
         [Authorize(Policy = "Company_RequireCEO")]

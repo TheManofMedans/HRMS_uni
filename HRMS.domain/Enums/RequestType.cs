@@ -14,6 +14,7 @@ namespace HRMS.domain.Enums
         Shift_Change,
         Mission,
         OverTime,
+        tankhah,
         Other
     }
 }

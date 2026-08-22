@@ -145,6 +145,31 @@ namespace HRMS.Application.Services
             }
             return _mapper.Map<CompanyResponseDto>(_Company);
         }
+        public async Task<CompanyResponseDto> UpdateUserCompanyAsync(int userId,int companyId, CompanyRole Role)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+            {
+                throw new NotFoundException(nameof(User),userId);
+            }
+            var company = await _companyRepository.GetByIdAsync(companyId);
+            if (company == null)
+            {
+                throw new NotFoundException(nameof(Company),companyId);
+            }
+            if (!user.UserCompanies.Any(uc => uc.CompanyId == companyId))
+            {
+                throw new ConflictException("This user is not related to this company!");
+            }
+            var oldusercompany = user.UserCompanies.FirstOrDefault(uc => uc.CompanyId == companyId);
+            oldusercompany.Role = Role;
+            var isadded =  await _userManager.UpdateAsync(user);
+            if (!isadded.Succeeded)
+            {
+                throw new Exception("Error while editing usercompany!");
+            }
+            return _mapper.Map<CompanyResponseDto>(company);
+        }
         private IEnumerable<Company> FilterVisible (IEnumerable<Company> companies, CompanyRole minimumRole)
         {
             if (_currentUser.IsSuperAdmin)

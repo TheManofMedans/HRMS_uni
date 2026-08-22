@@ -17,7 +17,7 @@ namespace HRMS.Application.Validators
             RuleFor(u => u.Phone).NotEmpty();
             RuleFor(u => u.FirstName).NotEmpty().MaximumLength(100);
             RuleFor(u => u.LastName).NotEmpty().MaximumLength(100);
-            RuleFor(u => u.SSN).NotEmpty().MaximumLength(10);
+            RuleFor(u => u.SSN).NotEmpty().MaximumLength(10).MinimumLength(10);
         }
     }
 }
