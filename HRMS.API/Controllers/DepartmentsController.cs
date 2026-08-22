@@ -42,7 +42,7 @@ namespace HRMS.API.Controllers
         [Authorize]
         public async Task<IActionResult> Create([FromBody] CreateDepartmentDto dto)
         {
-            if (!User.hasSufficientCompanyRole(dto.CompanyId,domain.Enums.CompanyRole.CEO))
+            if (!User.IsInRole("SuperAdmin") &&!User.hasSufficientCompanyRole(dto.CompanyId,domain.Enums.CompanyRole.CEO))
             {
                 return Forbid();
             }

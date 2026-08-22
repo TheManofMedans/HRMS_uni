@@ -179,4 +179,4 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run("https://0.0.0.0:7220");
+app.Run("http://0.0.0.0:5287");
