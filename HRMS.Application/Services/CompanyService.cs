@@ -152,21 +152,49 @@ namespace HRMS.Application.Services
             {
                 throw new NotFoundException(nameof(User),userId);
             }
-            var company = await _companyRepository.GetByIdAsync(companyId);
+            //var userwithdata =  await _userRepository.GetByIdWithEverythingAsync(userId);
+            var company = await _companyRepository.GetWithUserAsync(companyId);
             if (company == null)
             {
                 throw new NotFoundException(nameof(Company),companyId);
             }
-            if (!user.UserCompanies.Any(uc => uc.CompanyId == companyId))
+            if (!company.UserCompanies.Any(uc => uc.UserId == userId))
             {
                 throw new ConflictException("This user is not related to this company!");
             }
-            var oldusercompany = user.UserCompanies.FirstOrDefault(uc => uc.CompanyId == companyId);
+            var oldusercompany = company.UserCompanies.FirstOrDefault(uc => uc.UserId == userId);
             oldusercompany.Role = Role;
-            var isadded =  await _userManager.UpdateAsync(user);
-            if (!isadded.Succeeded)
+            _companyRepository.Update(company);
+            var isadded = await _companyRepository.SaveChangesAsync();
+            if (!isadded)
             {
                 throw new Exception("Error while editing usercompany!");
+            }
+            return _mapper.Map<CompanyResponseDto>(company);
+        }
+        public async Task<CompanyResponseDto> DeleteUserCompanyAsync(int userId, int companyId)
+        {
+            var company = await _companyRepository.GetByIdAsync(companyId);
+            if (company == null)
+            {
+                throw new NotFoundException(nameof(Company), companyId);
+            }
+            var user = _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+            {
+                throw new NotFoundException(nameof(User),userId);
+            }
+            var usercompany = company.UserCompanies.FirstOrDefault(uc => uc.UserId == userId);
+            if (usercompany == null)
+            {
+                throw new ConflictException("This user doesnt work in this company!");
+            }
+            company.UserCompanies.Remove(usercompany);
+            _companyRepository.Update(company);
+            var isadded = await _companyRepository.SaveChangesAsync();
+            if (!isadded)
+            {
+                throw new Exception("Error while deleting usercompany!");
             }
             return _mapper.Map<CompanyResponseDto>(company);
         }

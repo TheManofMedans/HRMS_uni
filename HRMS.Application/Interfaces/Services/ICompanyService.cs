@@ -18,6 +18,7 @@ namespace HRMS.Application.Interfaces.Services
         Task<CompanyResponseDto> CreateAsync(CreateCompanyDto dto);
         Task<CompanyResponseDto> AddUsertoCompanyAsync(int CompanyId,int UserId,CompanyRole Role);
         Task<CompanyResponseDto> UpdateUserCompanyAsync(int userId,int companyId,CompanyRole Role);
+        Task<CompanyResponseDto> DeleteUserCompanyAsync(int userId, int companyId);
         Task<bool> UpdateAsync(int id,UpdateCompanyDto dto);
         Task<bool> DeleteAsync(int id);
     }

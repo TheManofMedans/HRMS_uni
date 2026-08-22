@@ -20,7 +20,7 @@ namespace HRMS.Application.Validators
             RuleFor(ue => ue.EmploymentStatus).IsInEnum();
             RuleFor(ue => ue.PayrollStatus).IsInEnum();
             RuleFor(ue => ue.Gender).IsInEnum();
-            RuleFor(ue => ue.JobDescription).MinimumLength(500);
+            RuleFor(ue => ue.JobDescription).MaximumLength(500);
         }
     }
 }

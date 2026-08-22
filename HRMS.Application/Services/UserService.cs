@@ -20,13 +20,16 @@ namespace HRMS.Application.Services
         private readonly UserManager<User> _userManager;
         private readonly IUserRepository _userRepository;
         private readonly ICompanyRepository _companyRepository;
+        private readonly IEmployeeRepository _employeeRepository;
         private readonly IMapper _mapper;
-        public UserService(IUserRepository userRepository, IMapper mapper,ICompanyRepository companyRepository,UserManager<User> userManager)
+        public UserService(IUserRepository userRepository, IMapper mapper,ICompanyRepository companyRepository
+            , UserManager<User> userManager, IEmployeeRepository employeeRepository)
         {
             _userRepository = userRepository;
             _mapper = mapper;
             _companyRepository = companyRepository;
             _userManager = userManager;
+            _employeeRepository = employeeRepository;
         }
         public async Task<UserResponseDto?> GetByIdAsync(int id)
         {
@@ -46,6 +49,7 @@ namespace HRMS.Application.Services
             {
                 throw new NotFoundException(nameof(user),id);
             }
+            var employee = await _employeeRepository.GetByUserIdAsync(user.Id);
             if (dto.NewPassword != null && dto.CurrentPass != null)
             {
                await _userManager.ChangePasswordAsync(user, dto.CurrentPass, dto.NewPassword);
@@ -53,36 +57,80 @@ namespace HRMS.Application.Services
             if (dto.FirstName != null)
             {
                 user.FirstName = dto.FirstName;
+                if (employee != null)
+                {
+                    employee.FirstName = dto.FirstName;
+                }
             }
             if (dto.LastName != null)
             {
                 user.LastName = dto.LastName;
+                if (employee != null)
+                {
+                    employee.LastName = dto.LastName;
+                }
             }
             if (dto.Phone != null)
             {
                 user.PhoneNumber = dto.Phone;
+                if (employee != null)
+                {
+                    employee.Phone = dto.Phone;
+                }
             }
             if (dto.Gender != null)
             {
                 user.Gender = dto.Gender.Value;
+                if (employee != null)
+                {
+                    employee.Gender = dto.Gender.Value;
+                }
             }
             if (dto.SSN != null)
             {
                 user.SSN = dto.SSN;
+                if (employee != null)
+                {
+                    employee.SSN = dto.SSN;
+                }
             }
-            var result = await _userManager.UpdateAsync(user);
-            if (!result.Succeeded)
+            if (employee == null)
             {
-                throw new Exception("Could not update user info!");
+                var result = await _userManager.UpdateAsync(user);
+                if (!result.Succeeded)
+                {
+                    throw new Exception("Could not update user info!");
+                }
             }
+            else
+            {
+                var result = await _userManager.UpdateAsync(user);
+                _employeeRepository.Update(employee);
+                var empresult = await _employeeRepository.SaveChangesAsync();
+                if (!result.Succeeded || !empresult)
+                {
+                    throw new Exception("Error while changing the employee and user!");
+                }
+            }
+          
             return true;
         }
         public async Task<bool> DeleteUserAsync(int id)
         {
-            var user = await _userRepository.GetByIdAsync(id);
+            var user = await _userManager.FindByIdAsync(id.ToString());
             if (user is null)
             {
                 throw new NotFoundException(nameof(user), id);
+            }
+            var employee = await _employeeRepository.GetByUserIdAsync(user.Id);
+            if (employee is not null )
+            {
+                _employeeRepository.Delete(employee);
+                var isdeleted = await _employeeRepository.SaveChangesAsync();
+                if (!isdeleted)
+                {
+                    throw new Exception("Error while deleting the employee involved with the user!");
+                }
             }
             var result = await _userManager.DeleteAsync(user);
             if (!result.Succeeded)

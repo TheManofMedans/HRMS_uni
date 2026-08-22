@@ -44,7 +44,7 @@ namespace HRMS.API.Controllers
         [Authorize]
         public async Task<IActionResult> Create([FromBody] CreateShiftDto dto)
         {
-            if (!User.IsInRole("SuperAdmin") &&!User.HasAnySufficientCompanyRole(domain.Enums.CompanyRole.HRManager))
+            if (!User.IsInRole("SuperAdmin") && !User.HasSufficientCompanyRoleInCompany(domain.Enums.CompanyRole.HRManager,dto.CompanyId))
             {
                 throw new ForbiddenException("You cannot create a new Shift!");
             }

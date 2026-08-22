@@ -6,6 +6,7 @@ using HRMS.domain.Enums;
 using HRMS.Application.DTOs.Company;
 using Microsoft.AspNetCore.Authorization;
 using HRMS.API.Extensions;
+using System.Runtime.CompilerServices;
 
 namespace HRMS.API.Controllers
 {
@@ -72,6 +73,13 @@ namespace HRMS.API.Controllers
         public async Task<IActionResult> ChangeUserCompany(int companyId, int userId,[FromQuery] CompanyRole Role)
         {
             var companydto = await _companyService.UpdateUserCompanyAsync(userId, companyId, Role);
+            return Ok(companydto);
+        }
+        [HttpDelete("{companyId}/user/{userId}")]
+        [Authorize(Policy = "Company_RequireCEO")]
+        public async Task<IActionResult> DeleteUserCompany(int companyId,int userId)
+        {
+            var companydto = await _companyService.DeleteUserCompanyAsync(userId,companyId);
             return Ok(companydto);
         }
         [HttpDelete("{companyId}")]

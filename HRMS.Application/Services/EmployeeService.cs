@@ -300,6 +300,15 @@ namespace HRMS.Application.Services
             }
             var employee = _mapper.Map<Employee>(dto);
             employee.User = user;
+            employee.EmployeeDepartments.Add(new EmployeeDepartment
+            {
+                DepartmentID = dto.departmentId,
+                AssignedAt = dto.AssignedAt,
+                PayrollStatus = dto.PayrollStatus,
+                EmploymentStatus = dto.EmploymentStatus,
+                Salary = dto.Salary,
+                IsPrimary = false
+            });
             await _employeeRepository.AddAsync(employee);
             var isadded = await _employeeRepository.SaveChangesAsync();
             if (!isadded)

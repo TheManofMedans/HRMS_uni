@@ -36,7 +36,7 @@ namespace HRMS.API.Controllers
         [Authorize]
         public async Task<IActionResult> Create([FromBody] CreateEmployeeDto dto)
         {
-            if (!User.IsInRole("SuperAdmin") && !User.HasAnySufficientCompanyRole(CompanyRole.HRManager))
+            if (!User.IsInRole("SuperAdmin") && !User.HasSufficientCompanyRoleInCompany(CompanyRole.HRManager))
             {
                 return Forbid();
             }
@@ -46,7 +46,7 @@ namespace HRMS.API.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] RegisterEmployeeDto dto)
         {
-            if (!User.IsInRole("SuperAdmin") && !User.HasAnySufficientCompanyRole(CompanyRole.HRManager))
+            if (!User.IsInRole("SuperAdmin") && !User.HasSufficientCompanyRoleInCompany(CompanyRole.HRManager))
             {
                 return Forbid();
             }

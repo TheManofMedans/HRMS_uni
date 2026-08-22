@@ -18,5 +18,11 @@ namespace HRMS.Application.DTOs.Employee
         public GenderType Gender { get; set; }
         public DateTime HireDate { get; set; }
         public string Password {  get; set; } = string.Empty;
+        public int departmentId { get; set; }
+        public string Salary { get; set; } = string.Empty;
+        //public string? JobDescription {  get; set; } = string.Empty;
+        public PayrollStatus PayrollStatus { get; set; }
+        public EmploymentStatus EmploymentStatus { get; set; }
+        public DateTime AssignedAt { get; set; }
     }
 }

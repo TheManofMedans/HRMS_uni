@@ -35,7 +35,7 @@ namespace HRMS.API.Extensions
             }
             return false;
         }
-        public static bool HasAnySufficientCompanyRole(this ClaimsPrincipal user, CompanyRole minimumRole)
+        public static bool HasSufficientCompanyRoleInCompany(this ClaimsPrincipal user, CompanyRole minimumRole)
         {
             var companyRoleClaims = user.Claims.Where(c => c.Type == "company_role");
 
@@ -46,6 +46,26 @@ namespace HRMS.API.Extensions
                 if (!Enum.TryParse<CompanyRole>(items[1], out var claimRole)) continue;
 
                 if (CompanyRoleHierarchy.Meets(claimRole, minimumRole))
+                    return true;
+            }
+
+            return false;
+        }
+        public static bool HasSufficientCompanyRoleInCompany(this ClaimsPrincipal user, CompanyRole minimumRole,int companyId)
+        {
+            var companyRoleClaims = user.Claims.Where(c => c.Type == "company_role");
+
+            foreach (var claim in companyRoleClaims)
+            {
+                var items = claim.Value.Split(':');
+                if (items.Length != 2) continue;
+                if (!int.TryParse(items[0],out var callerCompanyId))
+                {
+                    continue;
+                }
+                if (!Enum.TryParse<CompanyRole>(items[1], out var claimRole)) continue;
+
+                if (callerCompanyId == companyId && CompanyRoleHierarchy.Meets(claimRole, minimumRole))
                     return true;
             }
 

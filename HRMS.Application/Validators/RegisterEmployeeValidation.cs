@@ -20,6 +20,11 @@ namespace HRMS.Application.Validators
             RuleFor(er => er.Phone).NotEmpty();
             RuleFor(er => er.Password).NotEmpty().MinimumLength(8);
             RuleFor(er => er.HireDate).NotEmpty().LessThanOrEqualTo(DateTime.UtcNow);
+            RuleFor(er => er.AssignedAt).NotEmpty().LessThanOrEqualTo(DateTime.UtcNow);
+            RuleFor(er => er.EmploymentStatus).IsInEnum();
+            RuleFor(er => er.departmentId).NotEmpty();
+            RuleFor(er => er.PayrollStatus).IsInEnum();
+           // RuleFor(er => er.JobDescription).MaximumLength(500);
         }
     }
 }
