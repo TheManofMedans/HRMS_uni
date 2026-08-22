@@ -13,6 +13,8 @@ namespace HRMS.Application.Validators
     {
         public UpdateAttendanceDtoValidator() 
         {
+            RuleFor(a => a.attendanceStatus).IsInEnum();
+            RuleFor(a => a.ShiftId).GreaterThan(0);
         }
     }
 }

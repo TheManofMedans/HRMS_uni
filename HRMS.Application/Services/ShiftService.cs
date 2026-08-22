@@ -78,9 +78,18 @@ namespace HRMS.Application.Services
             {
                 throw new NotFoundException(nameof(Shift),id);
             }
-            shift.ShiftName = dto.ShiftName;
-            shift.StartTime = dto.StartTime;
-            shift.EndTime = dto.EndTime;
+            if (dto.ShiftName != null)
+            {
+                shift.ShiftName = dto.ShiftName;
+            }
+            if (dto.StartTime != null)
+            {
+                shift.StartTime = dto.StartTime.Value;
+            }
+            if (dto.EndTime !=  null)
+            {
+                shift.EndTime = dto.EndTime.Value;
+            }
             _shiftRepository.Update(shift);
             return await _shiftRepository.SaveChangesAsync();
         }
