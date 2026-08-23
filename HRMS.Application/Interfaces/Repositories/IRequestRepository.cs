@@ -18,6 +18,7 @@ namespace HRMS.Application.Interfaces.Repositories
         Task<IEnumerable<Request>> GetWithStatusAsync(RequestStatus status);
         Task<IEnumerable<Request>> GetWithTypeAsync(RequestType type);
         Task<IEnumerable<Request>> GetWithCustomDataAsync(int? EmployeeId,RequestStatus? status,RequestType? type);
+        Task<IEnumerable<Request>> GetWithTypesAsync(IEnumerable<RequestType> types);
         Task AddAsync(Request request);
         void Update(Request request);
         void Delete(Request request);

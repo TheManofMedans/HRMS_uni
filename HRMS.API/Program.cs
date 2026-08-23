@@ -152,6 +152,7 @@ builder.Services.AddCors(options =>
         });
 });
 builder.Services.AddHostedService<AttendanceStatusBackgroundService>();
+builder.Services.AddHostedService<RequestStatusBackgroundService>();
 var app = builder.Build();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 

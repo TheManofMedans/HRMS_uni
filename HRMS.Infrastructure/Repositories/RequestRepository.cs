@@ -57,6 +57,12 @@ namespace HRMS.Infrastructure.Repositories
                 .Where(r => r.Type == type)
                 .ToListAsync();
         }
+        public async Task<IEnumerable<Request>> GetWithTypesAsync(IEnumerable<RequestType> types)
+        {
+            var query = _context.Requests.AsQueryable();
+            query.Where(r => types.Contains(r.Type));
+            return await query.ToListAsync();
+        }
         public async Task<IEnumerable<Request>> GetWithCustomDataAsync(int? id, RequestStatus? status, RequestType? type)
         {
             var query = _context.Requests
