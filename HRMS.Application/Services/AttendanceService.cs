@@ -128,7 +128,7 @@ namespace HRMS.Application.Services
                     throw new ConflictException("Cannot clock out when you havent clocked in!");
                 }
             }
-            if (Attendance.Clockedout is null)
+            if (Attendance.Clockedout is null && Attendance.Clockedin != null)
             {
                 if (dto.ClockedOut != null)
                 {
