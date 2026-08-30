@@ -67,6 +67,8 @@ builder.Services.AddScoped<DepartmentCompanyResolver>();
 builder.Services.AddScoped<ShiftCompanyResolver>();
 builder.Services.AddScoped<AttendanceCompanyResolver>();
 builder.Services.AddScoped<RequestCompanyResolver>();
+builder.Services.AddScoped<AttendanceOwnerResolver>();
+builder.Services.AddScoped<RequestOwnerResolver>();
 builder.Services.AddScoped<IAuthorizationHandler, CompanyRoleAuthorizationHandler>();
 builder.Services.AddScoped<IAuthorizationHandler, EmployeeCompanyAuthorizationHandler>();
 builder.Services.AddScoped<IAuthorizationHandler,OwnerOrRoleAuthorizationHandler>();
