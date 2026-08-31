@@ -115,7 +115,11 @@ namespace HRMS.Application.Services
             var Attendance = await _attendanceRepository.GetByIdAsync(id);
             if (Attendance is null)
             {
-                return false;
+                throw new NotFoundException(nameof(Attendance),id);
+            }
+            if (DateTime.UtcNow < CalculateShiftStart(Attendance))
+            {
+                throw new ConflictException("You cannot Clock in before due time!");
             }
             if (Attendance.Clockedin is null)
             {
@@ -128,7 +132,7 @@ namespace HRMS.Application.Services
                     throw new ConflictException("Cannot clock out when you havent clocked in!");
                 }
             }
-            if (Attendance.Clockedout is null && Attendance.Clockedin != null)
+            else if (Attendance.Clockedout is null)
             {
                 if (dto.ClockedOut != null)
                 {
@@ -214,6 +218,26 @@ namespace HRMS.Application.Services
             return attendances.Where(a => a.EmployeeId == _currentUser.EmployeeId || 
             (_currentUser.CompanyRoles.TryGetValue(a.Department.CompanyId,out var rolevalues) && 
             Enum.TryParse<CompanyRole>(rolevalues,out var role) && role <= CompanyRole.HREmployee)).ToList();
+        }
+        private DateTime CalculateShiftEnd(Attendance attendance)
+        {
+            var shiftend = attendance.Date;
+            if (attendance.Shift.StartTime > attendance.Shift.EndTime)
+            {
+                shiftend.Add(attendance.Shift.EndTime);
+                shiftend.AddDays(1);
+            }
+            else
+            {
+                shiftend.Add(attendance.Shift.EndTime);
+            }
+            return shiftend;
+        }
+        private DateTime CalculateShiftStart(Attendance attendance)
+        {
+            var shiftstart = attendance.Date;
+            shiftstart.Add(attendance.Shift.StartTime);
+            return shiftstart;
         }
     }
 }
