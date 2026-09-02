@@ -136,6 +136,10 @@ namespace HRMS.Application.Services
             {
                 if (dto.ClockedOut != null)
                 {
+                    if (dto.ClockedIn <= CalculateShiftStart(Attendance))
+                    {
+                        throw new ConflictException("You cannot clockin before the shift start!");
+                    }
                     Attendance.Clockedout = dto.ClockedOut;
                     Attendance.AttendanceStatus = AttendanceStatus.Present;
                 }

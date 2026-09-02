@@ -12,7 +12,7 @@ namespace HRMS.API.Authorization.Resolvers
         public async Task<int?> ResolveCompanyId (int resourceId)
         {
             var attendance = await _attendanceRepository.GetByIdAsync(resourceId);
-            return attendance?.Department?.Id;
+            return attendance?.Department?.CompanyId;
         }
     }
 }
