@@ -23,6 +23,7 @@ namespace HRMS.Infrastructure.Persistence
         public DbSet<Shift> Shifts => Set<Shift>();
         public DbSet<Request> Requests => Set<Request>();
         public DbSet<Attendance> Attendances => Set<Attendance>();
+        public DbSet<Notification> Notifications => Set<Notification>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

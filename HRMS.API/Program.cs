@@ -48,6 +48,7 @@ builder.Services.AddAuthentication(options =>
 })
     .AddJwtBearer(options =>
     {
+        //options.MapInboundClaims = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -69,6 +70,8 @@ builder.Services.AddScoped<AttendanceCompanyResolver>();
 builder.Services.AddScoped<RequestCompanyResolver>();
 builder.Services.AddScoped<AttendanceOwnerResolver>();
 builder.Services.AddScoped<RequestOwnerResolver>();
+builder.Services.AddScoped<NotificationCompanyResolver>();
+builder.Services.AddScoped<NotificationOwnerResolver>();
 builder.Services.AddScoped<IAuthorizationHandler, CompanyRoleAuthorizationHandler>();
 builder.Services.AddScoped<IAuthorizationHandler, EmployeeCompanyAuthorizationHandler>();
 builder.Services.AddScoped<IAuthorizationHandler,OwnerOrRoleAuthorizationHandler>();
@@ -105,6 +108,9 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Request_OwnOrHREmployee", policy =>
         policy.Requirements.Add(new OwnershipOrRoleRequirement(typeof(RequestCompanyResolver), typeof(RequestOwnerResolver), CompanyRole.HREmployee,
         "id")));
+    options.AddPolicy("Notification_OwnOrHREmployee", policy =>
+    policy.Requirements.Add(new OwnershipOrRoleRequirement(typeof(NotificationCompanyResolver), typeof(NotificationOwnerResolver),
+    CompanyRole.HREmployee, "id")));
     options.AddPolicy("Employee_RequireCEO", policy =>
         policy.Requirements.Add(new EmployeeCompanyRequirement(CompanyRole.CEO)));
     options.AddPolicy("Employee_RequireHRManager", policy =>

@@ -23,8 +23,9 @@ namespace HRMS.Application.Services
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IShiftRepository _shiftRepository;
         private readonly IDepartmentRepository _departmentRepository;
+        private readonly INotificationService _notificationService;
         public AttendanceService(IAttendanceRepository attendanceRepository, IMapper mapper, IEmployeeRepository employeeRepository, IShiftRepository shiftRepository
-            , IDepartmentRepository departdmentRepository, ICurrentUserService currentUser)
+            , IDepartmentRepository departdmentRepository, ICurrentUserService currentUser, INotificationService notificationService)
         {
             _attendanceRepository = attendanceRepository;
             _mapper = mapper;
@@ -32,6 +33,7 @@ namespace HRMS.Application.Services
             _shiftRepository = shiftRepository;
             _departmentRepository = departdmentRepository;
             _currentUser = currentUser;
+            _notificationService = notificationService;
         }
         public async Task<AttendanceResponseDto?> GetByIdAsync(int id)
         {
@@ -108,10 +110,15 @@ namespace HRMS.Application.Services
             {
                 throw new Exception("The Create action hasnt been successful!");
             }
+            await _notificationService.NotifyAsync(Employee.UserId,
+                $"A new attendance record has been scheduled for {Attendance.Date:yyyy-MM-dd}.",
+                NotificationType.AttendanceCreated,
+                attendanceId: Attendance.Id);
             return _mapper.Map<AttendanceResponseDto>(Attendance);
         }
         public async Task<bool> UpdateAsync(int id, UpdateAttendanceDto dto)
         {
+            NotificationType notifType = new();
             var Attendance = await _attendanceRepository.GetByIdAsync(id);
             if (Attendance is null)
             {
@@ -126,6 +133,7 @@ namespace HRMS.Application.Services
                 if (dto.ClockedIn != null)
                 {
                     Attendance.Clockedin = dto.ClockedIn;
+                    notifType = NotificationType.AttendanceClockIn;
                 }
                 else
                 {
@@ -142,6 +150,7 @@ namespace HRMS.Application.Services
                     }
                     Attendance.Clockedout = dto.ClockedOut;
                     Attendance.AttendanceStatus = AttendanceStatus.Present;
+                    notifType = NotificationType.AttendanceClockOut;
                 }
                 else
                 {
@@ -165,7 +174,16 @@ namespace HRMS.Application.Services
                 Attendance.AttendanceStatus = AttendanceStatus.Absent;
             }
             _attendanceRepository.Update(Attendance);
-            return await _attendanceRepository.SaveChangesAsync();
+            var isadded = await _attendanceRepository.SaveChangesAsync();
+            if (!isadded)
+            {
+                throw new Exception("Could not Update attendance!");
+            }
+            await _notificationService.NotifyAsync(Attendance.Employee.UserId,
+                $"{Attendance.Employee.FirstName} {Attendance.Employee.LastName} clocked in/out for {Attendance.Date:yyyy-MM-dd}.",
+                notifType,
+                attendanceId : Attendance.Id);
+            return isadded;
         }
         public async Task<bool> HighClearanceUpdateAsync(int id, UpdateAttendanceDto dto)
         {
@@ -201,6 +219,10 @@ namespace HRMS.Application.Services
             {
                 throw new Exception("Could not update attendance!");
             }
+            await _notificationService.NotifyAsync(attendance.Employee.UserId,
+                $"The attendance record of employee with {attendance.Employee.Id} on {attendance.Date:yyyy-MM-dd} Has been changed by {_currentUser.UserId}"
+                , NotificationType.AttendanceInfoUpdate,
+                attendanceId: attendance.Id);
             return isadded;
         }
         public async Task<bool> DeleteAsync(int id)

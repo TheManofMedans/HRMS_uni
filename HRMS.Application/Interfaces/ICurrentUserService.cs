@@ -11,6 +11,7 @@ namespace HRMS.Application.Interfaces
         bool IsAuthenticated { get; }
         bool IsSuperAdmin {  get; } 
         int? EmployeeId { get; }
+        int? UserId { get; }
         IReadOnlyDictionary<int, string> CompanyRoles { get; }
     }
 }

@@ -22,12 +22,15 @@ namespace HRMS.Application.Services
         private readonly IMapper _mapper;
         private readonly IRequestRepository _requestRepository;
         private readonly IEmployeeRepository _employeeRepository;
-        public RequestService(IMapper mapper, IRequestRepository requestRepository, IEmployeeRepository employeeRepository,ICurrentUserService currentUser)
+        private readonly INotificationService _notificationService;
+        public RequestService(IMapper mapper, IRequestRepository requestRepository, IEmployeeRepository employeeRepository,ICurrentUserService currentUser
+            , INotificationService notificationService)
         {
             _mapper = mapper;
             _requestRepository = requestRepository;
             _employeeRepository = employeeRepository;
             _currentUser = currentUser;
+            _notificationService = notificationService;
         }
         public async Task<RequestResponseDto?> GetByIdAsync(int id) 
         {
@@ -113,10 +116,14 @@ namespace HRMS.Application.Services
             {
                 throw new Exception("Couldnt save the new request!");
             }
+            await _notificationService.NotifyAsync(request.Employee.UserId,
+                $"A new Request has been made by {request.EmployeeId} With the Subject: {request.Type}",
+                NotificationType.RequestSubmitted,attendanceId: null, requestId: request.Id);
             return _mapper.Map<RequestResponseDto>(request);
         }
         public async Task<bool> UpdateAsync(int id,UpdateRequestDto requestDto)
         {
+            NotificationType type = new();
             var request = await _requestRepository.GetByIdAsync(id);
             if (request is null)
             {
@@ -141,7 +148,23 @@ namespace HRMS.Application.Services
             }
             
             _requestRepository.Update(request);
-            return await _requestRepository.SaveChangesAsync();
+            var isupdated = await _requestRepository.SaveChangesAsync();
+            if (!isupdated)
+            {
+                throw new Exception("Could not update request!");
+            }
+            if (request.Status == RequestStatus.Accepted)
+            {
+                type = NotificationType.RequestApproved;
+            }
+            else
+            {
+                type = NotificationType.RequestDenied;
+            }
+            await _notificationService.NotifyAsync(request.Employee.UserId,
+                $"The request with Id {request.Id} has been updated by user {_currentUser.UserId}",
+                type,requestId: request.Id);
+            return isupdated;
         }
         public async Task UpdateByEmployeeAsync(int id, UpdateRequestDto dto)
         {
@@ -151,8 +174,37 @@ namespace HRMS.Application.Services
                 throw new NotFoundException(nameof(Request),id);
             }
             bool isown = _currentUser.EmployeeId == request.EmployeeId;
-            bool hasSufficientRole = (_currentUser.IsSuperAdmin || (_currentUser.CompanyRoles.TryGetValue(request.Department.CompanyId,out var RoleValues)
-                && Enum.TryParse<CompanyRole>(RoleValues,out var Role) && Role <= CompanyRole.HREmployee));
+            //bool hasSufficientRole = (_currentUser.IsSuperAdmin || (_currentUser.CompanyRoles.TryGetValue(request.Department.CompanyId,out var RoleValues)
+              //  && Enum.TryParse<CompanyRole>(RoleValues,out var Role) && Role <= CompanyRole.HREmployee));
+            if (!isown)
+            {
+                throw new ForbiddenException("You cannot change this request!");
+            }
+            if (dto.StartDate != null)
+            {
+                request.StartDate = dto.StartDate.Value;
+            }
+            if (dto.EndDate != null)
+            {
+                request.EndDate = dto.EndDate.Value;
+            }
+            if (dto.Description != null)
+            {
+                request.Description = dto.Description;
+            }
+            if (dto.RequestType != null)
+            {
+                request.Type = dto.RequestType.Value;
+            }
+            _requestRepository.Update(request);
+            var isupdated = await _requestRepository.SaveChangesAsync();
+            if (!isupdated)
+            {
+                throw new Exception("Could not update request!");
+            }
+            await _notificationService.NotifyAsync(request.Employee.UserId,
+                $"The request with id {request.Id} has been updated by User {_currentUser.UserId}",
+                NotificationType.RequestUpdated,requestId : request.Id);
         }
         public async Task<bool> DeleteAsync(int id)
         {
