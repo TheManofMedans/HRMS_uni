@@ -16,7 +16,7 @@ namespace HRMS.Application.DTOs.Employee
         public GenderType? Gender { get; set; }
         public string? JobDescription {  get; set; } = string.Empty;
         public PayrollStatus? PayrollStatus { get; set; }
-        public string? Salary {  get; set; } = string.Empty;
+        public decimal? Salary {  get; set; }
         public EmploymentStatus? EmploymentStatus { get; set; }
     }
 }

@@ -19,7 +19,7 @@ namespace HRMS.Application.DTOs.Employee
         public DateTime HireDate { get; set; }
         public string Password {  get; set; } = string.Empty;
         public int departmentId { get; set; }
-        public string Salary { get; set; } = string.Empty;
+        public decimal Salary { get; set; }
         //public string? JobDescription {  get; set; } = string.Empty;
         public PayrollStatus PayrollStatus { get; set; }
         public EmploymentStatus EmploymentStatus { get; set; }

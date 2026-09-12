@@ -17,6 +17,14 @@ namespace HRMS.Infrastructure.Persistence.Configurations
             builder.HasKey(a => a.Id);
             builder.Property(a => a.AttendanceStatus).IsRequired();
             builder.HasIndex(a => new { a.EmployeeId, a.Date }).IsUnique();
+            builder.HasOne(a => a.Shift)
+                .WithMany(s => s.Attendances)
+                .HasForeignKey(a => a.ShiftId)
+                .OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(a => a.Employee)
+                .WithMany(e => e.Attendances)
+                .HasForeignKey(a => a.EmployeeId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

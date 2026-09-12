@@ -19,18 +19,20 @@ namespace HRMS.Application.Services
     public class RequestService : IRequestService
     {
         private readonly ICurrentUserService _currentUser;
+        private readonly IAttendanceRepository _attendanceRepository;
         private readonly IMapper _mapper;
         private readonly IRequestRepository _requestRepository;
         private readonly IEmployeeRepository _employeeRepository;
         private readonly INotificationService _notificationService;
         public RequestService(IMapper mapper, IRequestRepository requestRepository, IEmployeeRepository employeeRepository,ICurrentUserService currentUser
-            , INotificationService notificationService)
+            , INotificationService notificationService, IAttendanceRepository attendanceRepository)
         {
             _mapper = mapper;
             _requestRepository = requestRepository;
             _employeeRepository = employeeRepository;
             _currentUser = currentUser;
             _notificationService = notificationService;
+            _attendanceRepository = attendanceRepository;
         }
         public async Task<RequestResponseDto?> GetByIdAsync(int id) 
         {
@@ -123,7 +125,6 @@ namespace HRMS.Application.Services
         }
         public async Task<bool> UpdateAsync(int id,UpdateRequestDto requestDto)
         {
-            NotificationType type = new();
             var request = await _requestRepository.GetByIdAsync(id);
             if (request is null)
             {
@@ -146,24 +147,31 @@ namespace HRMS.Application.Services
             {
                 request.Description = requestDto.Description;
             }
-            
             _requestRepository.Update(request);
             var isupdated = await _requestRepository.SaveChangesAsync();
             if (!isupdated)
             {
                 throw new Exception("Could not update request!");
             }
-            if (request.Status == RequestStatus.Accepted)
+            if (request.Type == RequestType.PaidLeave || request.Type == RequestType.UnPaidLeave)
             {
-                type = NotificationType.RequestApproved;
+                if (request.Status == RequestStatus.Accepted)
+                {
+                    await CreateOrUpdateAttendanceForLeave(request);
+                }
             }
-            else
+            NotificationType? type = request.Status switch
             {
-                type = NotificationType.RequestDenied;
-            }
-            await _notificationService.NotifyAsync(request.Employee.UserId,
+                RequestStatus.Accepted => NotificationType.RequestApproved,
+                RequestStatus.Rejected => NotificationType.RequestDenied,
+                _ => null
+            };
+            if (type != null)
+            {
+                await _notificationService.NotifyAsync(request.Employee.UserId,
                 $"The request with Id {request.Id} has been updated by user {_currentUser.UserId}",
-                type,requestId: request.Id);
+                type.Value, requestId: request.Id);
+            }         
             return isupdated;
         }
         public async Task UpdateByEmployeeAsync(int id, UpdateRequestDto dto)
@@ -226,6 +234,52 @@ namespace HRMS.Application.Services
             (_currentUser.CompanyRoles.TryGetValue(r.DepartmentId != 0 ? r.Department.CompanyId : -1, out var role) &&
             Enum.TryParse<CompanyRole>(role, out var parsedRole) &&
             parsedRole <= CompanyRole.HREmployee)).ToList();
+        }
+        private async Task CreateOrUpdateAttendanceForLeave(Request request)
+        {
+            int addedentires = 0;
+            //int updates = 0;
+            AttendanceStatus attendanceStatus;
+            if (request.Type == RequestType.PaidLeave)
+            {
+                attendanceStatus = AttendanceStatus.OnPaidLeave;
+            }
+            else
+            {
+                attendanceStatus = AttendanceStatus.OnUnpaidLeave;
+            }
+            var attendances = await _attendanceRepository.GetByEmployeeIdAsync(request.EmployeeId);
+            /*if (attendances is null)
+            {
+                throw new NotFoundException("No Attendances exist for this employee!");
+            }*/
+            attendances = attendances.Where(a => a.Date <= request.EndDate && a.Date >= request.StartDate).ToList();
+            var date = request.StartDate;
+            while (date <= request.EndDate)
+            {
+                var existingattendance = attendances.FirstOrDefault(a => a.Date == date);
+                if (existingattendance == null)
+                {
+                    var newattendance = new Attendance
+                    {
+                        Employee = request.Employee,
+                        Department = request.Department,
+                        AttendanceStatus = attendanceStatus,
+                        Date = date,
+                    };
+                    await _attendanceRepository.AddAsync(newattendance);
+                    addedentires++;
+                }
+                date = date.AddDays(1);
+            }
+            if (addedentires > 0)
+            {
+                var isadded = await _attendanceRepository.SaveChangesAsync();
+                if (!isadded)
+                {
+                    throw new Exception("Could not save and update attendances!");
+                }
+            }
         }
     }
 }

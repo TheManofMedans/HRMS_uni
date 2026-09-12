@@ -124,6 +124,11 @@ namespace HRMS.Application.Services
             {
                 throw new NotFoundException(nameof(Attendance),id);
             }
+            if (Attendance.AttendanceStatus == AttendanceStatus.OnUnpaidLeave || Attendance.AttendanceStatus == AttendanceStatus.OnPaidLeave ||
+                Attendance.ShiftId == null)
+            {
+                throw new ConflictException("You cannot clock in or out for a \"On Leave\" attendance record!");
+            }
             if (DateTime.UtcNow < CalculateShiftStart(Attendance))
             {
                 throw new ConflictException("You cannot Clock in before due time!");

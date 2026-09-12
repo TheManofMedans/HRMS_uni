@@ -16,8 +16,10 @@ namespace HRMS.Infrastructure.Persistence.Configurations
             builder.ToTable("Company");
             builder.HasKey(x => x.Id);
             builder.Property(u => u.RegNum).IsRequired().HasMaxLength(100);
-            builder.Property(u=>u.Name).HasMaxLength(100);
+            builder.Property(u=>u.Name).IsRequired().HasMaxLength(100);
             builder.Property(u=>u.Address).HasMaxLength(500);
+            builder.Property(c => c.OvertimeRate).HasColumnType("decimal(5,2)");
+            builder.Property(c => c.LateDeductionValue).HasColumnType("decimal(18,2)");
             builder.HasIndex(u => u.RegNum).IsUnique();
 
             builder.HasMany(u=>u.Departments)

@@ -33,7 +33,8 @@ namespace HRMS.API.BackgroundServices
             var requestRepository = scope.ServiceProvider.GetRequiredService<IRequestRepository>();
             int updated = 0;
             List<RequestType> requestTypes = new List<RequestType>();
-            requestTypes.Add(RequestType.Leave);
+            requestTypes.Add(RequestType.PaidLeave);
+            requestTypes.Add(RequestType.UnPaidLeave);
             requestTypes.Add(RequestType.Remote_Work);
             requestTypes.Add(RequestType.Shift_Change);
             requestTypes.Add(RequestType.Mission);

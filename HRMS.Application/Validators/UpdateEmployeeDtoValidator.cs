@@ -16,7 +16,7 @@ namespace HRMS.Application.Validators
             RuleFor(ue => ue.FirstName).MaximumLength(100);
             RuleFor(ue => ue.LastName).MaximumLength(100);
             RuleFor(ue => ue.Phone).MaximumLength(11);
-            RuleFor(ue => ue.Salary).MaximumLength(11);
+            RuleFor(ue => ue.Salary).NotNull();
             RuleFor(ue => ue.EmploymentStatus).IsInEnum();
             RuleFor(ue => ue.PayrollStatus).IsInEnum();
             RuleFor(ue => ue.Gender).IsInEnum();

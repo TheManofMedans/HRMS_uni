@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HRMS.domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,9 @@ namespace HRMS.domain.Entities
         public ICollection<UserCompany> UserCompanies { get; set; } = new List<UserCompany>();
         public ICollection<Department> Departments { get; set; } = new List<Department>();
         public ICollection<Shift> Shifts { get; set; } = new List<Shift>();
+        public decimal OvertimeRate { get; set; } = 1.5m;
+        public LateDeductionType LateDeductionType { get; set;}
+        public decimal LateDeductionValue { get; set; }
 
     }
 }

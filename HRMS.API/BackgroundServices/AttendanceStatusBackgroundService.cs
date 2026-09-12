@@ -37,6 +37,10 @@ namespace HRMS.API.BackgroundServices
             int updatecount = 0;
             foreach ( var attendance in pendingattendances )
             {
+                if (attendance.ShiftId == null)
+                {
+                    continue;
+                }
                 var shiftstart = CalculateShiftStart(attendance.Date, attendance.Shift.StartTime);
                 var shiftend = CalculateShiftEnd(attendance.Date,attendance.Shift.StartTime,attendance.Shift.EndTime);
                 if (now < shiftend)

@@ -161,6 +161,7 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddHostedService<AttendanceStatusBackgroundService>();
 builder.Services.AddHostedService<RequestStatusBackgroundService>();
+builder.Services.AddHostedService<PaySlipGenerationBackgrounService>();
 var app = builder.Build();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 

@@ -13,6 +13,7 @@ namespace HRMS.Application.Interfaces.Repositories
         Task<Employee?> GetByIdWithDepartmentsAsync(int Id);
         Task<Employee?> GetByUserIdAsync(int userId);
         Task<IEnumerable<Employee>> GetAllAsync();
+        Task<IEnumerable<EmployeeDepartment>> GetAllAssignmentsAsync();
         Task<bool> UserIdExistsAsync(int userId);
         Task AddAsync(Employee employee);
         void Update(Employee employee);

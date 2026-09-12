@@ -52,6 +52,13 @@ namespace HRMS.Infrastructure.Repositories
                 .Where(a => a.Employee.Id == id && a.AttendanceStatus == status)
                 .ToListAsync();
         }
+        public async Task<IEnumerable<Attendance>> GetByEmployeeAndDepartmentAndWeekAsync(int employeeId,int departmentId, DateTime weekStart, DateTime weekEnd)
+        {
+            return await _context.Attendances
+                .Include(a => a.Shift)
+                .Where(a => a.EmployeeId == employeeId && a.departmentId == departmentId && a.Date >= weekStart && a.Date <= weekEnd)
+                .ToListAsync();
+        }
         public async Task AddAsync(Attendance attendance)
         {
             await _context.AddAsync(attendance);

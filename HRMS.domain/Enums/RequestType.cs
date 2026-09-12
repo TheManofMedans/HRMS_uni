@@ -8,7 +8,8 @@ namespace HRMS.domain.Enums
 {
     public enum RequestType
     {
-        Leave,
+        PaidLeave,
+        UnPaidLeave,
         Remote_Work,
         Equipment,
         Shift_Change,

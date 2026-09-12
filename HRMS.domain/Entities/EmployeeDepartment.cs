@@ -14,7 +14,7 @@ namespace HRMS.domain.Entities
         public int DepartmentID { get; set; }
         public Department Department { get; set; } = null!;
         public Boolean IsPrimary { get; set; }
-        public string Salary { get; set; } = string.Empty;
+        public decimal Salary { get; set; }
         public string JobDescription {  get; set; } = string.Empty;
         public EmploymentStatus EmploymentStatus { get; set; }
         public PayrollStatus PayrollStatus { get; set; }

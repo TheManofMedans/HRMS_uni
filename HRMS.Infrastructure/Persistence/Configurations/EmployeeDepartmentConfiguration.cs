@@ -15,7 +15,7 @@ namespace HRMS.Infrastructure.Persistence.Configurations
         {
             builder.ToTable("EmployeeDepartment");
             builder.HasKey(ed => new{ ed.EmployeeID,ed.DepartmentID});
-            builder.Property(ed => ed.Salary).IsRequired();
+            builder.Property(ed => ed.Salary).IsRequired().HasColumnType("decimal(18,2)");
             builder.Property(ed => ed.EmploymentStatus).IsRequired();
             builder.HasOne(ed => ed.Employee)
                 .WithMany(e=>e.EmployeeDepartments)

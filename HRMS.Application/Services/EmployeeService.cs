@@ -85,7 +85,7 @@ namespace HRMS.Application.Services
                 DepartmentID = DepartmentId,
                 AssignedAt = DateTime.UtcNow,
                 IsPrimary = false,
-                Salary = dto.Salary,
+                Salary = dto.Salary.Value,
                 EmploymentStatus = dto.EmploymentStatus.Value,
                 JobDescription = dto.JobDescription,
                 PayrollStatus = dto.PayrollStatus.Value,
@@ -112,7 +112,7 @@ namespace HRMS.Application.Services
             }
             if (dto.Salary != null)
             {
-                employeedepartment.Salary = dto.Salary;
+                employeedepartment.Salary = dto.Salary.Value;
             }
             if (dto.PayrollStatus != null)
             {
@@ -256,7 +256,7 @@ namespace HRMS.Application.Services
             }
             if (dto.Salary != null)
             {
-                ed.Salary = dto.Salary;
+                ed.Salary = dto.Salary.Value;
             }
             _employeeRepository.Update(employee);
             return await _employeeRepository.SaveChangesAsync();

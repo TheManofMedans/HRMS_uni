@@ -6,15 +6,9 @@ using System.Threading.Tasks;
 
 namespace HRMS.domain.Enums
 {
-    public enum AttendanceStatus
+    public enum LateDeductionType
     {
-        Pending,
-        Present,
-        Late,
-        Absent,
-        OnPaidLeave,
-        OnUnpaidLeave,
-        NoClockOut
-
+        Percentage,
+        FlatAmount
     }
 }

@@ -10,9 +10,9 @@ namespace HRMS.Application.DTOs.Attendance
     public class AttendanceResponseDto
     {
         public int Id {  get; set; }
-        public EmployeeDto Employee { get; set; }
-        public DepartmentDto Department { get; set; }
-        public ShiftDto Shift { get; set; }
+        public EmployeeDto Employee { get; set; } = null!;
+        public DepartmentDto Department { get; set; } = null!;
+        public ShiftDto? Shift { get; set; }
         public DateTime Date { get; set; }
         public DateTime? ClockedIn {  get; set; }
         public DateTime? ClockedOut { get; set; }

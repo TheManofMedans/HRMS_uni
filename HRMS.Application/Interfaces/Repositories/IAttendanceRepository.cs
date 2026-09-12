@@ -15,6 +15,7 @@ namespace HRMS.Application.Interfaces.Repositories
         Task<IEnumerable<Attendance>> GetByEmployeeIdAsync(int employeeId);
         Task<IEnumerable<Attendance>> GetByStatusAsync(AttendanceStatus status);
         Task<IEnumerable<Attendance>> GetByEmployeeAndStatusAsync(int employeeId, AttendanceStatus status);
+        Task<IEnumerable<Attendance>> GetByEmployeeAndDepartmentAndWeekAsync(int employeeId, int departmentId, DateTime weekStart,DateTime weekEnd);
         Task AddAsync(Attendance attendance);
         void Update(Attendance attendance);
         void Delete(Attendance attendance);
