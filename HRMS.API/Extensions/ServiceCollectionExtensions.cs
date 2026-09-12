@@ -16,6 +16,18 @@ namespace HRMS.API.Extensions
             RegisterByConvention(services, infrastructureAssembly);
             return services;
         }
+        public static IServiceCollection AddCompanyResolvers(this IServiceCollection services)
+        {
+            var resolverAssembly = typeof(HRMS.API.Authorization.ICompanyResolver).Assembly;
+            RegisterCompanyResolvers(services, resolverAssembly);
+            return services;
+        }
+        public static IServiceCollection AddOwnerResolvers(this IServiceCollection services)
+        {
+            var resolverAssembly = typeof(HRMS.API.Authorization.IResourceOwnerResolver).Assembly;
+            RegisterOwnerResolvers(services, resolverAssembly);
+            return services;
+        }
         private static void RegisterByConvention(IServiceCollection services, Assembly assembly)
         {
             var candidates = assembly.GetTypes().Where(t => t.IsClass && !t.IsAbstract);
@@ -26,6 +38,30 @@ namespace HRMS.API.Extensions
                 if (matchingInterface != null)
                 {
                     services.AddScoped(matchingInterface, candidate);
+                }
+            }
+        }
+        public static void RegisterCompanyResolvers(IServiceCollection services,Assembly assembly)
+        {
+            var candidates = assembly.GetTypes().Where(c => c.IsClass && !c.IsAbstract);
+            foreach(var candidate in candidates)
+            {
+                var interfaces = candidate.GetInterfaces().FirstOrDefault(c => c.Name == "ICompanyResolver");
+                if (interfaces != null)
+                {
+                    services.AddScoped(interfaces, candidate);
+                }
+            }
+        }
+        public static void RegisterOwnerResolvers(IServiceCollection services,Assembly assembly)
+        {
+            var candidates = assembly.GetTypes().Where(c => c.IsClass && !c.IsAbstract);
+            foreach (var candidate in candidates)
+            {
+                var specialinterface = candidate.GetInterfaces().FirstOrDefault(i => i.Name == "IResourceOwnerResolver");
+                if (specialinterface != null)
+                {
+                    services.AddScoped(specialinterface, candidate);
                 }
             }
         }

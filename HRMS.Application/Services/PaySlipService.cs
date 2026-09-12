@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HRMS.Application.DTOs.PaySlip;
 using HRMS.Application.Exceptions;
+using HRMS.Application.Interfaces;
 using HRMS.Application.Interfaces.Repositories;
 using HRMS.Application.Interfaces.Services;
 using HRMS.domain.Entities;
@@ -20,10 +21,11 @@ namespace HRMS.Application.Services
         private readonly IDepartmentRepository _departmentRepository;
         private readonly IAttendanceRepository _attendanceRepository;
         private readonly ICompanyRepository _companyRepository;
+        private readonly ICurrentUserService _currentUser;
         private readonly IMapper _mapper;
         public PaySlipService(IPaySlipRepository paySlipRepository, IEmployeeRepository employeeRepository, IDepartmentRepository departmentRepository
             ,IAttendanceRepository attendanceRepository, ICompanyRepository companyRepository
-            ,IMapper mapper)
+            ,IMapper mapper,ICurrentUserService currentUser)
         {
             _paySlipRepository = paySlipRepository;
             _employeeRepository = employeeRepository;
@@ -31,6 +33,7 @@ namespace HRMS.Application.Services
             _attendanceRepository = attendanceRepository;
             _companyRepository = companyRepository;
             _mapper = mapper;
+            _currentUser = currentUser;
         }
         public async Task<PaySlipResponseDto> GenerateForWeekAsync(int employeeId,int departmentId,DateTime weekStart)
         {
@@ -192,7 +195,8 @@ namespace HRMS.Application.Services
                     throw new NotFoundException(nameof(Department),departmentId.Value);
                 }
             }
-            var result = await _paySlipRepository.GetByDateAsync(startWeek,endWeek,companyId,departmentId);
+            var payslips = await _paySlipRepository.GetByDateAsync(startWeek,endWeek,companyId,departmentId);
+            var result = FilterVisible(payslips);
             return _mapper.Map<IEnumerable<PaySlipResponseDto>>(result);
         }
         public async Task DeleteAsync(int id)
@@ -215,6 +219,12 @@ namespace HRMS.Application.Services
             if (duration <= TimeSpan.Zero)
                 duration = duration.Add(TimeSpan.FromHours(24));
             return duration;
+        }
+        private IEnumerable<PaySlip> FilterVisible(IEnumerable<PaySlip> slips)
+        {
+            return slips.Where(s => s.EmployeeId == _currentUser.EmployeeId || 
+            (_currentUser.CompanyRoles.TryGetValue(s.Department.CompanyId,out var role) && Enum.TryParse<CompanyRole>(role,out var companyRole)
+            && companyRole <= CompanyRole.HRManager)).ToList();
         }
     }
 }

@@ -25,6 +25,8 @@ builder.Services.AddControllers();
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrustructureServices();
+builder.Services.AddCompanyResolvers();
+builder.Services.AddOwnerResolvers();
 builder.Services.AddAutoMapper(cfg => { },typeof(HRMS.Application.Mappings.AttendanceMappingProfile).Assembly);
 builder.Services.AddValidatorsFromAssembly(typeof(HRMS.Application.Validators.CreateAttendanceDtoValidator).Assembly);
 builder.Services.AddFluentValidationAutoValidation();
@@ -63,7 +65,7 @@ builder.Services.AddAuthentication(options =>
     });
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService,CurrentUserService>();
-builder.Services.AddScoped<CompanyCompanyResolver>();
+/*builder.Services.AddScoped<CompanyCompanyResolver>();
 builder.Services.AddScoped<DepartmentCompanyResolver>();
 builder.Services.AddScoped<ShiftCompanyResolver>();
 builder.Services.AddScoped<AttendanceCompanyResolver>();
@@ -71,7 +73,7 @@ builder.Services.AddScoped<RequestCompanyResolver>();
 builder.Services.AddScoped<AttendanceOwnerResolver>();
 builder.Services.AddScoped<RequestOwnerResolver>();
 builder.Services.AddScoped<NotificationCompanyResolver>();
-builder.Services.AddScoped<NotificationOwnerResolver>();
+builder.Services.AddScoped<NotificationOwnerResolver>();*/
 builder.Services.AddScoped<IAuthorizationHandler, CompanyRoleAuthorizationHandler>();
 builder.Services.AddScoped<IAuthorizationHandler, EmployeeCompanyAuthorizationHandler>();
 builder.Services.AddScoped<IAuthorizationHandler,OwnerOrRoleAuthorizationHandler>();
@@ -99,6 +101,8 @@ builder.Services.AddAuthorization(options =>
         policy.Requirements.Add(new CompanyRoleRequirement(CompanyRole.HRManager, typeof(RequestCompanyResolver), "id")));
     options.AddPolicy("Request_RequireHREmployee", policy =>
         policy.Requirements.Add(new CompanyRoleRequirement(CompanyRole.HREmployee, typeof(RequestCompanyResolver), "id")));
+    options.AddPolicy("PaySlip_RequireHRManager", policy =>
+       policy.Requirements.Add(new CompanyRoleRequirement(CompanyRole.HRManager, typeof(PaySlipCompanyResolver), "id")));
     options.AddPolicy("Attendance_OwnOrHRManager", policy =>
         policy.Requirements.Add(new OwnershipOrRoleRequirement(typeof(AttendanceCompanyResolver)
             , typeof(AttendanceOwnerResolver),CompanyRole.HRManager , "id")));
@@ -119,6 +123,9 @@ builder.Services.AddAuthorization(options =>
         policy.Requirements.Add(new EmployeeCompanyRequirement(CompanyRole.HREmployee)));
     options.AddPolicy("Employee_ViewOrEditScoped", policy =>
         policy.Requirements.Add(new EmployeeCompanyRequirement(CompanyRole.HRManager)));
+    options.AddPolicy("PaySlip_OwnOrHRManager", policy =>
+        policy.Requirements.Add(new OwnershipOrRoleRequirement(typeof(PaySlipCompanyResolver), typeof(PaySlipOwnerResolver), CompanyRole.HRManager,
+        "id")));
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
