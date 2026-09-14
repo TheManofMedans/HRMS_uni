@@ -14,7 +14,7 @@ namespace HRMS.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<MailThreadParticipant> builder)
         {
-            builder.ToTable("MailThreadParticioants");
+            builder.ToTable("MailThreadParticipants");
             builder.HasKey(mtp => new { mtp.ThreadId, mtp.UserId });
             builder.HasOne(mtp => mtp.Thread)
                 .WithMany(mt => mt.Participants)

@@ -29,7 +29,7 @@ namespace HRMS.Infrastructure.Repositories
             return await _context.MailThreads.Include(mt => mt.CreatedByUser)
                 .Include(mt => mt.Company).Include(mt => mt.Participants)
                 .Include(mt => mt.Messages).Include(mt => mt.RelatedRequest)
-                .Where(mt => mt.CreatedByUserId == userId).ToListAsync();
+                .Where(mt => mt.Participants.Any(p => p.UserId == userId)).ToListAsync();
         }
         public async Task AddThreadAsync(MailThread thread)
         {

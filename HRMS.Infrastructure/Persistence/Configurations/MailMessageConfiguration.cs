@@ -19,7 +19,7 @@ namespace HRMS.Infrastructure.Persistence.Configurations
             builder.HasOne(mm => mm.Thread)
                 .WithMany(t => t.Messages)
                 .HasForeignKey(mm => mm.ThreadId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
             builder.HasOne(mm => mm.Sender)
                 .WithMany()
                 .HasForeignKey(mm => mm.SenderUserId)
