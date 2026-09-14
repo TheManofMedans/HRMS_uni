@@ -41,6 +41,11 @@ namespace HRMS.Application.Services
             var Users = await _userRepository.GetAllAsync();
             return _mapper.Map <IEnumerable< UserResponseDto >> (Users);
         }
+        public async Task<IEnumerable<UserResponseDto>> GetByCompanyIdAsync(int companyId)
+        {
+            var users = await _userRepository.GetByCompanyIdAsync(companyId);
+            return _mapper.Map<IEnumerable<UserResponseDto>>(users);
+        }
 
         public async Task<bool> UpdateUserAsync(int id, UpdateUserDto dto)
         {
@@ -52,9 +57,13 @@ namespace HRMS.Application.Services
             var employee = await _employeeRepository.GetByUserIdAsync(user.Id);
             if (dto.NewPassword != null && dto.CurrentPass != null)
             {
-               await _userManager.ChangePasswordAsync(user, dto.CurrentPass, dto.NewPassword);
+                var result =  await _userManager.ChangePasswordAsync(user, dto.CurrentPass, dto.NewPassword);
+                if (!result.Succeeded)
+                {
+                    throw new Exception("Password did not change!");
+                }
             }
-            if (dto.FirstName != null)
+            /*if (dto.FirstName != null)
             {
                 user.FirstName = dto.FirstName;
                 if (employee != null)
@@ -93,7 +102,7 @@ namespace HRMS.Application.Services
                 {
                     employee.SSN = dto.SSN;
                 }
-            }
+            }*/
             if (employee == null)
             {
                 var result = await _userManager.UpdateAsync(user);

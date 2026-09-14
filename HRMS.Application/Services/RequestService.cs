@@ -12,6 +12,7 @@ using HRMS.Application.DTOs.Request;
 using HRMS.Application.Exceptions;
 using HRMS.domain.Enums;
 using HRMS.Application.Interfaces;
+using HRMS.domain.Helpers;
 
 
 namespace HRMS.Application.Services
@@ -23,9 +24,11 @@ namespace HRMS.Application.Services
         private readonly IMapper _mapper;
         private readonly IRequestRepository _requestRepository;
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly IShiftRepository _shiftRepository;
+        private readonly IDepartmentRepository _departmentRepository;
         private readonly INotificationService _notificationService;
         public RequestService(IMapper mapper, IRequestRepository requestRepository, IEmployeeRepository employeeRepository,ICurrentUserService currentUser
-            , INotificationService notificationService, IAttendanceRepository attendanceRepository)
+            , INotificationService notificationService, IAttendanceRepository attendanceRepository, IShiftRepository shiftRepository, IDepartmentRepository departmentRepository)
         {
             _mapper = mapper;
             _requestRepository = requestRepository;
@@ -33,6 +36,8 @@ namespace HRMS.Application.Services
             _currentUser = currentUser;
             _notificationService = notificationService;
             _attendanceRepository = attendanceRepository;
+            _shiftRepository = shiftRepository;
+            _departmentRepository = departmentRepository;
         }
         public async Task<RequestResponseDto?> GetByIdAsync(int id) 
         {
@@ -123,6 +128,35 @@ namespace HRMS.Application.Services
                 NotificationType.RequestSubmitted,attendanceId: null, requestId: request.Id);
             return _mapper.Map<RequestResponseDto>(request);
         }
+       /* public async Task<RequestResponseDto> SelfReportAsync(SelfReportRequestDto dto)
+        {
+            var employee = await _employeeRepository.GetbyIdAsync(dto.EmployeeId);
+            if (employee == null)
+            {
+                throw new NotFoundException(nameof(Employee),dto.EmployeeId);
+            }
+            var department = await _departmentRepository.GetByIdAsync(dto.DepartmentId);
+            if (department == null) 
+            {
+                throw new NotFoundException(nameof (Department),dto.DepartmentId);
+            }
+            var membership = employee.EmployeeDepartments.FirstOrDefault(ed => ed.DepartmentID == dto.DepartmentId);
+            if (membership == null)
+            {
+                throw new ConflictException("This employee does not work in this department!");
+            }
+            var shift = await _shiftRepository.GetByIdAsync(dto.ShiftId);
+            if (shift == null)
+            {
+                throw new NotFoundException(nameof(Shift),dto.ShiftId);
+            }
+            var attendanceStart = ShiftCalculationHelper.CalculateShiftStart(dto.Date, shift);
+            var attendanceEnd = ShiftCalculationHelper.CalculateShiftEnd(dto.Date, shift);
+            if (employee.Attendances.FirstOrDefault(a => a.Date == dto.Date))
+            {
+
+            }
+        }*/
         public async Task<bool> UpdateAsync(int id,UpdateRequestDto requestDto)
         {
             var request = await _requestRepository.GetByIdAsync(id);

@@ -12,6 +12,7 @@ namespace HRMS.Application.Interfaces.Services
     {
         Task<UserResponseDto?> GetByIdAsync(int id);
         Task<IEnumerable<UserResponseDto>> GetAllAsync();
+        Task<IEnumerable<UserResponseDto>> GetByCompanyIdAsync(int companyId);
         Task<bool> UpdateUserAsync(int id, UpdateUserDto dto);
         Task<bool> DeleteUserAsync(int id);
     }

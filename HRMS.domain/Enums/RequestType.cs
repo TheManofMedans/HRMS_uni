@@ -16,6 +16,7 @@ namespace HRMS.domain.Enums
         Mission,
         OverTime,
         tankhah,
+        KhodEzhari,
         Other
     }
 }

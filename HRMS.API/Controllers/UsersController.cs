@@ -24,13 +24,21 @@ namespace HRMS.API.Controllers
             return Ok(users);
         }
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetById(int id)
         {
             var user = await _userService.GetByIdAsync(id);
             return user is null ? NotFound() : Ok(user);
         }
+        [HttpGet("Company/{companyId}")]
+        [Authorize]
+        public async Task<IActionResult> GetByCompanyId(int companyId)
+        {
+            var users = await _userService.GetByCompanyIdAsync(companyId);
+            return Ok(users);
+        }
         [HttpPut("{id}")]
-        [Authorize(Roles = "SuperAdmin")]
+        [Authorize]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateUserDto dto)
         {
             await _userService.UpdateUserAsync(id, dto);
