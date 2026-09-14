@@ -42,6 +42,15 @@ namespace HRMS.Infrastructure.Repositories
                 .Include(u => u.UserCompanies)
                 .FirstOrDefaultAsync (u => u.Id == id);
         }
+        public async Task<IEnumerable<int>> GetAllCompanyIdsForUserAsync(int userId)
+        {
+            var viaCompanyRole =  await _context.UserCompanies.Where(uc => uc.UserId == userId)
+                .Select(uc => uc.CompanyId).ToListAsync();
+            var viaEmployee = await _context.Employees.Where(e => e.UserId == userId)
+                .SelectMany(e => e.EmployeeDepartments.Select(ed => ed.Department.CompanyId))
+                .ToListAsync();
+            return viaCompanyRole.Union(viaEmployee).Distinct();
+        }
         public async Task<bool> EmailExistsAsync(string email)
         {
             return await _context.Users.AnyAsync(u => u.Email == email);

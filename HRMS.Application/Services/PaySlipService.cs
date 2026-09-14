@@ -165,7 +165,8 @@ namespace HRMS.Application.Services
                 throw new NotFoundException(nameof(Employee), employeeId);
             }
             var paySlips = await _paySlipRepository.GetByEmployeeIdAsync(employeeId);
-            return _mapper.Map<IEnumerable<PaySlipResponseDto>>(paySlips);
+            var result = FilterVisible(paySlips);
+            return _mapper.Map<IEnumerable<PaySlipResponseDto>>(result);
         }
         public async Task<IEnumerable<PaySlipResponseDto>> GetByDepartmentIdAsync(int departmentId)
         {
@@ -175,7 +176,8 @@ namespace HRMS.Application.Services
                 throw new NotFoundException(nameof(Department), departmentId);
             }
             var paySlips = await _paySlipRepository.GetByDepartmentIdAsync(departmentId);
-            return _mapper.Map<IEnumerable<PaySlipResponseDto>>(paySlips);
+            var filtered = FilterVisible(paySlips);
+            return _mapper.Map<IEnumerable<PaySlipResponseDto>>(filtered);
         }
         public async Task<IEnumerable<PaySlipResponseDto>> SearchAsync(DateTime? startWeek = null,DateTime? endWeek= null,int? companyId= null,int? departmentId = null)
         {

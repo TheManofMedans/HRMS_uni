@@ -13,6 +13,7 @@ namespace HRMS.Application.Interfaces.Repositories
         Task<User?> GetByIdWithCompanyAsync(int id);
         Task<User?> GetByIdWithEverythingAsync(int id);
         Task<IEnumerable<User>> GetAllAsync();
+        Task<IEnumerable<int>> GetAllCompanyIdsForUserAsync(int userId);
         Task AddAsync(User user);
         void Update(User user);
         void Delete(User user);

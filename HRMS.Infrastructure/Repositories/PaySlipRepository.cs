@@ -31,6 +31,7 @@ namespace HRMS.Infrastructure.Repositories
         public async Task<IEnumerable<PaySlip>> GetByDateAsync(DateTime? startWeek = null, DateTime? endWeek = null, int? companyId = null, int? departmentId = null)
         {
             var query = _context.PaySlips.AsQueryable();
+            query = query.Include(p => p.Employee).ThenInclude(e => e.EmployeeDepartments).Include(p => p.Department).ThenInclude(d => d.Company);
             if (startWeek != null)
             {
                 query = query.Where(p => p.WeekStart >= startWeek);

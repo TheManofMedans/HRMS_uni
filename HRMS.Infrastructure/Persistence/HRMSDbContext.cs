@@ -25,6 +25,9 @@ namespace HRMS.Infrastructure.Persistence
         public DbSet<Attendance> Attendances => Set<Attendance>();
         public DbSet<Notification> Notifications => Set<Notification>();
         public DbSet<PaySlip> PaySlips => Set<PaySlip>();
+        public DbSet<MailThread> MailThreads => Set<MailThread>();
+        public DbSet<MailMessage> MailMessages => Set<MailMessage>();
+        public DbSet<MailThreadParticipant> MailThreadParticipants => Set<MailThreadParticipant>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

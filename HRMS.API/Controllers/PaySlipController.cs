@@ -37,9 +37,9 @@ namespace HRMS.API.Controllers
         }
         [HttpGet("Company/{companyId}")]
         [Authorize(Policy = "Company_RequireHRManager")]
-        public async Task<IActionResult> GetCompanyPayRoll(int companyId, DateTime weekStart)
+        public async Task<IActionResult> GetCompanyPayRollForEmployee(int employeeId,[FromQuery] DateTime weekStart)
         {
-            var paySlip = await _paySlipService.GetCompanyPayrollSummaryAsync(companyId, weekStart);
+            var paySlip = await _paySlipService.GetCompanyPayrollSummaryAsync(employeeId, weekStart);
             return Ok(paySlip);
         }
         [HttpGet("Employee/{id}")]
@@ -65,9 +65,9 @@ namespace HRMS.API.Controllers
         }
         [HttpPost("Employee/{employeeId}/Department/{departmentId}")]
         [Authorize]
-        public async Task<IActionResult> CreatePaySlip(int employeeId,int departmentId,[FromQuery]DateTime startWeek)
+        public async Task<IActionResult> CreatePaySlip(int employeeId,int departmentId,[FromBody]DateTime startWeek)
         {
-            var department = await _departmentRepository.GetByIdAsync(employeeId);
+            var department = await _departmentRepository.GetByIdAsync(departmentId);
             if (department == null)
             {
                 throw new NotFoundException(nameof(Department),departmentId);
