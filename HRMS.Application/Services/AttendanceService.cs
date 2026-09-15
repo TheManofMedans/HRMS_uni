@@ -237,6 +237,7 @@ namespace HRMS.Application.Services
             {
                 return false;
             }
+            await _notificationService.RemoveAttendanceReferencesAsync(id);
             _attendanceRepository.Delete(Attendance);
             return await _attendanceRepository.SaveChangesAsync();
         }

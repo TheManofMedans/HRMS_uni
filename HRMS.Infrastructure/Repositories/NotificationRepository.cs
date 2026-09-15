@@ -26,6 +26,14 @@ namespace HRMS.Infrastructure.Repositories
                 .ThenInclude(d => d.Company)
                 .ToListAsync();
         }
+        public async Task<IEnumerable<Notification>> GetByRequestIdAsync(int requestId)
+        {
+            return await _context.Notifications.Where(n => n.RequestId == requestId).ToListAsync();
+        }
+        public async Task<IEnumerable<Notification>> GetByAttendanceIdAsync(int attendanceId)
+        {
+            return await _context.Notifications.Where(n => n.AttendanceId == attendanceId).ToListAsync();
+        }
         public async Task<Notification?> GetByIdAsync(int id)
         {
             return await _context.Notifications.Include(n => n.User)

@@ -128,9 +128,9 @@ namespace HRMS.Application.Services
                 NotificationType.RequestSubmitted,attendanceId: null, requestId: request.Id);
             return _mapper.Map<RequestResponseDto>(request);
         }
-       /* public async Task<RequestResponseDto> SelfReportAsync(SelfReportRequestDto dto)
+        /*public async Task<RequestResponseDto> SelfReportAsync(SelfReportRequestDto dto)
         {
-            var employee = await _employeeRepository.GetbyIdAsync(dto.EmployeeId);
+            var employee = await _employeeRepository.GetByIdWithDepartmentsAsync(dto.EmployeeId);
             if (employee == null)
             {
                 throw new NotFoundException(nameof(Employee),dto.EmployeeId);
@@ -152,10 +152,7 @@ namespace HRMS.Application.Services
             }
             var attendanceStart = ShiftCalculationHelper.CalculateShiftStart(dto.Date, shift);
             var attendanceEnd = ShiftCalculationHelper.CalculateShiftEnd(dto.Date, shift);
-            if (employee.Attendances.FirstOrDefault(a => a.Date == dto.Date))
-            {
 
-            }
         }*/
         public async Task<bool> UpdateAsync(int id,UpdateRequestDto requestDto)
         {
@@ -255,6 +252,7 @@ namespace HRMS.Application.Services
             {
                 throw new NotFoundException(nameof(request), id);
             }
+            await _notificationService.RemoveRequestReferencesAsync(id);
             _requestRepository.Delete(request);
             return await _requestRepository.SaveChangesAsync();
         }

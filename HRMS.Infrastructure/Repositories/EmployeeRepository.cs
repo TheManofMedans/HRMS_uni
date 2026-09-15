@@ -36,8 +36,10 @@ namespace HRMS.Infrastructure.Repositories
         }
         public async Task<Employee?> GetByIdWithDepartmentsAsync(int id)
         {
-            return await _context.Employees.
-                Include(e => e.EmployeeDepartments).
+            return await _context.Employees
+                .Include(e => e.Attendances)
+                .ThenInclude(a => a.Shift)
+                .Include(e => e.EmployeeDepartments).
                 ThenInclude(ed => ed.Department)
                 .ThenInclude(d => d.Company)
                 .FirstOrDefaultAsync(e => e.Id == id);

@@ -77,6 +77,52 @@ namespace HRMS.Application.Services
                 throw new Exception("Could not add the notification to the database!");
             }
         }
+        public async Task RemoveRequestReferencesAsync(int requestId)
+        {
+            var notifications = await _notificationRepository.GetByRequestIdAsync(requestId);
+            foreach(var notification in notifications)
+            {
+                notification.RequestId = null;
+                _notificationRepository.Update(notification);
+            }
+            var isupdated = await _notificationRepository.SaveChangesAsync();
+            if (!isupdated)
+            {
+                throw new Exception($"Unable to remove notification from {requestId}");
+            }
+            foreach(var notification in notifications)
+            {
+                _notificationRepository.Delete(notification);
+            }
+            var isdeleted = await _notificationRepository.SaveChangesAsync();
+            if (!isdeleted)
+            {
+                throw new Exception("Unable to delete the notification!");
+            }
+        }
+        public async Task RemoveAttendanceReferencesAsync(int attendanceId)
+        {
+            var notifications = await _notificationRepository.GetByAttendanceIdAsync(attendanceId);
+            foreach(var notification in notifications)
+            {
+                notification.AttendanceId = null;
+                _notificationRepository.Update(notification);
+            }
+            var isupdated = await _notificationRepository.SaveChangesAsync();
+            if (!isupdated)
+            {
+                throw new Exception($"Unable to remove notification from {attendanceId}");
+            }
+            foreach (var notification in notifications)
+            {
+                _notificationRepository.Delete(notification);
+            }
+            var isdeleted = await _notificationRepository.SaveChangesAsync();
+            if (!isdeleted)
+            {
+                throw new Exception("Unable to delete the notification!");
+            }
+        }
         private IEnumerable<Notification> FilterVisible(IEnumerable<Notification> notifications)
         {
             if (_currentUser.IsSuperAdmin)

@@ -11,6 +11,8 @@ namespace HRMS.Application.Interfaces.Repositories
     public interface INotificationRepository
     {
         Task<IEnumerable<Notification>> GetAllAsync();
+        Task<IEnumerable<HRMS.domain.Entities.Notification>> GetByRequestIdAsync(int requestId);
+        Task<IEnumerable<Notification>> GetByAttendanceIdAsync(int attendanceId);
         Task<Notification?> GetByIdAsync(int id);
         Task CreateAsync(Notification notification);
         void Update(Notification notification);
