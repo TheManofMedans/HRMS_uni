@@ -150,9 +150,13 @@ namespace HRMS.Application.Services
             {
                 throw new NotFoundException(nameof(Shift),dto.ShiftId);
             }
-            var attendanceStart = ShiftCalculationHelper.CalculateShiftStart(dto.Date, shift);
-            var attendanceEnd = ShiftCalculationHelper.CalculateShiftEnd(dto.Date, shift);
-
+            var request = new Request{
+                EmployeeId = dto.EmployeeId,
+                DepartmentId = dto.DepartmentId,
+                Description = dto.Description,
+                Type = RequestType.KhodEzhari,
+                Status = RequestStatus.Pending,
+            };
         }*/
         public async Task<bool> UpdateAsync(int id,UpdateRequestDto requestDto)
         {

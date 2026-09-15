@@ -11,6 +11,7 @@ namespace HRMS.Application.Interfaces.Services
     {
         Task<PaySlipResponseDto> GenerateForWeekAsync(int employeeId,int departmentId,DateTime weekStart);
         Task<IEnumerable<CompanyPayrollSummaryDto>> GetCompanyPayrollSummaryAsync(int employeeId,DateTime weekStart);
+        Task RecalculateIfRecentAsync(int employeeId, int departmentId, DateTime attendanceDate);
         Task<PaySlipResponseDto?> GetByIdAsync(int id);
         Task<IEnumerable<PaySlipResponseDto>> GetByEmployeeIdAsync(int employeeId);
         Task<IEnumerable<PaySlipResponseDto>> GetByDepartmentIdAsync(int departmentId);

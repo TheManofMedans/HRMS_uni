@@ -129,7 +129,7 @@ builder.Services.AddAuthorization(options =>
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
+/*builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -155,7 +155,7 @@ builder.Services.AddSwaggerGen(options =>
             new string[] {}
         }
     });
-});
+});*/
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
@@ -174,11 +174,11 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+/*if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+}*/
 using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
@@ -189,11 +189,13 @@ using (var scope = app.Services.CreateScope())
 }
 app.UseCors("AllowAll");
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
 app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.MapControllers();
 
-app.Run("http://0.0.0.0:5287");
+app.MapControllers();
+app.MapFallbackToFile("index.html");
+app.Run();

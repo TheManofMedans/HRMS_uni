@@ -12,6 +12,8 @@ namespace HRMS.Application.DTOs.Request
         public int DepartmentId { get; set; }
         public int ShiftId { get; set; }
         public DateTime Date { get; set; }
+        public TimeSpan startTime { get; set; }
+        public TimeSpan endTime { get; set; }
         public string Description { get; set; } = string.Empty;
     }
 }

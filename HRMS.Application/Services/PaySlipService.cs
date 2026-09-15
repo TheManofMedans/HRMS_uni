@@ -6,6 +6,7 @@ using HRMS.Application.Interfaces.Repositories;
 using HRMS.Application.Interfaces.Services;
 using HRMS.domain.Entities;
 using HRMS.domain.Enums;
+using HRMS.domain.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +38,9 @@ namespace HRMS.Application.Services
         }
         public async Task<PaySlipResponseDto> GenerateForWeekAsync(int employeeId,int departmentId,DateTime weekStart)
         {
-            if (await _paySlipRepository.PaySlipExistsForWeekAsync(employeeId, departmentId, weekStart))
+            int daysSinceSaturday = ((int)weekStart.DayOfWeek + 1) % 7;
+            var saturdayWeekStart = weekStart.AddDays(-daysSinceSaturday);
+            if (await _paySlipRepository.PaySlipExistsForWeekAsync(employeeId, departmentId, saturdayWeekStart))
             {
                 throw new ConflictException("Error!");
             }
@@ -63,9 +66,9 @@ namespace HRMS.Application.Services
             }
             decimal monthlySalary = membership.Salary;
             decimal BaseWeeklyPay = monthlySalary * 12 / 52;
-            weekStart = weekStart.Date;
-            var weekEnd = weekStart.AddDays(6);
-            var attendances = await _attendanceRepository.GetByEmployeeAndDepartmentAndWeekAsync(employeeId,departmentId,weekStart,weekEnd);
+            //weekStart = weekStart.Date;
+            var weekEnd = saturdayWeekStart.AddDays(6);
+            var attendances = await _attendanceRepository.GetByEmployeeAndDepartmentAndWeekAsync(employeeId,departmentId,saturdayWeekStart,weekEnd);
             if (attendances.Count() == 0)
             {
                 throw new NotFoundException("There are no attendances for this user amd department! cannot calculate pay!");
@@ -118,7 +121,7 @@ namespace HRMS.Application.Services
             {
                 EmployeeId = employeeId,
                 DepartmentId = departmentId,
-                WeekStart = weekStart,
+                WeekStart = saturdayWeekStart,
                 WeekEnd = weekEnd,
                 BasePay = BaseWeeklyPay,
                 AbsenceDeduction = absenceDeduction,
@@ -127,12 +130,52 @@ namespace HRMS.Application.Services
                 OvertimePay = overtimePay,
                 NetPay = netPay,
             };
+            //var payslip = await BuildPayslipAsync(employee, membership, company, weekStart, weekStart.AddDays(6));
             await _paySlipRepository.AddAsync(payslip);
             var saved = await _paySlipRepository.SaveChangesAsync();
             if (!saved)
                 throw new Exception("Failed to save the calculated payslip.");
 
             return _mapper.Map<PaySlipResponseDto>(payslip);
+        }
+        public async Task RecalculateIfRecentAsync(int employeeId, int departmentId, DateTime attendanceDate)
+        {
+            var weekStart = PayrollWeekCalculator.GetWeekStart(attendanceDate);
+
+            var existing = (await _paySlipRepository.GetByEmployeeIdAndWeekAsync(employeeId, weekStart))
+                .FirstOrDefault(p => p.DepartmentId == departmentId);
+
+            if (existing is null)
+                return; 
+
+            if (DateTime.UtcNow - existing.WeekEnd > PayrollWeekCalculator.RecalculationWindow)
+                return; 
+
+            var employee = await _employeeRepository.GetByIdWithDepartmentsAsync(employeeId);
+            if (employee is null) return;
+
+            var membership = employee.EmployeeDepartments.FirstOrDefault(ed => ed.DepartmentID == departmentId);
+            if (membership is null) return;
+
+            var company = await _companyRepository.GetByIdAsync(membership.Department.CompanyId);
+            if (company is null) return;
+
+            var recalculated = await BuildPayslipAsync(employee, membership, company, existing.WeekStart, existing.WeekEnd);
+
+            existing.BasePay = recalculated.BasePay;
+            existing.AbsenceDeduction = recalculated.AbsenceDeduction;
+            existing.LateDeduction = recalculated.LateDeduction;
+            existing.UnpaidLeaveDeduction = recalculated.UnpaidLeaveDeduction;
+            existing.OvertimePay = recalculated.OvertimePay;
+            existing.NetPay = recalculated.NetPay;
+            existing.GeneratedAt = DateTime.UtcNow;
+
+            _paySlipRepository.Update(existing);
+            var isadded = await _paySlipRepository.SaveChangesAsync();
+            if (!isadded)
+            {
+                throw new Exception("Could not change payslip!");
+            }
         }
         public async Task<IEnumerable<CompanyPayrollSummaryDto>> GetCompanyPayrollSummaryAsync(int employeeId,DateTime weekStart)
         {
@@ -227,6 +270,67 @@ namespace HRMS.Application.Services
             return slips.Where(s => s.EmployeeId == _currentUser.EmployeeId || 
             (_currentUser.CompanyRoles.TryGetValue(s.Department.CompanyId,out var role) && Enum.TryParse<CompanyRole>(role,out var companyRole)
             && companyRole <= CompanyRole.HRManager)).ToList();
+        }
+        private async Task<PaySlip> BuildPayslipAsync(Employee employee, EmployeeDepartment membership, Company company, DateTime weekStart, DateTime weekEnd)
+        {
+            var attendances = (await _attendanceRepository.GetByEmployeeAndDepartmentAndWeekAsync(employee.Id, membership.DepartmentID, weekStart, weekEnd)).ToList();
+            if (attendances.Count == 0)
+                throw new ConflictException("No attendance records found for this employee, department, and week — cannot calculate payroll.");
+
+            decimal monthlySalary = membership.Salary;
+            decimal weeklyBasePay = monthlySalary * 12 / 52;
+            int scheduledDays = attendances.Count;
+            decimal dailyRate = weeklyBasePay / scheduledDays;
+
+            decimal totalScheduledHours = 0, totalOvertimeHours = 0;
+            int absentDays = 0, unpaidLeaveDays = 0, lateDays = 0;
+
+            foreach (var a in attendances)
+            {
+                switch (a.AttendanceStatus)
+                {
+                    case AttendanceStatus.Absent: absentDays++; break;
+                    case AttendanceStatus.OnUnpaidLeave: unpaidLeaveDays++; break;
+                    case AttendanceStatus.Late: lateDays++; break;
+                }
+
+                if (a.Shift is not null)
+                {
+                    var scheduledDuration = CalculateShiftDuration(a.Shift.StartTime, a.Shift.EndTime);
+                    totalScheduledHours += (decimal)scheduledDuration.TotalHours;
+
+                    if (a.Clockedin is not null && a.Clockedout is not null)
+                    {
+                        var actualHours = (decimal)(a.Clockedout.Value - a.Clockedin.Value).TotalHours;
+                        var excess = actualHours - (decimal)scheduledDuration.TotalHours;
+                        if (excess > 0) totalOvertimeHours += excess;
+                    }
+                }
+            }
+
+            decimal absenceDeduction = dailyRate * absentDays;
+            decimal unpaidLeaveDeduction = dailyRate * unpaidLeaveDays;
+            decimal lateDeduction = company.LateDeductionType == LateDeductionType.Percentage
+                ? dailyRate * (company.LateDeductionValue / 100m) * lateDays
+                : company.LateDeductionValue * lateDays;
+            decimal hourlyRate = totalScheduledHours > 0 ? weeklyBasePay / totalScheduledHours : 0;
+            decimal overtimePay = totalOvertimeHours * hourlyRate * company.OvertimeRate;
+            decimal netPay = weeklyBasePay - absenceDeduction - lateDeduction - unpaidLeaveDeduction + overtimePay;
+
+            return new PaySlip
+            {
+                EmployeeId = employee.Id,
+                DepartmentId = membership.DepartmentID,
+                WeekStart = weekStart,
+                WeekEnd = weekEnd,
+                BasePay = weeklyBasePay,
+                AbsenceDeduction = absenceDeduction,
+                LateDeduction = lateDeduction,
+                UnpaidLeaveDeduction = unpaidLeaveDeduction,
+                OvertimePay = overtimePay,
+                NetPay = netPay,
+                GeneratedAt = DateTime.UtcNow
+            };
         }
     }
 }

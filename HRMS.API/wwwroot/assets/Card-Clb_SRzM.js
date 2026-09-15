@@ -1,0 +1,1 @@
+import{B as e}from"./index-BoMuUMAH.js";var t=e(),n=({children:e,className:n=``,...r})=>(0,t.jsx)(`div`,{className:`bg-white rounded-2xl border border-slate-100 shadow-sm p-5 md:p-6 ${n}`,...r,children:e});export{n as t};

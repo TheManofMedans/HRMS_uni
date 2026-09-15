@@ -2,6 +2,7 @@
 using HRMS.Application.Interfaces.Repositories;
 using HRMS.domain.Enums;
 using HRMS.domain.Entities;
+using HRMS.Application.Interfaces.Services;
 namespace HRMS.API.BackgroundServices
 {
     public class AttendanceStatusBackgroundService : BackgroundService
@@ -32,6 +33,7 @@ namespace HRMS.API.BackgroundServices
         {
             using var scope = _scopeFactory.CreateScope();
             var attendancerepository = scope.ServiceProvider.GetRequiredService<IAttendanceRepository>();
+            var payslipService = scope.ServiceProvider.GetRequiredService<IPaySlipService>();
             var now = DateTime.UtcNow;
             var pendingattendances = await attendancerepository.GetByStatusAsync(AttendanceStatus.Pending);
             int updatecount = 0;
@@ -77,6 +79,7 @@ namespace HRMS.API.BackgroundServices
                     }
                 }
                 attendancerepository.Update(attendance);
+                await payslipService.RecalculateIfRecentAsync(attendance.EmployeeId, attendance.departmentId, attendance.Date);
                 updatecount++;
             }
             if (updatecount > 0)

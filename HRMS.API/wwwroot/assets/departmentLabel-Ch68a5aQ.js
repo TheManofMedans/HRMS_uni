@@ -1,0 +1,1 @@
+var e=e=>{if(!e)return`—`;let t=e.name||`دپارتمان ${e.id}`,n=e.company?.name||e.companyName||e.company?.Name||null;return n?`${t} — ${n}`:t},t=(t=[])=>(t||[]).map(t=>({value:t.id,label:e(t)}));export{t as n,e as t};

@@ -76,6 +76,7 @@ namespace HRMS.Application.Services
             {
                 throw new ConflictException("This registration number already exists!");
             }
+            Company.LateDeductionValue = 10;
             Company.UserCompanies.Add(new UserCompany
             {
                 User = User,

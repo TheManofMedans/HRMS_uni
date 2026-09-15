@@ -24,8 +24,9 @@ namespace HRMS.Application.Services
         private readonly IShiftRepository _shiftRepository;
         private readonly IDepartmentRepository _departmentRepository;
         private readonly INotificationService _notificationService;
+        private readonly IPaySlipService _paySlipService;
         public AttendanceService(IAttendanceRepository attendanceRepository, IMapper mapper, IEmployeeRepository employeeRepository, IShiftRepository shiftRepository
-            , IDepartmentRepository departdmentRepository, ICurrentUserService currentUser, INotificationService notificationService)
+            , IDepartmentRepository departdmentRepository, ICurrentUserService currentUser, INotificationService notificationService, IPaySlipService paySlipService)
         {
             _attendanceRepository = attendanceRepository;
             _mapper = mapper;
@@ -34,6 +35,7 @@ namespace HRMS.Application.Services
             _departmentRepository = departdmentRepository;
             _currentUser = currentUser;
             _notificationService = notificationService;
+            _paySlipService = paySlipService;
         }
         public async Task<AttendanceResponseDto?> GetByIdAsync(int id)
         {
@@ -188,6 +190,7 @@ namespace HRMS.Application.Services
                 $"{Attendance.Employee.FirstName} {Attendance.Employee.LastName} clocked in/out for {Attendance.Date:yyyy-MM-dd}.",
                 notifType,
                 attendanceId : Attendance.Id);
+            await _paySlipService.RecalculateIfRecentAsync(Attendance.EmployeeId, Attendance.departmentId, Attendance.Date);
             return isadded;
         }
         public async Task<bool> HighClearanceUpdateAsync(int id, UpdateAttendanceDto dto)
@@ -228,6 +231,7 @@ namespace HRMS.Application.Services
                 $"The attendance record of employee with {attendance.Employee.Id} on {attendance.Date:yyyy-MM-dd} Has been changed by {_currentUser.UserId}"
                 , NotificationType.AttendanceInfoUpdate,
                 attendanceId: attendance.Id);
+            await _paySlipService.RecalculateIfRecentAsync(attendance.EmployeeId, attendance.departmentId, attendance.Date);
             return isadded;
         }
         public async Task<bool> DeleteAsync(int id)
